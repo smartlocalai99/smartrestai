@@ -1,11 +1,13 @@
+import { useState } from "react";
 import Image from "next/image";
-import { IoAdd, IoStar } from "react-icons/io5";
+import { IoAdd, IoChevronDown, IoStar } from "react-icons/io5";
 
 const fishImage = "/fish.jpg";
 const chilliFishImage = "/chillifish.jpg";
 const grillImage = "/grill.jpg";
 const mandiChickenImage = "/mandic.jpg";
 const muttonMandiImage = "/muttonm.jpg";
+const apricotDelightImage = "/apricotdelight.jpg";
 
 const recommendedItems = [
   { title: "Mini Mandi Meal", price: "Rs 99", oldPrice: "Rs 129", image: fishImage },
@@ -18,6 +20,12 @@ const recommendedItems = [
   { title: "Grill Fish Special", price: "Rs 289", oldPrice: "Rs 349", image: grillImage },
   { title: "Chicken Mandi", price: "Rs 239", oldPrice: "Rs 289", image: mandiChickenImage },
   { title: "Mutton Mandi", price: "Rs 329", oldPrice: "Rs 389", image: muttonMandiImage },
+  {
+    title: "Apricot Delight",
+    price: "Rs 129",
+    oldPrice: "Rs 159",
+    image: apricotDelightImage,
+  },
 ];
 
 const cardImages = [
@@ -26,6 +34,7 @@ const cardImages = [
   grillImage,
   mandiChickenImage,
   muttonMandiImage,
+  apricotDelightImage,
 ];
 
 const cardPair = (first, second, offset = 0) => [
@@ -132,11 +141,20 @@ const menuSections = [
   },
   {
     heading: "Desserts (2)",
-    cards: cardPair(
-      { title: "Royal Dessert", price: "Rs 129", oldPrice: "Rs 159" },
-      { title: "Sweet Bowl", price: "Rs 99", oldPrice: "Rs 129" },
-      0
-    ),
+    cards: [
+      {
+        title: "Apricot Delight",
+        price: "Rs 129",
+        oldPrice: "Rs 159",
+        image: apricotDelightImage,
+      },
+      {
+        title: "Sweet Bowl",
+        price: "Rs 99",
+        oldPrice: "Rs 129",
+        image: apricotDelightImage,
+      },
+    ],
   },
   {
     heading: "Extra & Add Ons (11)",
@@ -224,24 +242,49 @@ function ProductCard({ item }) {
   );
 }
 
+function CollapsibleSection({ title, children, accent = false, titleSize = "text-[22px]" }) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <section>
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((value) => !value)}
+        className={`mb-3 flex w-full items-center justify-between gap-3 text-left ${titleSize} font-semibold leading-tight ${
+          accent ? "text-[#ef4f61]" : "text-[#202020]"
+        }`}
+      >
+        <span>{title}</span>
+        <IoChevronDown
+          className={`h-5 w-5 shrink-0 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : "rotate-0"
+          }`}
+        />
+      </button>
+
+      {isOpen ? children : null}
+    </section>
+  );
+}
+
 export default function PopularChoices() {
   return (
     <section className="w-full bg-transparent px-4 pb-6 pt-2 sm:px-6 lg:py-8">
       <div className="mx-auto max-w-3xl">
-        <div className="mb-4">
-          <h2 className="text-[26px] font-black tracking-tight text-[#241610] sm:text-[32px]">
-            Recommended
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          {recommendedItems.map((item) => (
-            <ProductCard
-              key={item.title}
-              item={item}
-            />
-          ))}
-        </div>
+        <CollapsibleSection
+          title="Recommended"
+          titleSize="text-[26px] sm:text-[32px]"
+        >
+          <div className="grid grid-cols-2 gap-4">
+            {recommendedItems.map((item) => (
+              <ProductCard
+                key={item.title}
+                item={item}
+              />
+            ))}
+          </div>
+        </CollapsibleSection>
 
         <div className="mt-8">
           <h2 className="mb-4 text-[26px] font-black tracking-tight text-[#241610] sm:text-[32px]">
@@ -250,15 +293,11 @@ export default function PopularChoices() {
 
           <div className="space-y-7">
             {menuSections.map((section, index) => (
-              <section key={section.heading}>
-                <h3
-                  className={`mb-3 text-[22px] font-semibold leading-tight ${
-                    index === 0 ? "text-[#ef4f61]" : "text-[#202020]"
-                  }`}
-                >
-                  {section.heading}
-                </h3>
-
+              <CollapsibleSection
+                key={section.heading}
+                title={section.heading}
+                accent={index === 0}
+              >
                 <div className="grid grid-cols-2 gap-4">
                   {section.cards.map((item) => (
                     <ProductCard
@@ -267,7 +306,7 @@ export default function PopularChoices() {
                     />
                   ))}
                 </div>
-              </section>
+              </CollapsibleSection>
             ))}
           </div>
         </div>
