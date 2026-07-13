@@ -87,7 +87,7 @@ function SearchBar() {
 
 function OfferCopy() {
   return (
-    <div className="relative z-10 max-w-[220px]">
+    <div className="relative z-10 max-w-[250px]">
       <p className="text-[18px] font-extrabold uppercase tracking-[0.12em] text-[#f4c45f]">
         Limited-time offer
       </p>
@@ -98,13 +98,13 @@ function OfferCopy() {
         Mini Mandi
       </h1>
 
-      <div className="mt-4 flex items-end">
+      <div className="mt-4 flex w-[240px] items-end">
         <span className="pb-1 text-[21px] font-extrabold text-white/55 line-through decoration-[#ff8a70] decoration-[3px]">
           ₹129
         </span>
 
         <span
-          className="font-serif text-[58px] font-black italic leading-[0.8] tracking-[-0.06em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
+          className="pl-2 font-serif text-[56px] font-black italic leading-none tracking-[-0.03em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
           style={{
             WebkitTextStroke: "1.5px #fff4d1",
             paintOrder: "stroke fill",
@@ -114,7 +114,7 @@ function OfferCopy() {
         </span>
       </div>
 
-      <p className="mt-4 max-w-[205px] text-[15px] font-bold leading-5 text-white/85">
+      <p className="mt-4 max-w-[225px] text-[15px] font-bold leading-5 text-white/85">
         A delicious mini mandi meal packed with flavour at a special price.
       </p>
 
@@ -142,7 +142,7 @@ export default function TopOfferBanner() {
         </div>
       </div>
 
-      <section className="relative min-h-[330px] shrink-0 overflow-hidden bg-[#32120d] px-5 pb-8  text-white">
+      <section className="relative min-h-[355px] shrink-0 overflow-hidden bg-[#32120d] px-5 pb-8 text-white">
         <div className="pointer-events-none absolute -right-24 top-8 h-[310px] w-[310px] rounded-full bg-[#8f2f1d]/35 blur-3xl" />
 
         <Image
@@ -151,7 +151,7 @@ export default function TopOfferBanner() {
           width={1500}
           height={1024}
           priority
-          className="absolute left-[185px] top-[62px] w-[310px] max-w-none rotate-1 object-contain drop-shadow-2xl"
+          className="absolute left-[218px] top-[108px] w-[275px] max-w-none rotate-1 object-contain drop-shadow-2xl"
         />
 
         <OfferCopy />
