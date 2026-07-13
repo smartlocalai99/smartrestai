@@ -48,6 +48,11 @@ const images = {
   butterChickenWithRumaliRoti: "/butterchickenrrumalioti.jpg",
   turkishChicken: "/turkeshchicken.webp",
   kadhaiChickenWithRoti: "/kadaichickenwithroti.jpg",
+  kajuMasalaWithRoti: "/kajumasalawithroti.jpeg",
+  kajuPaneerWithRoti: "/kajupannerroti.jpg",
+  mughlaiChickenWithRoti: "/mughalichickenroti.jpg",
+  fryMuttonMandi: "/frymuttonmandi.webp",
+  muttonRoastMandi: "/muttonroastmandi.jpg",
 };
 
 const menuItem = (title, price, description = "") => ({
@@ -271,7 +276,12 @@ const imageForItem = (item, sectionTitle = "") => {
   if (/palak paneer with 2 rumali roti/.test(text)) return images.palakPaneerWithRoti;
   if (/butter chicken with 2 rumali roti/.test(text)) return images.butterChickenWithRumaliRoti;
   if (/kadhai chicken with 2 rumali roti/.test(text)) return images.kadhaiChickenWithRoti;
+  if (/kaju masala with 2 rumali roti/.test(text)) return images.kajuMasalaWithRoti;
+  if (/kaju paneer with 2 rumali roti/.test(text)) return images.kajuPaneerWithRoti;
+  if (/mughlai chicken with 2 rumali roti/.test(text)) return images.mughlaiChickenWithRoti;
   if (/turkish chicken chefs special/.test(text)) return images.turkishChicken;
+  if (/fry mutton mandi/.test(text)) return images.fryMuttonMandi;
+  if (/mutton dum roast mandi|mutton dum roast single/.test(text)) return images.muttonRoastMandi;
   if (/paneer butter masala/.test(text)) return images.paneerButterMasala;
   if (/continental mini spl\. platter/.test(text)) return images.miniSpecialPlatter;
   if (/broasted mix platter/.test(text)) return images.broastedMixPlatter;
