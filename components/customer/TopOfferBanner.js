@@ -59,19 +59,19 @@ function LocationHeader() {
 
 function SearchBar() {
   return (
-    <div className="grid h-[52px] grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-2 rounded-xl bg-[#4b1b12] px-3 text-[#fff7df] shadow-xl">
-      <IoSearch className="h-6 w-6 shrink-0 text-[#f4c45f]" />
+    <div className="grid h-[52px] grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-2 rounded-xl bg-white px-3 text-black shadow-xl">
+      <IoSearch className="h-6 w-6 shrink-0 text-black" />
       <input
         type="text"
         placeholder="Restaurant name or a dish..."
         aria-label="Search the menu"
-        className="min-w-0 bg-transparent text-base font-semibold outline-none placeholder:text-[#d8b99b]"
+        className="min-w-0 bg-transparent text-base font-semibold text-black outline-none placeholder:text-black/45"
       />
-      <span className="h-7 w-px bg-[#f4c45f]/20" />
+      <span className="h-7 w-px bg-black/10" />
       <button
         type="button"
         aria-label="Search by voice"
-        className="grid h-8 w-8 place-items-center rounded-lg bg-[#f4c45f]/15 text-[#f4c45f]"
+        className="grid h-8 w-8 place-items-center rounded-lg bg-black/5 text-black"
       >
         <IoMicOutline className="h-6 w-6" />
       </button>
@@ -108,7 +108,7 @@ export default function TopOfferBanner() {
         <LocationHeader />
       </section>
 
-      <div className="sticky top-0 z-40 overflow-hidden bg-[#32120d] px-5  text-white">
+      <div className="sticky top-0 z-40 overflow-hidden bg-[#32120d] px-5 pb-3 pt-[3px] text-white">
         <div className="relative z-10">
           <SearchBar />
         </div>

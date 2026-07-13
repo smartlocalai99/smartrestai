@@ -9,7 +9,13 @@ const menuCategories = [
 
 export default function MenuCategories({ compact = false }) {
   return (
-    <section className={compact ? "shrink-0 pt-4" : "shrink-0 px-5 py-5"}>
+    <section
+      className={
+        compact
+          ? "sticky top-[67px] z-30 shrink-0 bg-white pt-4"
+          : "sticky top-[67px] z-30 shrink-0 bg-white px-5 py-5"
+      }
+    >
       <div className="grid grid-cols-4 gap-4">
         {menuCategories.map((item) => (
           <button
