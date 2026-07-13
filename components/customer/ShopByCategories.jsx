@@ -86,11 +86,11 @@ export default function ShopByCategories() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-5">
           <h2 className="text-[26px] font-black tracking-tight text-[#241610] sm:text-[32px]">
-            Shop by categories
+            Popular Choices
           </h2>
 
-          <p className="mt-1 text-[15px] font-semibold text-[#7b6251] sm:text-[18px]">
-            Freshest meat just for you
+          <p className=" text-[15px] font-semibold text-[#7b6251] sm:text-[18px]">
+          Explore the favourites our customers love
           </p>
         </div>
 
