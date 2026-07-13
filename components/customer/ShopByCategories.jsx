@@ -28,6 +28,7 @@ const images = {
   miniChickenWingsMandi: "/MiniChickenWingsMandi.jpeg",
   chicken65Mandi: "/Chicken65Mandi.webp",
   chickenSheekKebabMandi: "/ChickenSheekKebabMandi.webp",
+  malaiKababMandi: "/maialkababmandi.webp",
   chickenTikkaMandi: "/ChickenTikkaMandi.webp",
   fishFryMandi: "/FishFryMandiMini.webp",
   chickenJuicyMandi: "/chickenjuicymandi.jpg",
@@ -39,6 +40,14 @@ const images = {
   muttonMixPlatter: "/muttonmixplatter.webp",
   continentalSpecialPlatter: "/ContinentalSpecialPlatter.webp",
   seafoodPlatter: "/seafoodplatter.webp",
+  bbqFish: "/bbqfish.jpeg",
+  chickenSizzler: "/chickensiszler.webp",
+  garlicFish: "/garlicfish.jpg",
+  muttonGheeRoast: "/muttongheeroast.jpg",
+  palakPaneerWithRoti: "/palakpannerwithroti.jpg",
+  butterChickenWithRumaliRoti: "/butterchickenrrumalioti.jpg",
+  turkishChicken: "/turkeshchicken.webp",
+  kadhaiChickenWithRoti: "/kadaichickenwithroti.jpg",
 };
 
 const menuItem = (title, price, description = "") => ({
@@ -57,30 +66,18 @@ const menuSections = [
     heading: "Mini Pack",
     items: [
       menuItem(
-        "Serve For 1 Afghani Kabab Mandi",
+        "Afghani Kabab Mandi (Serves 1)",
         189,
         "Tender Afghani-style kababs served with flavorful mandi rice."
       ),
-      menuItem("Serve For 1 Butter Chicken With Rice", 169, "Creamy butter chicken with fluffy rice."),
-      menuItem("Serve For 1 Mini Chicken Wings Mandi", 179, "Juicy wings in fiery mandi sauce with rice."),
-      menuItem("Serve For 1 Chicken 65 Mandi", 179, "Mini chicken 65 pieces cooked in flavorful mandi sauce."),
-      menuItem("Serve For 1 Chicken Sheek Kebab Mandi", 199, "Chicken sheek kababs grilled with spices."),
-      menuItem("Serve For 1 Chicken Tikka Mandi", 189, "Mini chicken tikka pieces with mandi rice."),
-      menuItem("Serve For 1 Fish Fry Mandi", 209, "Crispy fried fish with flavorful mandi sauce."),
-      menuItem("Serve For 1 Malai Kebab Mandi", 199, "Tender chicken in rich malai sauce."),
-      menuItem("Serve For 1 Mutton Sheekh Kebab Mandi", 249, "Mutton skewers grilled with herbs and spices."),
-    ],
-  },
-  {
-    heading: "Mini Curry Meal",
-    items: [
-      menuItem("Palak Paneer With 2 Rumali Roti", 149),
-      menuItem("Serve For 1 Butter Chicken + 2 Rumali Roti", 179, "Signature butter chicken with soft rumali rotis."),
-      menuItem("Serve For 1 Kadhai Chicken + 2 Rumali Roti", 179, "Spicy tomato-based kadhai chicken with rotis."),
-      menuItem("Serve For 1 Kaju Masala + 2 Rumali Roti", 159, "Creamy kaju masala with rumali rotis."),
-      menuItem("Serve For 1 Kaju Paneer + 2 Rumali Roti", 169, "Paneer in creamy cashew sauce with rotis."),
-      menuItem("Serve For 1 Mughlai Chicken + 2 Rumali Roti", 189, "Mild, creamy Mughlai chicken with rumali rotis."),
-      menuItem("Serve For 1 Paneer Butter Masala + 2 Rumali Roti", 169, "Paneer butter masala with rumali rotis."),
+      menuItem("Butter Chicken With Rice (Serves 1)", 169, "Creamy butter chicken with fluffy rice."),
+      menuItem("Chicken Wings Mandi (Serves 1)", 179, "Juicy wings in fiery mandi sauce with rice."),
+      menuItem("Chicken 65 Mandi (Serves 1)", 179, "Mini chicken 65 pieces cooked in flavorful mandi sauce."),
+      menuItem("Chicken Sheek Kebab Mandi (Serves 1)", 199, "Chicken sheek kababs grilled with spices."),
+      menuItem("Chicken Tikka Mandi (Serves 1)", 189, "Mini chicken tikka pieces with mandi rice."),
+      menuItem("Fish Fry Mandi (Serves 1)", 209, "Crispy fried fish with flavorful mandi sauce."),
+      menuItem("Malai Kebab Mandi (Serves 1)", 199, "Tender chicken in rich malai sauce."),
+      menuItem("Mutton Sheekh Kebab Mandi (Serves 1)", 249, "Mutton skewers grilled with herbs and spices."),
     ],
   },
   {
@@ -91,6 +88,18 @@ const menuSections = [
       menuItem("Garlic Fish Chefs Special", 299, "Boneless fish fillet with garlic, barbequed on coal."),
       menuItem("Mutton Ghee Roast Chefs Special", 349, "Mutton tossed in a fiery blend of spices."),
       menuItem("Turkish Chicken Chefs Special", 279, "Marinated chicken with Turkish sauces and 2 rotis."),
+    ],
+  },
+  {
+    heading: "Curry Meals for One",
+    items: [
+      menuItem("Palak Paneer with 2 Rumali Rotis (Serves 1)", 149),
+      menuItem("Butter Chicken with 2 Rumali Rotis (Serves 1)", 179, "Signature butter chicken with soft rumali rotis."),
+      menuItem("Kadhai Chicken with 2 Rumali Rotis (Serves 1)", 179, "Spicy tomato-based kadhai chicken with rotis."),
+      menuItem("Kaju Masala with 2 Rumali Rotis (Serves 1)", 159, "Creamy kaju masala with rumali rotis."),
+      menuItem("Kaju Paneer with 2 Rumali Rotis (Serves 1)", 169, "Paneer in creamy cashew sauce with rotis."),
+      menuItem("Mughlai Chicken with 2 Rumali Rotis (Serves 1)", 189, "Mild, creamy Mughlai chicken with rumali rotis."),
+      menuItem("Paneer Butter Masala with 2 Rumali Rotis (Serves 1)", 169, "Paneer butter masala with rumali rotis."),
     ],
   },
   {
@@ -255,6 +264,14 @@ const regularMenuSections = menuSections.filter(
 const imageForItem = (item, sectionTitle = "") => {
   const text = `${item.title} ${sectionTitle}`.toLowerCase();
 
+  if (/bbq fish chefs special/.test(text)) return images.bbqFish;
+  if (/chicken sizzler chefs special/.test(text)) return images.chickenSizzler;
+  if (/garlic fish chefs special/.test(text)) return images.garlicFish;
+  if (/mutton ghee roast chefs special/.test(text)) return images.muttonGheeRoast;
+  if (/palak paneer with 2 rumali roti/.test(text)) return images.palakPaneerWithRoti;
+  if (/butter chicken with 2 rumali roti/.test(text)) return images.butterChickenWithRumaliRoti;
+  if (/kadhai chicken with 2 rumali roti/.test(text)) return images.kadhaiChickenWithRoti;
+  if (/turkish chicken chefs special/.test(text)) return images.turkishChicken;
   if (/paneer butter masala/.test(text)) return images.paneerButterMasala;
   if (/continental mini spl\. platter/.test(text)) return images.miniSpecialPlatter;
   if (/broasted mix platter/.test(text)) return images.broastedMixPlatter;
@@ -266,11 +283,13 @@ const imageForItem = (item, sectionTitle = "") => {
   if (/chicken juicy mandi/.test(text)) return images.chickenJuicyMandi;
   if (/mutton juicy mandi/.test(text)) return images.muttonJuicyMandi;
   if (/chicken sheek kebab mandi/.test(text)) return images.chickenSheekKebabMandi;
+  if (/mutton sheekh kebab mandi/.test(text)) return images.chickenSheekKebabMandi;
+  if (/malai kebab mandi/.test(text)) return images.malaiKababMandi;
   if (/chicken tikka mandi/.test(text)) return images.chickenTikkaMandi;
   if (/fish fry mandi|fish fried mandi/.test(text)) return images.fishFryMandi;
   if (/afghani.*kabab.*mandi/.test(text)) return images.afghaniKababMandi;
   if (/butter chicken.*rice/.test(text)) return images.butterChickenRice;
-  if (/mini chicken wings mandi/.test(text)) return images.miniChickenWingsMandi;
+  if (/chicken wings mandi/.test(text)) return images.miniChickenWingsMandi;
   if (/dessert|kunafa|qurbani|sweet|apricot/.test(text)) return images.dessert;
   if (/roti|naan|rumali/.test(text)) return images.roti;
   if (/mutton|raan|chops|botti/.test(text)) return images.muttonMandi;
@@ -553,7 +572,7 @@ export default function PopularChoices({
           {visibleMenuSections.map((section) => (
             <CollapsibleSection
               key={section.heading}
-              title={`${section.heading} (${section.items.length})`}
+              title={section.heading}
             >
               <div className="grid grid-cols-2 gap-4">
                 {section.items.map((item) => renderProduct(item, section.heading))}

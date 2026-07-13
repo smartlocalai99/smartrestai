@@ -1,10 +1,10 @@
 import Image from "next/image";
 
 const menuCategories = [
-  { label: "Mandi", image: "/mandi9.png", targetId: "section-chicken-mandi-7" },
-  { label: "Starters", image: "/starter.png", targetId: "section-chicken-starters-8" },
-  { label: "Rotis", image: "/rotis.png", targetId: "section-rotis-6" },
-  { label: "Desserts", image: "/desert.png", targetId: "section-desserts-2" },
+  { label: "Mandi", image: "/mandi9.png", targetId: "section-chicken-mandi" },
+  { label: "Starters", image: "/starter.png", targetId: "section-chicken-starters" },
+  { label: "Rotis", image: "/rotis.png", targetId: "section-rotis" },
+  { label: "Desserts", image: "/desert.png", targetId: "section-desserts" },
 ];
 
 export default function MenuCategories({ compact = false }) {
