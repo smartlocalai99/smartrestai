@@ -20,6 +20,18 @@ export default function App({ Component, pageProps }) {
       return;
     }
 
+    if (process.env.NODE_ENV !== "production") {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((registrations) =>
+          Promise.all(registrations.map((registration) => registration.unregister()))
+        )
+        .then(() => caches?.keys?.())
+        .then((keys) => Promise.all((keys || []).map((key) => caches.delete(key))))
+        .catch(() => {});
+      return;
+    }
+
     const registerServiceWorker = () => {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     };

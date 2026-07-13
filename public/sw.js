@@ -1,6 +1,5 @@
-const CACHE_NAME = "smartrest-v1";
+const CACHE_NAME = "smartrest-v2";
 const APP_SHELL = [
-  "/",
   "/manifest.webmanifest",
   "/pwa-icon-192.png",
   "/pwa-icon-512.png",
@@ -42,15 +41,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put("/", responseClone));
-          return response;
-        })
-        .catch(() => caches.match("/"))
-    );
+    event.respondWith(fetch(request));
     return;
   }
 
@@ -62,6 +53,11 @@ self.addEventListener("fetch", (event) => {
 
       return fetch(request).then((response) => {
         if (!response || response.status !== 200) {
+          return response;
+        }
+
+        const destination = request.destination;
+        if (!["image", "style", "script", "font", "manifest"].includes(destination)) {
           return response;
         }
 
