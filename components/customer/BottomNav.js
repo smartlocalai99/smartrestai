@@ -16,10 +16,12 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Primary navigation"
-      className="relative mx-4 mb-[calc(0.75rem+env(safe-area-inset-bottom))] mt-3 grid shrink-0 grid-cols-4 overflow-hidden rounded-[28px] border border-white/45 bg-white/35 px-2 py-2 shadow-2xl shadow-[#3a160f]/15 backdrop-blur-2xl"
+      className="absolute inset-x-4 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 grid grid-cols-4 overflow-hidden rounded-[30px] border border-white/55 bg-white/20 px-2 py-2 shadow-[0_18px_45px_rgba(58,22,15,0.22)] backdrop-blur-[22px] backdrop-saturate-150"
     >
-      <span className="pointer-events-none absolute inset-x-3 top-1 h-8 rounded-full bg-white/35 blur-md" />
-      <span className="pointer-events-none absolute inset-0 rounded-[28px] ring-1 ring-inset ring-white/35" />
+      <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/55 via-white/20 to-white/5" />
+      <span className="pointer-events-none absolute inset-x-5 top-1 h-7 rounded-full bg-white/55 blur-lg" />
+      <span className="pointer-events-none absolute inset-x-6 bottom-1 h-5 rounded-full bg-[#f4c45f]/10 blur-xl" />
+      <span className="pointer-events-none absolute inset-0 rounded-[30px] ring-1 ring-inset ring-white/45" />
       {navItems.map(({ label, icon: Icon, active }) => (
         <button
           type="button"
