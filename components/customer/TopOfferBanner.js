@@ -142,7 +142,7 @@ export default function TopOfferBanner() {
         </div>
       </div>
 
-      <section className="relative min-h-[330px] shrink-0 overflow-hidden bg-[#32120d] px-5 pb-8 pt-7 text-white">
+      <section className="relative min-h-[330px] shrink-0 overflow-hidden bg-[#32120d] px-5 pb-8  text-white">
         <div className="pointer-events-none absolute -right-24 top-8 h-[310px] w-[310px] rounded-full bg-[#8f2f1d]/35 blur-3xl" />
 
         <Image
