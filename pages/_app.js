@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Fraunces, Inter } from "next/font/google";
 import "@/styles/globals.css";
 
@@ -14,6 +15,24 @@ const inter = Inter({
 });
 
 export default function App({ Component, pageProps }) {
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) {
+      return;
+    }
+
+    const registerServiceWorker = () => {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    };
+
+    if (document.readyState === "complete") {
+      registerServiceWorker();
+      return;
+    }
+
+    window.addEventListener("load", registerServiceWorker);
+    return () => window.removeEventListener("load", registerServiceWorker);
+  }, []);
+
   return (
     <div className={`${fraunces.variable} ${inter.variable}`}>
       <Component {...pageProps} />
