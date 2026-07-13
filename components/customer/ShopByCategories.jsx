@@ -99,7 +99,7 @@ export default function ShopByCategories() {
             <CategoryCard
               key={category.id}
               category={category}
-              priority={index < 2}
+              priority={index === 0}
             />
           ))}
         </div>

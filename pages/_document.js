@@ -9,7 +9,7 @@ export default function Document() {
         <meta name="apple-mobile-web-app-title" content="SmartRest" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#3a160f" />
+        <meta name="theme-color" content="#32120d" />
         <meta name="format-detection" content="telephone=no" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

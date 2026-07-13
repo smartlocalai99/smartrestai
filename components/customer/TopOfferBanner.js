@@ -8,51 +8,6 @@ import {
   IoSearch,
 } from "react-icons/io5";
 
-function LocationHeader() {
-  return (
-    <div className="relative z-10 flex items-center justify-between gap-4">
-      <button
-        type="button"
-        aria-label="Change delivery location"
-        className="flex min-w-0 items-center gap-2 rounded-full"
-      >
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#fff7df] text-[#8f2f1d] shadow-lg">
-          <IoHome className="h-5 w-5" />
-        </span>
-
-        <span className="flex min-w-0 items-center gap-1.5">
-          <span className="truncate text-xl font-black leading-none">Kadapa</span>
-          <IoChevronDown className="mt-0.5 h-4 w-4 shrink-0" />
-        </span>
-      </button>
-
-      <VegModeToggle />
-    </div>
-  );
-}
-
-function SearchBar() {
-  return (
-    <div className="grid h-[52px] grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-2 rounded-xl bg-white px-3 text-[#211712] shadow-xl">
-      <IoSearch className="h-6 w-6 shrink-0 text-[#b3402a]" />
-      <input
-        type="text"
-        placeholder="Restaurant name or a dish..."
-        aria-label="Search the menu"
-        className="min-w-0 bg-transparent text-base font-semibold outline-none placeholder:text-[#8f8780]"
-      />
-      <span className="h-7 w-px bg-[#211712]/10" />
-      <button
-        type="button"
-        aria-label="Search by voice"
-        className="grid h-8 w-8 place-items-center rounded-lg bg-[#b3402a]/10 text-[#b3402a]"
-      >
-        <IoMicOutline className="h-6 w-6" />
-      </button>
-    </div>
-  );
-}
-
 function VegModeToggle() {
   const [vegOnly, setVegOnly] = useState(false);
 
@@ -79,9 +34,54 @@ function VegModeToggle() {
   );
 }
 
+function LocationHeader() {
+  return (
+    <div className="relative z-10 flex items-center justify-between gap-4">
+      <button
+        type="button"
+        aria-label="Change delivery location"
+        className="flex min-w-0 items-center gap-2 rounded-full"
+      >
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#fff7df] text-[#8f2f1d] shadow-lg">
+          <IoHome className="h-5 w-5" />
+        </span>
+
+        <span className="flex min-w-0 items-center gap-1.5">
+          <span className="truncate text-xl font-black leading-none">Kadapa</span>
+          <IoChevronDown className="mt-0.5 h-4 w-4 shrink-0" />
+        </span>
+      </button>
+
+      <VegModeToggle />
+    </div>
+  );
+}
+
+function SearchBar() {
+  return (
+    <div className="grid h-[52px] grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-2 rounded-xl bg-[#4b1b12] px-3 text-[#fff7df] shadow-xl">
+      <IoSearch className="h-6 w-6 shrink-0 text-[#f4c45f]" />
+      <input
+        type="text"
+        placeholder="Restaurant name or a dish..."
+        aria-label="Search the menu"
+        className="min-w-0 bg-transparent text-base font-semibold outline-none placeholder:text-[#d8b99b]"
+      />
+      <span className="h-7 w-px bg-[#f4c45f]/20" />
+      <button
+        type="button"
+        aria-label="Search by voice"
+        className="grid h-8 w-8 place-items-center rounded-lg bg-[#f4c45f]/15 text-[#f4c45f]"
+      >
+        <IoMicOutline className="h-6 w-6" />
+      </button>
+    </div>
+  );
+}
+
 function OfferCopy() {
   return (
-    <div className="relative z-10 mt-11 max-w-[210px]">
+    <div className="relative z-10 max-w-[210px]">
       <p className="text-[34px] font-black leading-[0.98] tracking-tight">
         Get Mini
         <br />
@@ -103,27 +103,30 @@ function OfferCopy() {
 
 export default function TopOfferBanner() {
   return (
-    <section className="relative shrink-0 overflow-hidden rounded-b-[34px] bg-[#3a160f] px-5 pb-8 pt-[calc(1.5rem+env(safe-area-inset-top))] text-white shadow-xl">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_86%_54%,rgba(238,192,106,0.3),transparent_30%),radial-gradient(circle_at_8%_12%,rgba(196,73,42,0.65),transparent_32%),linear-gradient(135deg,#5b2115_0%,#30120d_52%,#120a07_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/25 to-transparent" />
-      <div className="absolute left-0 top-0 h-full w-1/2 bg-[radial-gradient(circle_at_20%_65%,rgba(215,155,63,0.18),transparent_42%)]" />
-      <Image
-        src="/mandi99.png"
-        alt=""
-        aria-hidden="true"
-        width={1500}
-        height={1024}
-        priority
-        className="absolute left-48 top-36 w-[304px] max-w-none rotate-1 drop-shadow-2xl"
-      />
+    <>
+      <section className="relative shrink-0 overflow-hidden bg-[#32120d] px-5 pb-5 pt-[calc(1.5rem+env(safe-area-inset-top))] text-white">
+        <LocationHeader />
+      </section>
 
-      <LocationHeader />
-
-      <div className="relative z-10 mt-5">
-        <SearchBar />
+      <div className="sticky top-0 z-40 overflow-hidden bg-[#32120d] px-5  text-white">
+        <div className="relative z-10">
+          <SearchBar />
+        </div>
       </div>
 
-      <OfferCopy />
-    </section>
+      <section className="relative shrink-0 overflow-hidden bg-[#32120d] px-5 pb-8 pt-7 text-white">
+        <Image
+          src="/mandi99.png"
+          alt=""
+          aria-hidden="true"
+          width={1500}
+          height={1024}
+          priority
+          className="absolute left-48 top-12 w-[304px] max-w-none rotate-1 drop-shadow-2xl"
+        />
+
+        <OfferCopy />
+      </section>
+    </>
   );
 }
