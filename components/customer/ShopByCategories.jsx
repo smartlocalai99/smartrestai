@@ -4,6 +4,8 @@ import { IoAdd, IoStar } from "react-icons/io5";
 const fishImage = "/fish.jpg";
 const chilliFishImage = "/chillifish.jpg";
 const grillImage = "/grill.jpg";
+const mandiChickenImage = "/mandic.jpg";
+const muttonMandiImage = "/muttonm.jpg";
 
 const recommendedItems = [
   { title: "Mini Mandi Meal", price: "Rs 99", oldPrice: "Rs 129", image: fishImage },
@@ -14,9 +16,17 @@ const recommendedItems = [
     image: chilliFishImage,
   },
   { title: "Grill Fish Special", price: "Rs 289", oldPrice: "Rs 349", image: grillImage },
+  { title: "Chicken Mandi", price: "Rs 239", oldPrice: "Rs 289", image: mandiChickenImage },
+  { title: "Mutton Mandi", price: "Rs 329", oldPrice: "Rs 389", image: muttonMandiImage },
 ];
 
-const cardImages = [fishImage, chilliFishImage, grillImage];
+const cardImages = [
+  fishImage,
+  chilliFishImage,
+  grillImage,
+  mandiChickenImage,
+  muttonMandiImage,
+];
 
 const cardPair = (first, second, offset = 0) => [
   { ...first, image: cardImages[offset % cardImages.length] },
@@ -156,8 +166,8 @@ const menuSections = [
 
 function ProductCard({ item }) {
   return (
-    <article className="bg-white shadow-[0_10px_24px_rgba(31,16,10,0.12)]">
-      <div className="relative h-[150px] w-full overflow-hidden rounded-[20px] bg-[#f2e5d3]">
+    <article className="bg-white">
+      <div className="relative h-[150px] w-full overflow-hidden rounded-[20px] bg-white">
         <Image
           src={item.image}
           alt=""
@@ -168,9 +178,15 @@ function ProductCard({ item }) {
         />
       </div>
 
-      <div className="p-3">
-        <div className="mb-2 flex items-center justify-between gap-2">
+      <div className="px-1 pt-1.5 pb-2">
+        <div className="mb-1 flex items-center justify-between gap-2">
           <span className="inline-flex items-center gap-1 text-[12px] font-black text-[#ef4f61]">
+            <span
+              aria-label="Non veg"
+              className="grid h-4 w-4 place-items-center rounded-[4px] border border-[#ef4f61]"
+            >
+              <span className="h-2 w-2 rounded-full bg-[#ef4f61]" />
+            </span>
             Bestseller
           </span>
 
@@ -180,16 +196,16 @@ function ProductCard({ item }) {
           </span>
         </div>
 
-        <h4 className="min-h-[40px] text-[17px] font-black leading-[1.15] text-[#202020]">
+        <h4 className="text-[16px] font-black leading-[1.08] text-[#202020]">
           {item.title}
         </h4>
 
-        <div className="mt-3 flex items-end justify-between gap-2">
+        <div className="mt-1.5 flex items-end justify-between gap-2">
           <div>
-            <p className="text-[13px] font-bold text-[#8b8580] line-through">
+            <p className="text-[12px] font-bold leading-none text-[#8b8580] line-through">
               {item.oldPrice}
             </p>
-            <p className="inline-flex rounded-sm bg-[#ffdf3f] px-1.5 py-0.5 text-[17px] font-black text-black">
+            <p className="mt-0.5 inline-flex rounded-sm bg-[#ffdf3f] px-1.5 py-0.5 text-[16px] font-black leading-none text-black">
               {item.price}
             </p>
           </div>
@@ -197,7 +213,7 @@ function ProductCard({ item }) {
           <button
             type="button"
             aria-label={`Add ${item.title}`}
-            className="inline-flex h-10 min-w-[76px] items-center justify-center gap-1 rounded-xl border border-[#d8d3cf] bg-white px-3 text-[14px] font-black text-[#36a46a] shadow-sm transition-transform duration-200 active:scale-95"
+            className="inline-flex h-10 min-w-[76px] items-center justify-center gap-1 rounded-xl border border-[#d8d3cf] bg-white px-3 text-[14px] font-black text-[#36a46a] transition-transform duration-200 active:scale-95"
           >
             ADD
             <IoAdd className="h-4 w-4" />
