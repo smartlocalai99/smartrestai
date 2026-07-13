@@ -5,7 +5,6 @@ import {
   IoChevronDown,
   IoHome,
   IoMicOutline,
-  IoNotificationsOutline,
   IoSearch,
 } from "react-icons/io5";
 
@@ -27,14 +26,7 @@ function LocationHeader() {
         </span>
       </button>
 
-      <button
-        type="button"
-        aria-label="Notifications"
-        className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#fff7df] text-[#211712] shadow-lg"
-      >
-        <IoNotificationsOutline className="h-6 w-6" />
-        <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#d79b3f] ring-2 ring-[#fff7df]" />
-      </button>
+      <VegModeToggle />
     </div>
   );
 }
@@ -69,24 +61,18 @@ function VegModeToggle() {
       type="button"
       role="switch"
       aria-checked={vegOnly}
-      aria-label="Veg only mode"
+      aria-label="Veg or non-veg mode"
       onClick={() => setVegOnly((value) => !value)}
-      className="flex h-[52px] w-full flex-col items-center justify-center gap-1"
+      className="flex h-11 w-[74px] shrink-0 flex-col items-center justify-center gap-1 rounded-full bg-black/10 px-2 backdrop-blur-sm"
     >
-      <span className="w-full text-center text-[11px] font-black leading-[1.05] tracking-wide text-white drop-shadow">
-        VEG
-        <br />
-        MODE
+      <span className="w-full text-center text-[9px] font-black leading-none tracking-wide text-white drop-shadow">
+        {vegOnly ? "VEG" : "NON VEG"}
       </span>
-      <span
-        className={`relative h-6 w-12 rounded-full p-0.5 shadow-lg ring-1 ring-white/60 transition-colors ${
-          vegOnly ? "bg-[#d79b3f]" : "bg-white/80"
-        }`}
-      >
+      <span className="relative h-5 w-11 rounded-full bg-white p-0.5 shadow-lg ring-1 ring-white/70">
         <span
-          className={`block h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200 ${
+          className={`block h-4 w-4 rounded-full shadow-md transition-transform duration-200 ${
             vegOnly ? "translate-x-6" : "translate-x-0"
-          }`}
+          } ${vegOnly ? "bg-[#3f7a54]" : "bg-[#d79b3f]"}`}
         />
       </span>
     </button>
@@ -133,9 +119,8 @@ export default function TopOfferBanner() {
 
       <LocationHeader />
 
-      <div className="relative z-10 mt-5 grid grid-cols-[minmax(0,1fr)_72px] gap-3">
+      <div className="relative z-10 mt-5">
         <SearchBar />
-        <VegModeToggle />
       </div>
 
       <OfferCopy />
