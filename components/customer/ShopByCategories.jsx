@@ -738,7 +738,7 @@ function MenuNavigator({ entries, itemsByCategory, onSelect }) {
           id="menu-category-navigator"
           aria-label="Menu categories"
           style={{ right: rightEdge }}
-          className="fixed bottom-[calc(10.75rem+env(safe-area-inset-bottom))] z-50 max-h-[62vh] w-[min(320px,calc(100vw-2.5rem))] overflow-hidden rounded-[24px] border border-white/20 bg-[#232329]/80 p-3 text-white shadow-[0_24px_55px_rgba(0,0,0,0.38)] backdrop-blur-[28px] backdrop-saturate-150"
+          className="fixed bottom-[9.5rem] z-50 max-h-[62vh] w-[min(320px,calc(100vw-2.5rem))] overflow-hidden rounded-[24px] border border-white/20 bg-[#232329]/80 p-3 text-white shadow-[0_24px_55px_rgba(0,0,0,0.38)] backdrop-blur-[28px] backdrop-saturate-150"
         >
           <span className="pointer-events-none absolute inset-[1px] rounded-[23px] bg-gradient-to-b from-white/15 via-white/[0.03] to-transparent" />
           <div className="relative z-10">
@@ -778,7 +778,7 @@ function MenuNavigator({ entries, itemsByCategory, onSelect }) {
         onClick={() => setIsOpen((current) => !current)}
         whileTap={{ scale: 0.93 }}
         style={{ right: rightEdge }}
-        className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] z-50 inline-flex h-12 items-center gap-1.5 overflow-hidden rounded-[18px] border border-white/30 bg-[#232329]/75 px-4 text-base font-black text-white shadow-[0_12px_28px_rgba(0,0,0,0.26)] backdrop-blur-[22px] backdrop-saturate-150"
+        className="fixed bottom-[5.75rem] z-50 inline-flex h-12 items-center gap-1.5 overflow-hidden rounded-[18px] border border-white/30 bg-[#232329]/75 px-4 text-base font-black text-white shadow-[0_12px_28px_rgba(0,0,0,0.26)] backdrop-blur-[22px] backdrop-saturate-150"
       >
         <span className="pointer-events-none absolute inset-[1px] rounded-[17px] bg-gradient-to-b from-white/15 via-white/[0.03] to-transparent" />
         <LuUtensils className="relative z-10 h-5 w-5" />
