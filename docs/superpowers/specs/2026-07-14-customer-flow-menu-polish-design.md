@@ -48,12 +48,12 @@ Change only its visual treatment and row label layout:
 - Add strong backdrop blur and saturation.
 - Use a subtle white border, soft outer shadow, and a non-interactive inner highlight to create a glossy glass surface.
 - Keep text white and counts muted white.
-- In every category row, render the category name and a plain `+` together on the left.
+- In every category row, move the existing preview-toggle `+` button immediately beside the category name on the left.
 - Color only the plus with the app's primary green `#128647`.
-- Give the plus no background, circle, border, or separate button behavior.
+- Give the plus button no visible background, circle, or border.
 - Keep the item count independently right-aligned; the plus must not sit beside the count.
 
-The plus is decorative and part of the existing category-selection button. Mark it hidden from assistive technology so the row's accessible label remains the category name and count context.
+The plus remains the existing interactive preview toggle, including its rotation, expanded state, and accessible `Preview`/`Hide` label. Only its position and visual treatment change.
 
 ## Error Handling
 
@@ -71,7 +71,7 @@ Add focused regression coverage that verifies:
 - `SPICE10`, `Save 10% on this order`, `Tap to apply`, and `Applied` are present.
 - Coupon selection still sets the 10 percent discount.
 - The Menu popup uses translucent glass classes and retains its existing dimensions.
-- The plus is adjacent to the category name, uses `#128647`, has no background wrapper, and remains separate from the right-aligned count.
+- The interactive plus is adjacent to the category name, uses `#128647`, has no visible background, remains separate from the right-aligned count, and still toggles category-item previews.
 - Existing menu navigation, image mappings, restaurant information, lint, and production build checks continue to pass.
 
 ## Non-Goals
