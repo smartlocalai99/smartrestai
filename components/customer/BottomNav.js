@@ -92,13 +92,6 @@ export default function BottomNav({ checkoutSummary }) {
               isActive ? "text-[#b3402a]" : "text-black"
             }`}
           >
-            {isActive ? (
-              <motion.span
-                layoutId="bottomNavActivePill"
-                transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                className="absolute inset-1 -z-10 rounded-2xl bg-white/70 shadow-sm"
-              />
-            ) : null}
             <Icon className="h-7 w-7 shrink-0" />
             <span className="leading-none">{label}</span>
           </motion.button>

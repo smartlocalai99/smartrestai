@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { AnimatePresence, motion, useAnimation } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   IoArrowBack,
   IoBagHandleOutline,
@@ -25,7 +25,9 @@ import { playOrderSuccessSound } from "@/lib/sounds";
 
 const PAYMENT_ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline, card: IoCardOutline };
 
-const COUPONS = { SPICE10: 0.1 };
+const AVAILABLE_COUPONS = [
+  { code: "SPICE10", rate: 0.1, description: "Save 10% on this order" },
+];
 
 function BasketRow({ entry, onIncrement, onDecrement, onRemove }) {
   const { item, sectionTitle, quantity } = entry;
@@ -180,12 +182,9 @@ export default function Checkout() {
   const { method } = usePayment();
   const router = useRouter();
 
-  const [couponInput, setCouponInput] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
-  const [couponError, setCouponError] = useState("");
   const [isPlacing, setIsPlacing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
-  const couponShake = useAnimation();
 
   if (!isReady) return null;
 
@@ -194,20 +193,8 @@ export default function Checkout() {
   const deliveryFee = items.length > 0 ? DELIVERY_FEE : 0;
   const total = Math.max(subtotal - discount + deliveryFee, 0);
 
-  const handleApplyCoupon = () => {
-    const code = couponInput.trim().toUpperCase();
-    const rate = COUPONS[code];
-    if (rate) {
-      setAppliedCoupon({ code, rate });
-      setCouponError("");
-    } else {
-      setAppliedCoupon(null);
-      setCouponError("That code isn't valid. Try SPICE10.");
-      couponShake.start({
-        x: [0, -8, 8, -6, 6, -3, 3, 0],
-        transition: { duration: 0.4 },
-      });
-    }
+  const handleApplyCoupon = (coupon) => {
+    setAppliedCoupon(coupon);
   };
 
   const handlePlaceOrder = () => {
@@ -371,53 +358,41 @@ export default function Checkout() {
 
                   <section className="mt-5">
                     <p className="text-[14px] font-black text-[#241610]">Discount Coupon</p>
-                    <motion.div animate={couponShake} className="mt-2 flex gap-2">
-                      <div className="flex h-12 flex-1 items-center gap-2 rounded-xl border border-[#e4dcd2] px-3">
-                        <IoPricetagOutline className="h-4 w-4 shrink-0 text-[#8b8580]" />
-                        <input
-                          type="text"
-                          value={couponInput}
-                          onChange={(event) => {
-                            setCouponInput(event.target.value);
-                            setCouponError("");
-                          }}
-                          placeholder="Promo Code"
-                          className="min-w-0 flex-1 bg-transparent text-[13px] font-bold uppercase text-[#241610] outline-none placeholder:normal-case placeholder:text-[#a99a8c]"
-                        />
-                      </div>
-                      <motion.button
-                        type="button"
-                        onClick={handleApplyCoupon}
-                        disabled={!couponInput.trim()}
-                        whileTap={{ scale: 0.94 }}
-                        className="h-12 shrink-0 rounded-xl bg-[#128647] px-5 text-[13px] font-black text-white disabled:opacity-40"
-                      >
-                        Apply
-                      </motion.button>
-                    </motion.div>
-                    <AnimatePresence mode="wait">
-                      {couponError ? (
-                        <motion.p
-                          key="error"
-                          initial={{ opacity: 0, y: -4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0 }}
-                          className="mt-1.5 text-[12px] font-bold text-[#ef4f61]"
-                        >
-                          {couponError}
-                        </motion.p>
-                      ) : appliedCoupon ? (
-                        <motion.p
-                          key="success"
-                          initial={{ opacity: 0, y: -4, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="mt-1.5 text-[12px] font-bold text-[#1c9b5f]"
-                        >
-                          {appliedCoupon.code} applied — {Math.round(appliedCoupon.rate * 100)}% off
-                        </motion.p>
-                      ) : null}
-                    </AnimatePresence>
+                    <div className="mt-2 space-y-2">
+                      {AVAILABLE_COUPONS.map((coupon) => {
+                        const isApplied = appliedCoupon?.code === coupon.code;
+
+                        return (
+                          <motion.button
+                            type="button"
+                            key={coupon.code}
+                            aria-pressed={isApplied}
+                            onClick={() => handleApplyCoupon(coupon)}
+                            whileTap={{ scale: 0.98 }}
+                            className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
+                              isApplied
+                                ? "border-[#128647] bg-[#ecfff4]"
+                                : "border-[#e4dcd2] bg-white"
+                            }`}
+                          >
+                            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#f7f0e8] text-[#b3402a]">
+                              <IoPricetagOutline className="h-4 w-4" />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-[13px] font-black text-[#241610]">
+                                {coupon.code}
+                              </span>
+                              <span className="mt-0.5 block text-[11px] font-semibold text-[#8b8580]">
+                                {coupon.description}
+                              </span>
+                            </span>
+                            <span className={`shrink-0 text-[11px] font-black ${isApplied ? "text-[#128647]" : "text-[#8b8580]"}`}>
+                              {isApplied ? "Applied" : "Tap to apply"}
+                            </span>
+                          </motion.button>
+                        );
+                      })}
+                    </div>
                   </section>
 
                   <section className="mt-5 space-y-2 border-t border-[#f4eee9] pt-4">

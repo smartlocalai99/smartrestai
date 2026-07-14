@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "motion/react";
 import {
+  IoAlertCircleOutline,
   IoBriefcaseOutline,
   IoCheckmarkCircle,
   IoHomeOutline,
   IoLocationOutline,
+  IoNavigateOutline,
   IoPencilOutline,
   IoStar,
   IoStarOutline,
@@ -17,6 +19,7 @@ import PageHead from "@/components/customer/PageHead";
 import TabPageHeader from "@/components/customer/TabPageHeader";
 import { useAddresses } from "@/context/AddressContext";
 import useRequireAuth from "@/hooks/useRequireAuth";
+import { getCurrentCoords, reverseGeocode } from "@/lib/reverseGeocode";
 import { safeRedirect } from "@/lib/safeRedirect";
 
 const LABELS = [
@@ -34,7 +37,23 @@ function LabelIcon({ label, className }) {
 
 function AddressSheet({ initialValue, onClose, onSave }) {
   const [form, setForm] = useState(initialValue ?? emptyForm);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locateError, setLocateError] = useState("");
   const isValid = form.line.trim().length > 3;
+
+  const handleUseCurrentLocation = async () => {
+    setIsLocating(true);
+    setLocateError("");
+    try {
+      const { lat, lon } = await getCurrentCoords();
+      const { line, landmark } = await reverseGeocode(lat, lon);
+      setForm((f) => ({ ...f, line, landmark: landmark || f.landmark }));
+    } catch (error) {
+      setLocateError(error.message || "Couldn't get your location. Enter it manually.");
+    } finally {
+      setIsLocating(false);
+    }
+  };
 
   return (
     <motion.div
@@ -79,6 +98,28 @@ function AddressSheet({ initialValue, onClose, onSave }) {
             </motion.button>
           ))}
         </div>
+
+        <motion.button
+          type="button"
+          onClick={handleUseCurrentLocation}
+          disabled={isLocating}
+          whileTap={isLocating ? undefined : { scale: 0.97 }}
+          className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#128647] text-[13px] font-black text-[#128647] disabled:opacity-60"
+        >
+          {isLocating ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#128647]/30 border-t-[#128647]" />
+          ) : (
+            <IoNavigateOutline className="h-4 w-4" />
+          )}
+          {isLocating ? "Finding your location…" : "Use current location"}
+        </motion.button>
+
+        {locateError ? (
+          <p className="mt-2 flex items-start gap-1.5 text-[12px] font-semibold text-[#c0402a]">
+            <IoAlertCircleOutline className="mt-0.5 h-4 w-4 shrink-0" />
+            {locateError}
+          </p>
+        ) : null}
 
         <label className="mt-4 block">
           <span className="text-[12px] font-bold text-[#8b8580]">Address</span>

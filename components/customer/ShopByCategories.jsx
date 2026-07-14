@@ -296,6 +296,11 @@ const menuNavigatorEntries = createMenuNavigatorEntries(
   orderedMenuSections
 );
 
+const itemsByCategory = {
+  Recommended: recommendedItems,
+  ...Object.fromEntries(orderedMenuSections.map((section) => [section.heading, section.items])),
+};
+
 export const imageForItem = (item, sectionTitle = "") => {
   const exactImage = getExactMenuImage(item.title, sectionTitle);
   if (exactImage) return exactImage;
@@ -544,11 +549,11 @@ export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecre
           </span>
         </div>
 
-        <h4 className="min-h-[35px] overflow-hidden text-[16px] font-black leading-[1.08] text-[#202020] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+        <h4 className="overflow-hidden text-[16px] font-black leading-[1.08] text-[#202020] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
           {item.title}
         </h4>
 
-        <p className="mt-1 min-h-[28px] overflow-hidden text-[11px] font-medium leading-[1.25] text-[#756b64] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+        <p className="min-h-[28px] overflow-hidden text-[11px] font-medium leading-[1.25] text-[#756b64] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
           {item.description || "Freshly prepared and packed for your order."}
         </p>
 
@@ -645,13 +650,76 @@ function CollapsibleSection({
   );
 }
 
-function MenuNavigator({ entries, onSelect }) {
+function CategoryRow({ entry, items, isExpanded, onSelect, onToggleExpand }) {
+  return (
+    <div>
+      <div className="flex items-center px-3">
+        <button
+          type="button"
+          onClick={() => onSelect(entry.title)}
+          className="min-w-0 rounded-xl py-3 text-left text-sm font-bold active:bg-white/10"
+        >
+          <span>{entry.title}</span>
+        </button>
+        <motion.button
+          type="button"
+          onClick={() => onToggleExpand(entry.title)}
+          whileTap={{ scale: 0.88 }}
+          aria-label={isExpanded ? `Hide ${entry.title} items` : `Preview ${entry.title} items`}
+          aria-expanded={isExpanded}
+          className="grid h-8 w-8 shrink-0 place-items-center bg-transparent text-[#128647]"
+        >
+          <motion.span
+            animate={{ rotate: isExpanded ? 45 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="inline-flex"
+          >
+            <LuPlus className="h-4 w-4" />
+          </motion.span>
+        </motion.button>
+        <span className="ml-auto mr-1 text-white/60">{entry.count}</span>
+      </div>
+
+      <AnimatePresence initial={false}>
+        {isExpanded ? (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-0.5 py-1 pl-6 pr-3">
+              {items.map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  onClick={() => onSelect(entry.title)}
+                  className="block w-full truncate rounded-lg px-2 py-1.5 text-left text-[12px] font-semibold text-white/65 active:bg-white/10"
+                >
+                  {item.title}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function MenuNavigator({ entries, itemsByCategory, onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [expandedTitle, setExpandedTitle] = useState(null);
   const rightEdge = "max(1.25rem, calc((100vw - 430px) / 2 + 1.25rem))";
 
   const selectCategory = (title) => {
     setIsOpen(false);
     onSelect(title);
+  };
+
+  const toggleExpand = (title) => {
+    setExpandedTitle((current) => (current === title ? null : title));
   };
 
   return (
@@ -670,32 +738,34 @@ function MenuNavigator({ entries, onSelect }) {
           id="menu-category-navigator"
           aria-label="Menu categories"
           style={{ right: rightEdge }}
-          className="fixed bottom-[calc(10.75rem+env(safe-area-inset-bottom))] z-50 max-h-[62vh] w-[min(320px,calc(100vw-2.5rem))] overflow-hidden rounded-[24px] border border-white/10 bg-[#232329] p-3 text-white shadow-2xl"
+          className="fixed bottom-[calc(10.75rem+env(safe-area-inset-bottom))] z-50 max-h-[62vh] w-[min(320px,calc(100vw-2.5rem))] overflow-hidden rounded-[24px] border border-white/20 bg-[#232329]/80 p-3 text-white shadow-[0_24px_55px_rgba(0,0,0,0.38)] backdrop-blur-[28px] backdrop-saturate-150"
         >
-          <div className="flex items-center justify-between px-2 pb-2">
-            <p className="text-lg font-black">Menu</p>
-            <button
-              type="button"
-              aria-label="Close menu categories"
-              onClick={() => setIsOpen(false)}
-              className="grid h-9 w-9 place-items-center rounded-full bg-white/10"
-            >
-              <LuX className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="max-h-[calc(62vh-3.5rem)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {entries.map((entry) => (
+          <span className="pointer-events-none absolute inset-[1px] rounded-[23px] bg-gradient-to-b from-white/15 via-white/[0.03] to-transparent" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between px-2 pb-2">
+              <p className="text-lg font-black">Menu</p>
               <button
                 type="button"
-                key={entry.title}
-                onClick={() => selectCategory(entry.title)}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm font-bold active:bg-white/10"
+                aria-label="Close menu categories"
+                onClick={() => setIsOpen(false)}
+                className="grid h-9 w-9 place-items-center rounded-full bg-white/10"
               >
-                <span>{entry.title}</span>
-                <span className="text-white/60">{entry.count}</span>
+                <LuX className="h-5 w-5" />
               </button>
-            ))}
+            </div>
+
+            <div className="max-h-[calc(62vh-3.5rem)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {entries.map((entry) => (
+                <CategoryRow
+                  key={entry.title}
+                  entry={entry}
+                  items={itemsByCategory[entry.title] ?? []}
+                  isExpanded={expandedTitle === entry.title}
+                  onSelect={selectCategory}
+                  onToggleExpand={toggleExpand}
+                />
+              ))}
+            </div>
           </div>
         </nav>
       ) : null}
@@ -826,6 +896,7 @@ export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
       </div>
       <MenuNavigator
         entries={menuNavigatorEntries}
+        itemsByCategory={itemsByCategory}
         onSelect={navigateToSection}
       />
     </section>

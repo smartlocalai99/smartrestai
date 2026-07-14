@@ -41,9 +41,9 @@ export default function Account() {
     { label: "Help & support", icon: IoHelpCircleOutline, href: "/help" },
   ];
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await router.replace("/");
     logout();
-    router.push("/");
   };
 
   return (
