@@ -6,10 +6,19 @@ Add a Zomato-style floating `Menu` button that opens a navigator containing ever
 
 ## Floating button
 
-- Display a dark rounded `Menu` pill over the food list, above the bottom footer and aligned toward the lower-right side.
+- Display a compact dark-glass rounded `Menu` pill over the food list, above the bottom footer and aligned toward the lower-right side.
 - Include a white fork-and-knife icon and white `Menu` label.
 - Keep the button visible while the customer scrolls the food list.
 - Position it above both the normal footer and the green checkout footer so the controls do not overlap.
+- Use a 48px button height, tighter horizontal padding, a 20px icon, and a 16px label so it covers less of the product cards.
+- Use a translucent dark background, subtle white border, backdrop blur, saturation, inner highlight, and soft shadow to create a smoky glass effect.
+- Keep the opened category panel at its current size; only the floating trigger becomes smaller.
+
+## Last-item clearance
+
+- Add enough bottom space after the final category for its last row to scroll above the floating Menu pill and footer.
+- The final product card's price and `ADD` control must remain fully visible and tappable at the bottom of the menu.
+- Preserve the existing card layout and do not move or resize product controls.
 
 ## Category navigator
 
