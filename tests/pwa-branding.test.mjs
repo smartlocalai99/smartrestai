@@ -18,8 +18,9 @@ test("uses Mandi Kings as the installed app identity", async () => {
   assert.match(documentSource, /name="apple-mobile-web-app-title" content="Mandi Kings"/);
   assert.match(
     documentSource,
-    /name="apple-mobile-web-app-status-bar-style" content="black-translucent"/
+    /name="apple-mobile-web-app-status-bar-style" content="black"/
   );
+  assert.doesNotMatch(documentSource, /content="black-translucent"/);
 });
 
 test("provides logo splash artwork for matching and fallback iPhones", async () => {
