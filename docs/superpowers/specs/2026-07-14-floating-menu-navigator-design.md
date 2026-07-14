@@ -38,9 +38,9 @@ Add a Zomato-style floating `Menu` button that opens a navigator containing ever
 
 ## Footer
 
-- Change the normal four-item bottom navigation from translucent glass styling to a solid white background.
-- Remove its gradient, blur, and translucent overlay layers.
-- Preserve its rounded shape, labels, icons, layout, and behavior.
+- Keep the normal four-item bottom navigation's original translucent glass styling.
+- Use white for the inner app-shell background behind the footer instead of dark red.
+- Preserve the navigation's rounded shape, gradient, blur, labels, icons, layout, and behavior.
 - Keep the green checkout footer unchanged when cart items are present.
 
 ## Accessibility and interaction
@@ -52,7 +52,7 @@ Add a Zomato-style floating `Menu` button that opens a navigator containing ever
 
 ## Verification
 
-- Add tests for category titles/counts, controlled collapse state, selected-category expansion, and solid-white footer styling.
+- Add tests for category titles/counts, controlled collapse state, selected-category expansion, the original glass footer, compact glass Menu trigger, and bottom clearance.
 - Verify the panel contains every existing collapsible category exactly once.
 - Verify selecting a category closes the panel and scrolls to the corresponding section.
 - Run targeted ESLint, the Next.js production build, and browser verification at mobile width.
