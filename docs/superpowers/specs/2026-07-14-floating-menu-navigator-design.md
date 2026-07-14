@@ -2,7 +2,7 @@
 
 ## Goal
 
-Add a Zomato-style floating `Menu` button that opens a navigator containing every existing collapsible menu category and its dish count. Keep the existing category sections collapsible and change the normal bottom navigation footer to solid white.
+Add a Zomato-style floating `Menu` button that opens a navigator containing every existing collapsible menu category and its dish count. Keep the existing category sections and bottom navigation glass styling, use white behind the footer, and ensure the final menu item remains tappable.
 
 ## Floating button
 
