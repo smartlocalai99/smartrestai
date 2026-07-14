@@ -4,10 +4,10 @@ export default function Document() {
   return (
     <Html lang="en" className="bg-[#32120d]">
       <Head>
-        <meta name="application-name" content="SmartRest" />
+        <meta name="application-name" content="Mandi Kings" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-title" content="SmartRest" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-title" content="Mandi Kings" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#32120d" />
         <meta name="format-detection" content="telephone=no" />
@@ -16,6 +16,10 @@ export default function Document() {
         <link rel="icon" type="image/png" sizes="192x192" href="/pwa-icon-192.png" />
 
         {/* iOS splash screens (shown while the installed PWA is launching) */}
+        <link
+          rel="apple-touch-startup-image"
+          href="/splash/iphone-1290x2796.png"
+        />
         <link
           rel="apple-touch-startup-image"
           href="/splash/iphone-1290x2796.png"

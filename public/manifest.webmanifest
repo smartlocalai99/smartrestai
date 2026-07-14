@@ -1,7 +1,7 @@
 {
-  "name": "SmartRest AI",
-  "short_name": "SmartRest",
-  "description": "Order fresh mandi, tandoori, rotis, and desserts from SmartRest.",
+  "name": "Mandi Kings",
+  "short_name": "Mandi Kings",
+  "description": "Order fresh mandi, tandoori, rotis, and desserts from Mandi Kings.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
