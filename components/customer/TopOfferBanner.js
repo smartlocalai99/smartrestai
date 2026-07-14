@@ -206,23 +206,25 @@ function OfferCopy() {
   );
 }
 
-export function HomeHeader({
-  vegOnly = false,
-  onVegModeChange = () => {},
+export function HomeLocationBar({ vegOnly = false, onVegModeChange = () => {} }) {
+  return (
+    <section className="relative shrink-0 overflow-hidden bg-[#32120d] px-5 pb-5 pt-[calc(1.5rem+env(safe-area-inset-top))] text-white">
+      <LocationHeader
+        vegOnly={vegOnly}
+        onVegModeChange={onVegModeChange}
+      />
+    </section>
+  );
+}
+
+export function HomeSearchBar({
   searchQuery = "",
   onSearchChange = () => {},
   searchSuggestions = [],
 }) {
   return (
-    <div className="relative z-40 overflow-visible bg-[#32120d] text-white">
-      <div className="px-5 pb-3 pt-[calc(1.25rem+env(safe-area-inset-top))]">
-        <LocationHeader
-          vegOnly={vegOnly}
-          onVegModeChange={onVegModeChange}
-        />
-      </div>
-
-      <div className="px-5 pb-4">
+    <div className="sticky top-0 z-40 overflow-visible bg-[#32120d] px-5 pb-3 pt-[3px] text-white">
+      <div className="relative z-10">
         <SearchBar
           value={searchQuery}
           onChange={onSearchChange}
