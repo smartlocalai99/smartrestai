@@ -181,7 +181,7 @@ function OfferCopy() {
         </span>
 
         <span
-          className="pl-2 font-serif text-[56px] font-black italic leading-none tracking-[-0.03em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
+          className=" font-serif text-[50px] font-black italic leading-none tracking-[-0.03em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
           style={{
             WebkitTextStroke: "1.5px #fff4d1",
             paintOrder: "stroke fill",
@@ -206,7 +206,7 @@ function OfferCopy() {
   );
 }
 
-export default function TopOfferBanner({
+export function HomeHeader({
   vegOnly = false,
   onVegModeChange = () => {},
   searchQuery = "",
@@ -214,39 +214,41 @@ export default function TopOfferBanner({
   searchSuggestions = [],
 }) {
   return (
-    <>
-      <section className="relative shrink-0 overflow-hidden bg-[#32120d] px-5 pb-5 pt-[calc(1.5rem+env(safe-area-inset-top))] text-white">
+    <div className="relative z-40 overflow-visible bg-[#32120d] text-white">
+      <div className="px-5 pb-3 pt-[calc(1.25rem+env(safe-area-inset-top))]">
         <LocationHeader
           vegOnly={vegOnly}
           onVegModeChange={onVegModeChange}
         />
-      </section>
-
-      <div className="sticky top-0 z-40 overflow-visible bg-[#32120d] px-5 pb-3 pt-[3px] text-white">
-        <div className="relative z-10">
-          <SearchBar
-            value={searchQuery}
-            onChange={onSearchChange}
-            suggestions={searchSuggestions}
-            onSuggestionSelect={onSearchChange}
-          />
-        </div>
       </div>
 
-      <section className="relative min-h-[355px] shrink-0 overflow-hidden bg-[#32120d] px-5 pb-8 text-white">
-        <div className="pointer-events-none absolute -right-24 top-8 h-[310px] w-[310px] rounded-full bg-[#8f2f1d]/35 blur-3xl" />
-
-        <Image
-          src="/mandi99.png"
-          alt="Mini mandi special offer"
-          width={550}
-          height={550}
-          priority
-          className="absolute left-[218px] top-[108px] w-[275px] max-w-none rotate-1 object-contain drop-shadow-2xl"
+      <div className="px-5 pb-4">
+        <SearchBar
+          value={searchQuery}
+          onChange={onSearchChange}
+          suggestions={searchSuggestions}
+          onSuggestionSelect={onSearchChange}
         />
+      </div>
+    </div>
+  );
+}
 
-        <OfferCopy />
-      </section>
-    </>
+export default function TopOfferBanner() {
+  return (
+    <section className="relative min-h-[355px] shrink-0 overflow-hidden bg-[#32120d] px-5 pb-8 text-white">
+      <div className="pointer-events-none absolute -right-24 top-8 h-[310px] w-[310px] rounded-full bg-[#8f2f1d]/35 blur-3xl" />
+
+      <Image
+        src="/mandi99.png"
+        alt="Mini mandi special offer"
+        width={550}
+        height={550}
+        priority
+        className="absolute left-[218px] top-[108px] w-[275px] max-w-none rotate-1 object-contain drop-shadow-2xl"
+      />
+
+      <OfferCopy />
+    </section>
   );
 }

@@ -218,8 +218,8 @@ export default function Checkout() {
     <>
       <PageHead title="Checkout - SmartRest" />
 
-      <main className="h-dvh w-screen overflow-hidden bg-[#f3ede4] sm:grid sm:place-items-center sm:p-6">
-        <section className="relative flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-white shadow-2xl sm:rounded-[30px]">
+      <main className="h-dvh w-full overflow-hidden bg-[#f3ede4]">
+        <section className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-white">
           <header className="flex items-center gap-3 border-b border-[#f4eee9] px-5 pb-3 pt-[calc(1.25rem+env(safe-area-inset-top))]">
             <button
               type="button"

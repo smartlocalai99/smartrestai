@@ -320,8 +320,8 @@ export default function Login() {
     <>
       <PageHead title="Log in - SmartRest" />
 
-      <main className="h-dvh w-screen overflow-hidden bg-[#1c0f0a] sm:grid sm:place-items-center sm:p-6">
-        <section className="relative flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-[#32120d] shadow-2xl sm:rounded-[30px]">
+      <main className="h-dvh w-full overflow-hidden bg-[#1c0f0a]">
+        <section className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-[#32120d]">
           <div className="pointer-events-none absolute -right-20 -top-16 h-72 w-72 rounded-full bg-[#8f2f1d]/30 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-[#f4c45f]/10 blur-3xl" />
 
