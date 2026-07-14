@@ -223,7 +223,7 @@ export function HomeSearchBar({
   searchSuggestions = [],
 }) {
   return (
-    <div className="sticky top-0 z-40 overflow-visible bg-[#32120d] px-5 pb-3 pt-[3px] text-white">
+    <div className="sticky top-[env(safe-area-inset-top)] z-40 overflow-visible bg-[#32120d] px-5 pb-3 pt-[3px] text-white">
       <div className="relative z-10">
         <SearchBar
           value={searchQuery}

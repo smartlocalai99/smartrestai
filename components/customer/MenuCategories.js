@@ -20,8 +20,8 @@ export default function MenuCategories({ compact = false }) {
     <section
       className={
         compact
-          ? "sticky top-[67px] z-30 shrink-0 bg-white "
-          : "sticky top-[67px] z-30 shrink-0 bg-white px-2 "
+          ? "sticky top-[calc(67px+env(safe-area-inset-top))] z-30 shrink-0 bg-white "
+          : "sticky top-[calc(67px+env(safe-area-inset-top))] z-30 shrink-0 bg-white px-2 "
       }
     >
       <div className="grid grid-cols-4 gap-4">

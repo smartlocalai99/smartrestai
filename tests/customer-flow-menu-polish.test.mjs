@@ -87,13 +87,12 @@ test("keeps primary navigation available on the saved addresses page", async () 
   );
 });
 
-test("paints the mobile top safe area with the app primary color", async () => {
+test("uses the app primary color as the mobile document background", async () => {
   const source = await readSource("styles/globals.css");
 
-  assert.match(source, /body::before\s*\{/);
-  assert.match(source, /height:\s*env\(safe-area-inset-top\)/);
+  assert.match(source, /html,[\s\S]*?body,[\s\S]*?#__next\s*\{/);
   assert.match(source, /background:\s*#32120d/);
-  assert.match(source, /pointer-events:\s*none/);
+  assert.doesNotMatch(source, /body::before\s*\{/);
 });
 
 test("sends viewport-fit cover globally before protected pages hydrate", async () => {
@@ -105,4 +104,22 @@ test("sends viewport-fit cover globally before protected pages hydrate", async (
   assert.match(app, /import Head from "next\/head"/);
   assert.match(app, /<meta[\s\S]*?name="viewport"[\s\S]*?viewport-fit=cover/);
   assert.doesNotMatch(pageHead, /name="viewport"/);
+});
+
+test("keeps PWA sticky navigation below the phone status area without an overlay", async () => {
+  const [globals, topOfferBanner, menuCategories] = await Promise.all([
+    readSource("styles/globals.css"),
+    readSource("components/customer/TopOfferBanner.js"),
+    readSource("components/customer/MenuCategories.js"),
+  ]);
+
+  assert.doesNotMatch(globals, /body::before\s*\{/);
+  assert.match(
+    topOfferBanner,
+    /sticky top-\[env\(safe-area-inset-top\)\] z-40/
+  );
+  assert.match(
+    menuCategories,
+    /sticky top-\[calc\(67px\+env\(safe-area-inset-top\)\)\] z-30/
+  );
 });

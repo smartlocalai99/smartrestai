@@ -6,13 +6,3 @@ body,
   min-height: 100%;
   background: #32120d;
 }
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0 0 auto;
-  z-index: 9999;
-  height: env(safe-area-inset-top);
-  background: #32120d;
-  pointer-events: none;
-}
