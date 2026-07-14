@@ -64,10 +64,11 @@ const FAQS = [
 function FaqItem({ q, a, isOpen, onToggle }) {
   return (
     <div className="border-b border-[#f4eee9] py-3">
-      <button
+      <motion.button
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
+        whileTap={{ scale: 0.98 }}
         className="flex w-full items-center justify-between gap-3 text-left"
       >
         <span className="text-[14px] font-black text-[#241610]">{q}</span>
@@ -76,7 +77,7 @@ function FaqItem({ q, a, isOpen, onToggle }) {
             isOpen ? "rotate-180" : ""
           }`}
         />
-      </button>
+      </motion.button>
       <AnimatePresence initial={false}>
         {isOpen ? (
           <motion.div
@@ -106,12 +107,16 @@ export default function Help() {
           <TabPageHeader title="Help & Support" subtitle="We're here if something's not right" />
 
           <div className="grid grid-cols-3 gap-2 px-4 pt-2">
-            {CONTACT_OPTIONS.map(({ label, detail, icon: Icon, href }) => (
-              <a
+            {CONTACT_OPTIONS.map(({ label, detail, icon: Icon, href }, index) => (
+              <motion.a
                 key={label}
                 href={href}
                 target={label === "WhatsApp" ? "_blank" : undefined}
                 rel={label === "WhatsApp" ? "noreferrer" : undefined}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.06, duration: 0.25 }}
+                whileTap={{ scale: 0.93 }}
                 className="flex flex-col items-center gap-2 rounded-2xl border border-[#f0e9e0] bg-white py-4 text-center transition-colors duration-150 active:bg-[#faf5ef]"
               >
                 <span className="grid h-10 w-10 place-items-center rounded-full bg-[#f7f0e8] text-[#b3402a]">
@@ -121,7 +126,7 @@ export default function Help() {
                 <span className="px-1 text-[10px] font-semibold leading-tight text-[#a99a8c]">
                   {detail}
                 </span>
-              </a>
+              </motion.a>
             ))}
           </div>
 

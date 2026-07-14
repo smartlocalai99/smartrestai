@@ -4,17 +4,11 @@ import { AnimatePresence, motion, useAnimation } from "motion/react";
 import { IoArrowBack, IoCallOutline, IoCheckmark, IoShieldCheckmark } from "react-icons/io5";
 import { useAuth } from "@/context/AuthContext";
 import PageHead from "@/components/customer/PageHead";
+import { safeRedirect } from "@/lib/safeRedirect";
 
 const OTP_LENGTH = 4;
 const VALID_OTP = "1234";
 const RESEND_SECONDS = 30;
-
-function safeRedirect(target) {
-  if (typeof target === "string" && target.startsWith("/") && !target.startsWith("//")) {
-    return target;
-  }
-  return "/";
-}
 
 function PhoneStep({ phone, onChange, onSubmit, isSending }) {
   const isValid = phone.length === 10;

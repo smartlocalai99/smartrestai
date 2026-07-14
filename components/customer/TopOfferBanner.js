@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { motion } from "motion/react";
 import {
   IoArrowForward,
   IoChevronDown,
@@ -10,12 +11,13 @@ import {
 
 function VegModeToggle({ vegOnly, onChange }) {
   return (
-    <button
+    <motion.button
       type="button"
       role="switch"
       aria-checked={vegOnly}
       aria-label="Veg or non-veg mode"
       onClick={() => onChange(!vegOnly)}
+      whileTap={{ scale: 0.92 }}
       className="flex h-11 w-[74px] shrink-0 flex-col items-center justify-center gap-1 rounded-full bg-black/10 px-2 backdrop-blur-sm"
     >
       <span className="w-full text-center text-[9px] font-black leading-none tracking-wide text-white drop-shadow">
@@ -23,22 +25,26 @@ function VegModeToggle({ vegOnly, onChange }) {
       </span>
 
       <span className="relative h-5 w-11 rounded-full bg-white p-0.5 shadow-lg ring-1 ring-white/70">
-        <span
-          className={`block h-4 w-4 rounded-full shadow-md transition-transform duration-200 ${
-            vegOnly ? "translate-x-6" : "translate-x-0"
-          } ${vegOnly ? "bg-[#3f7a54]" : "bg-[#d79b3f]"}`}
+        <motion.span
+          layout
+          transition={{ type: "spring", stiffness: 600, damping: 32 }}
+          className={`absolute top-0.5 h-4 w-4 rounded-full shadow-md ${
+            vegOnly ? "bg-[#3f7a54]" : "bg-[#d79b3f]"
+          }`}
+          style={{ left: vegOnly ? 26 : 2 }}
         />
       </span>
-    </button>
+    </motion.button>
   );
 }
 
 function LocationHeader({ vegOnly, onVegModeChange }) {
   return (
     <div className="relative z-10 flex items-center justify-between gap-4">
-      <button
+      <motion.button
         type="button"
         aria-label="Change delivery location"
+        whileTap={{ scale: 0.96 }}
         className="flex min-w-0 items-center gap-2 rounded-full"
       >
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#fff7df] text-[#8f2f1d] shadow-lg">
@@ -51,7 +57,7 @@ function LocationHeader({ vegOnly, onVegModeChange }) {
           </span>
           <IoChevronDown className="mt-0.5 h-4 w-4 shrink-0" />
         </span>
-      </button>
+      </motion.button>
 
       <VegModeToggle
         vegOnly={vegOnly}
@@ -106,13 +112,14 @@ function SearchBar({
 
         <span className="h-7 w-px bg-black/10" />
 
-        <button
+        <motion.button
           type="button"
           aria-label="Search by voice"
+          whileTap={{ scale: 0.88 }}
           className="grid h-8 w-8 place-items-center rounded-lg bg-black/5 text-black"
         >
           <IoMicOutline className="h-6 w-6" />
-        </button>
+        </motion.button>
       </div>
 
       {hasSuggestions ? (

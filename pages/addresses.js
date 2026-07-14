@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "motion/react";
 import {
   IoBriefcaseOutline,
+  IoCheckmarkCircle,
   IoHomeOutline,
   IoLocationOutline,
   IoPencilOutline,
@@ -15,6 +17,7 @@ import PageHead from "@/components/customer/PageHead";
 import TabPageHeader from "@/components/customer/TabPageHeader";
 import { useAddresses } from "@/context/AddressContext";
 import useRequireAuth from "@/hooks/useRequireAuth";
+import { safeRedirect } from "@/lib/safeRedirect";
 
 const LABELS = [
   { id: "Home", icon: IoHomeOutline },
@@ -60,10 +63,11 @@ function AddressSheet({ initialValue, onClose, onSave }) {
 
         <div className="mt-4 flex gap-2">
           {LABELS.map(({ id, icon: Icon }) => (
-            <button
+            <motion.button
               key={id}
               type="button"
               onClick={() => setForm((f) => ({ ...f, label: id }))}
+              whileTap={{ scale: 0.93 }}
               className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-[13px] font-black transition-colors duration-150 ${
                 form.label === id
                   ? "border-[#128647] bg-[#eafff2] text-[#128647]"
@@ -72,7 +76,7 @@ function AddressSheet({ initialValue, onClose, onSave }) {
             >
               <Icon className="h-4 w-4" />
               {id}
-            </button>
+            </motion.button>
           ))}
         </div>
 
@@ -114,20 +118,22 @@ function AddressSheet({ initialValue, onClose, onSave }) {
         </label>
 
         <div className="mt-5 flex gap-3">
-          <button
+          <motion.button
             type="button"
             onClick={onClose}
+            whileTap={{ scale: 0.96 }}
             className="flex h-12 flex-1 items-center justify-center rounded-xl border border-[#e4dcd2] text-[14px] font-black text-[#5f554c]"
           >
             Cancel
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             type="submit"
             disabled={!isValid}
+            whileTap={isValid ? { scale: 0.96 } : undefined}
             className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[#128647] text-[14px] font-black text-white disabled:opacity-40"
           >
             Save address
-          </button>
+          </motion.button>
         </div>
       </motion.form>
     </motion.div>
@@ -167,31 +173,34 @@ function AddressCard({ address, onEdit, onDelete, onSetDefault }) {
       </div>
 
       <div className="mt-3 flex items-center gap-4 border-t border-[#f4eee9] pt-3">
-        <button
+        <motion.button
           type="button"
           onClick={onSetDefault}
           disabled={address.isDefault}
+          whileTap={address.isDefault ? undefined : { scale: 0.94 }}
           className="inline-flex items-center gap-1 text-[12px] font-black text-[#a56a10] disabled:opacity-40"
         >
           {address.isDefault ? <IoStar className="h-4 w-4" /> : <IoStarOutline className="h-4 w-4" />}
           {address.isDefault ? "Default" : "Set as default"}
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           type="button"
           onClick={onEdit}
+          whileTap={{ scale: 0.94 }}
           className="ml-auto inline-flex items-center gap-1 text-[12px] font-black text-[#5f554c]"
         >
           <IoPencilOutline className="h-4 w-4" />
           Edit
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           type="button"
           onClick={onDelete}
+          whileTap={{ scale: 0.94 }}
           className="inline-flex items-center gap-1 text-[12px] font-black text-[#ef4f61]"
         >
           <IoTrashOutline className="h-4 w-4" />
           Delete
-        </button>
+        </motion.button>
       </div>
     </motion.div>
   );
@@ -201,8 +210,12 @@ export default function Addresses() {
   const { isReady } = useRequireAuth();
   const { addresses, addAddress, updateAddress, removeAddress, setDefault } = useAddresses();
   const [sheet, setSheet] = useState(null); // null | "new" | address object
+  const [justSaved, setJustSaved] = useState(false);
+  const router = useRouter();
 
   if (!isReady) return null;
+
+  const redirectParam = typeof router.query.redirect === "string" ? router.query.redirect : null;
 
   const handleSave = (data) => {
     if (sheet && sheet !== "new") {
@@ -211,6 +224,14 @@ export default function Addresses() {
       addAddress(data);
     }
     setSheet(null);
+
+    if (redirectParam) {
+      router.push(safeRedirect(redirectParam));
+      return;
+    }
+
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 1800);
   };
 
   return (
@@ -220,6 +241,15 @@ export default function Addresses() {
       <AppShell>
         <div className="min-h-full bg-white">
           <TabPageHeader title="Saved Addresses" subtitle="Where should we deliver your order?" />
+
+          {redirectParam && addresses.length === 0 ? (
+            <div className="mx-4 mt-3 rounded-2xl border border-[#f3d4d0] bg-[#fdf6f4] px-4 py-3">
+              <p className="text-[13px] font-black text-[#c0402a]">Add an address to continue</p>
+              <p className="mt-0.5 text-[12px] font-semibold leading-4 text-[#a56a58]">
+                We need a delivery address before you can place your order.
+              </p>
+            </div>
+          ) : null}
 
           {addresses.length === 0 ? (
             <EmptyState
@@ -244,13 +274,14 @@ export default function Addresses() {
           )}
 
           <div className="px-4 pb-6">
-            <button
+            <motion.button
               type="button"
               onClick={() => setSheet("new")}
+              whileTap={{ scale: 0.97 }}
               className="flex h-12 w-full items-center justify-center rounded-xl border border-dashed border-[#c9d9cf] text-[13px] font-black text-[#128647]"
             >
               + Add New Address
-            </button>
+            </motion.button>
           </div>
         </div>
       </AppShell>
@@ -263,6 +294,21 @@ export default function Addresses() {
             onClose={() => setSheet(null)}
             onSave={handleSave}
           />
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {justSaved ? (
+          <motion.div
+            initial={{ opacity: 0, y: -16, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: -16, x: "-50%" }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="fixed left-1/2 top-[calc(1rem+env(safe-area-inset-top))] z-[60] flex items-center gap-2 rounded-full bg-[#241610] px-4 py-2.5 text-white shadow-xl"
+          >
+            <IoCheckmarkCircle className="h-4 w-4 text-[#1c9b5f]" />
+            <span className="text-[13px] font-bold">Address saved</span>
+          </motion.div>
         ) : null}
       </AnimatePresence>
     </>

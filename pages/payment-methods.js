@@ -26,15 +26,19 @@ export default function PaymentMethods() {
           />
 
           <div className="space-y-3 px-4 pb-6 pt-2">
-            {PAYMENT_METHODS.map((method) => {
+            {PAYMENT_METHODS.map((method, index) => {
               const Icon = ICONS[method.id];
               const isSelected = methodId === method.id;
 
               return (
-                <button
+                <motion.button
                   type="button"
                   key={method.id}
                   onClick={() => setMethodId(method.id)}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05, duration: 0.25 }}
+                  whileTap={{ scale: 0.98 }}
                   className={`flex w-full items-start gap-3 rounded-[20px] border p-4 text-left transition-colors duration-150 ${
                     isSelected ? "border-[#128647] bg-[#eafff2]" : "border-[#f0e9e0] bg-white"
                   }`}
@@ -64,7 +68,7 @@ export default function PaymentMethods() {
                       <IoCheckmarkCircle className="h-6 w-6" />
                     </motion.span>
                   ) : null}
-                </button>
+                </motion.button>
               );
             })}
           </div>

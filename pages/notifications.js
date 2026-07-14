@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 import {
   IoFastFoodOutline,
   IoGiftOutline,
@@ -49,10 +50,11 @@ function Toggle({ checked, onChange, disabled }) {
         checked ? "bg-[#128647]" : "bg-[#e4dcd2]"
       } ${disabled ? "opacity-60" : ""}`}
     >
-      <span
-        className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-md transition-transform duration-200 ${
-          checked ? "translate-x-[22px]" : "translate-x-0.5"
-        }`}
+      <motion.span
+        layout
+        transition={{ type: "spring", stiffness: 600, damping: 32 }}
+        className="absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-md"
+        style={{ left: checked ? 22 : 2 }}
       />
     </button>
   );
@@ -94,9 +96,12 @@ export default function Notifications() {
           <TabPageHeader title="Notifications" subtitle="Choose what you'd like to hear about" />
 
           <div className="space-y-3 px-4 pb-8 pt-2">
-            {PREFERENCES.map(({ id, label, description, icon: Icon, locked }) => (
-              <div
+            {PREFERENCES.map(({ id, label, description, icon: Icon, locked }, index) => (
+              <motion.div
                 key={id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.25 }}
                 className="flex items-start gap-3 rounded-[20px] border border-[#f0e9e0] bg-white p-4"
               >
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#f7f0e8] text-[#b3402a]">
@@ -118,7 +123,7 @@ export default function Notifications() {
                   disabled={locked}
                   onChange={(value) => updatePref(id, value)}
                 />
-              </div>
+              </motion.div>
             ))}
           </div>
 

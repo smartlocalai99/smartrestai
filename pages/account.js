@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { motion } from "motion/react";
 import {
   IoChevronForward,
   IoHeartOutline,
@@ -55,7 +56,12 @@ export default function Account() {
             <p className="text-[13px] font-bold uppercase tracking-[0.14em] text-white/40">
               Account
             </p>
-            <div className="mt-3 flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mt-3 flex items-center gap-3"
+            >
               <span className="grid h-14 w-14 place-items-center rounded-2xl bg-[#f4c45f] text-[20px] font-black text-[#3c1712]">
                 {user?.phone ? user.phone.slice(-2) : "SR"}
               </span>
@@ -65,7 +71,7 @@ export default function Account() {
                 </p>
                 <p className="text-[12px] font-semibold text-white/50">Kadapa, Andhra Pradesh</p>
               </div>
-            </div>
+            </motion.div>
           </section>
 
           <TabPageHeader title="Settings" variant="section" />
@@ -73,10 +79,11 @@ export default function Account() {
           <div className="px-5 pb-4">
             <div className="overflow-hidden rounded-2xl border border-[#f0e9e0]">
               {rows.map(({ label, icon: Icon, href, subtitle }, index) => (
-                <button
+                <motion.button
                   type="button"
                   key={label}
                   onClick={() => router.push(href)}
+                  whileTap={{ scale: 0.98, backgroundColor: "#faf5ef" }}
                   className={`flex w-full items-center gap-3 bg-white px-4 py-3.5 text-left transition-colors duration-150 active:bg-[#faf5ef] ${
                     index !== rows.length - 1 ? "border-b border-[#f4eee9]" : ""
                   }`}
@@ -93,18 +100,19 @@ export default function Account() {
                     ) : null}
                   </span>
                   <IoChevronForward className="h-4 w-4 shrink-0 text-[#c9c0b7]" />
-                </button>
+                </motion.button>
               ))}
             </div>
 
-            <button
+            <motion.button
               type="button"
               onClick={handleLogout}
+              whileTap={{ scale: 0.97 }}
               className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border border-[#f3d4d0] py-3.5 text-[14px] font-black text-[#c0402a] transition-colors duration-150 active:bg-[#fdf3f1]"
             >
               <IoLogOutOutline className="h-[18px] w-[18px]" />
               Log out
-            </button>
+            </motion.button>
           </div>
         </div>
       </AppShell>

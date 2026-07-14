@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useAnimation } from "motion/react";
 import {
   IoArrowBack,
   IoBagHandleOutline,
@@ -21,6 +21,7 @@ import { DELIVERY_FEE, useCart } from "@/context/CartContext";
 import { useOrders } from "@/context/OrdersContext";
 import { usePayment } from "@/context/PaymentContext";
 import useRequireAuth from "@/hooks/useRequireAuth";
+import { playOrderSuccessSound } from "@/lib/sounds";
 
 const PAYMENT_ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline, card: IoCardOutline };
 
@@ -53,42 +54,61 @@ function BasketRow({ entry, onIncrement, onDecrement, onRemove }) {
         <p className="truncate text-[14px] font-black text-[#241610]">{item.title}</p>
         <p className="mt-0.5 text-[13px] font-bold text-[#8b8580]">₹{item.price} each</p>
         <div className="mt-2 inline-flex h-8 items-center overflow-hidden rounded-lg border border-[#e4dcd2]">
-          <button
+          <motion.button
             type="button"
             aria-label={`Remove one ${item.title}`}
             onClick={onDecrement}
+            whileTap={{ scale: 0.85 }}
             className="grid h-full w-7 place-items-center text-[#5f554c]"
           >
             <LuMinus className="h-3.5 w-3.5" />
-          </button>
-          <span className="w-6 text-center text-[12px] font-black text-[#241610]">{quantity}</span>
-          <button
+          </motion.button>
+          <span className="grid w-6 place-items-center overflow-hidden text-center text-[12px] font-black text-[#241610]">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={quantity}
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -10, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {quantity}
+              </motion.span>
+            </AnimatePresence>
+          </span>
+          <motion.button
             type="button"
             aria-label={`Add one more ${item.title}`}
             onClick={onIncrement}
+            whileTap={{ scale: 0.85 }}
             className="grid h-full w-7 place-items-center text-[#5f554c]"
           >
             <LuPlus className="h-3.5 w-3.5" />
-          </button>
+          </motion.button>
         </div>
       </div>
 
       <div className="flex flex-col items-end gap-2">
         <p className="text-[14px] font-black text-[#241610]">₹{item.price * quantity}</p>
-        <button
+        <motion.button
           type="button"
           aria-label={`Remove ${item.title} from basket`}
           onClick={onRemove}
+          whileTap={{ scale: 0.85 }}
           className="text-[#c9c0b7] transition-colors duration-150 active:text-[#ef4f61]"
         >
           <IoTrashOutline className="h-[18px] w-[18px]" />
-        </button>
+        </motion.button>
       </div>
     </motion.div>
   );
 }
 
 function SuccessScreen({ orderId, total, router }) {
+  useEffect(() => {
+    playOrderSuccessSound();
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -165,6 +185,7 @@ export default function Checkout() {
   const [couponError, setCouponError] = useState("");
   const [isPlacing, setIsPlacing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
+  const couponShake = useAnimation();
 
   if (!isReady) return null;
 
@@ -182,6 +203,10 @@ export default function Checkout() {
     } else {
       setAppliedCoupon(null);
       setCouponError("That code isn't valid. Try SPICE10.");
+      couponShake.start({
+        x: [0, -8, 8, -6, 6, -3, 3, 0],
+        transition: { duration: 0.4 },
+      });
     }
   };
 
@@ -282,38 +307,48 @@ export default function Checkout() {
                       </AnimatePresence>
                     </div>
 
-                    <button
+                    <motion.button
                       type="button"
                       onClick={() => router.push("/")}
+                      whileTap={{ scale: 0.98 }}
                       className="mt-3 flex h-11 w-full items-center justify-center rounded-xl border border-dashed border-[#c9d9cf] text-[13px] font-black text-[#128647]"
                     >
                       + Add More Items
-                    </button>
+                    </motion.button>
                   </section>
 
                   <section className="mt-5 space-y-2">
-                    <button
+                    <motion.button
                       type="button"
-                      onClick={() => router.push("/addresses")}
-                      className="flex w-full items-center gap-3 rounded-2xl border border-[#f0e9e0] p-3.5 text-left"
+                      onClick={() => router.push("/addresses?redirect=%2Fcheckout")}
+                      whileTap={{ scale: 0.98 }}
+                      className={`flex w-full items-center gap-3 rounded-2xl border p-3.5 text-left ${
+                        defaultAddress ? "border-[#f0e9e0]" : "border-[#f3d4d0] bg-[#fdf6f4]"
+                      }`}
                     >
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#f7f0e8] text-[#b3402a]">
                         <IoLocationOutline className="h-[18px] w-[18px]" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-[11px] font-bold uppercase tracking-wide text-[#a99a8c]">
+                        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-[#a99a8c]">
                           Deliver to
+                          {defaultAddress ? null : (
+                            <span className="rounded-full bg-[#ef4f61]/15 px-1.5 py-0.5 text-[9px] font-black tracking-wide text-[#c0402a]">
+                              Required
+                            </span>
+                          )}
                         </span>
                         <span className="block truncate text-[13px] font-black text-[#241610]">
                           {defaultAddress ? defaultAddress.line : "Add a delivery address"}
                         </span>
                       </span>
                       <IoChevronForward className="h-4 w-4 shrink-0 text-[#c9c0b7]" />
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
                       type="button"
                       onClick={() => router.push("/payment-methods")}
+                      whileTap={{ scale: 0.98 }}
                       className="flex w-full items-center gap-3 rounded-2xl border border-[#f0e9e0] p-3.5 text-left"
                     >
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#f7f0e8] text-[#b3402a]">
@@ -331,12 +366,12 @@ export default function Checkout() {
                         </span>
                       </span>
                       <IoChevronForward className="h-4 w-4 shrink-0 text-[#c9c0b7]" />
-                    </button>
+                    </motion.button>
                   </section>
 
                   <section className="mt-5">
                     <p className="text-[14px] font-black text-[#241610]">Discount Coupon</p>
-                    <div className="mt-2 flex gap-2">
+                    <motion.div animate={couponShake} className="mt-2 flex gap-2">
                       <div className="flex h-12 flex-1 items-center gap-2 rounded-xl border border-[#e4dcd2] px-3">
                         <IoPricetagOutline className="h-4 w-4 shrink-0 text-[#8b8580]" />
                         <input
@@ -350,23 +385,39 @@ export default function Checkout() {
                           className="min-w-0 flex-1 bg-transparent text-[13px] font-bold uppercase text-[#241610] outline-none placeholder:normal-case placeholder:text-[#a99a8c]"
                         />
                       </div>
-                      <button
+                      <motion.button
                         type="button"
                         onClick={handleApplyCoupon}
                         disabled={!couponInput.trim()}
+                        whileTap={{ scale: 0.94 }}
                         className="h-12 shrink-0 rounded-xl bg-[#128647] px-5 text-[13px] font-black text-white disabled:opacity-40"
                       >
                         Apply
-                      </button>
-                    </div>
-                    {couponError ? (
-                      <p className="mt-1.5 text-[12px] font-bold text-[#ef4f61]">{couponError}</p>
-                    ) : null}
-                    {appliedCoupon ? (
-                      <p className="mt-1.5 text-[12px] font-bold text-[#1c9b5f]">
-                        {appliedCoupon.code} applied — {Math.round(appliedCoupon.rate * 100)}% off
-                      </p>
-                    ) : null}
+                      </motion.button>
+                    </motion.div>
+                    <AnimatePresence mode="wait">
+                      {couponError ? (
+                        <motion.p
+                          key="error"
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          className="mt-1.5 text-[12px] font-bold text-[#ef4f61]"
+                        >
+                          {couponError}
+                        </motion.p>
+                      ) : appliedCoupon ? (
+                        <motion.p
+                          key="success"
+                          initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="mt-1.5 text-[12px] font-bold text-[#1c9b5f]"
+                        >
+                          {appliedCoupon.code} applied — {Math.round(appliedCoupon.rate * 100)}% off
+                        </motion.p>
+                      ) : null}
+                    </AnimatePresence>
                   </section>
 
                   <section className="mt-5 space-y-2 border-t border-[#f4eee9] pt-4">
@@ -392,14 +443,20 @@ export default function Checkout() {
 
                   <button
                     type="button"
-                    onClick={handlePlaceOrder}
+                    onClick={
+                      defaultAddress
+                        ? handlePlaceOrder
+                        : () => router.push("/addresses?redirect=%2Fcheckout")
+                    }
                     disabled={isPlacing}
                     className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#128647] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(18,134,71,0.32)] transition-transform duration-150 active:scale-[0.98] disabled:opacity-60"
                   >
                     {isPlacing ? (
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                    ) : (
+                    ) : defaultAddress ? (
                       `Checkout · ₹${total}`
+                    ) : (
+                      "Add Delivery Address to Continue"
                     )}
                   </button>
                 </motion.div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { AnimatePresence, motion, useAnimation } from "motion/react";
 import {
   LuBicepsFlexed,
   LuCakeSlice,
@@ -20,6 +21,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/context/FavoritesContext";
+import { playFavoriteAddedSound, playFavoriteRemovedSound } from "@/lib/sounds";
 import { getExactMenuImage } from "./menuImageMappings.mjs";
 import {
   createInitialOpenSections,
@@ -406,25 +408,112 @@ export const getMenuSearchSuggestions = (query, vegOnly = false) => {
   return suggestions.slice(0, 6);
 };
 
-export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecrement }) {
+const CONFETTI_PARTICLES = [
+  { angle: 0, distance: 26, color: "#ef4f61", shape: "circle", delay: 0 },
+  { angle: 36, distance: 30, color: "#f4c45f", shape: "square", delay: 0.02 },
+  { angle: 72, distance: 23, color: "#1c9b5f", shape: "circle", delay: 0.05 },
+  { angle: 108, distance: 28, color: "#f4915f", shape: "square", delay: 0.01 },
+  { angle: 144, distance: 25, color: "#ef4f61", shape: "circle", delay: 0.06 },
+  { angle: 180, distance: 32, color: "#f4c45f", shape: "square", delay: 0.03 },
+  { angle: 216, distance: 23, color: "#1c9b5f", shape: "circle", delay: 0.02 },
+  { angle: 252, distance: 29, color: "#ef4f61", shape: "square", delay: 0.07 },
+  { angle: 288, distance: 27, color: "#f4c45f", shape: "circle", delay: 0.01 },
+  { angle: 324, distance: 24, color: "#f4915f", shape: "square", delay: 0.05 },
+];
+
+function ConfettiParticle({ angle, distance, color, shape, delay }) {
+  const rad = (angle * Math.PI) / 180;
+  const dx = Math.cos(rad) * distance;
+  const dy = Math.sin(rad) * distance;
+  const isSquare = shape === "square";
+
+  return (
+    <motion.span
+      className="pointer-events-none absolute left-1/2 top-1/2"
+      style={{
+        width: isSquare ? 5 : 4,
+        height: isSquare ? 5 : 4,
+        borderRadius: isSquare ? 1 : 999,
+        backgroundColor: color,
+      }}
+      initial={{ opacity: 1, x: "-50%", y: "-50%", scale: 0.4, rotate: 0 }}
+      animate={{
+        opacity: 0,
+        x: `calc(-50% + ${dx}px)`,
+        y: `calc(-50% + ${dy}px)`,
+        scale: 1,
+        rotate: isSquare ? 220 : 0,
+      }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+    />
+  );
+}
+
+function FavoriteButton({ item, sectionTitle }) {
   const router = useRouter();
   const { isLoggedIn, isHydrated } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const trait = foodTraitForItem(item, sectionTitle);
-  const TraitIcon = trait.icon;
-  const isVeg = isVegItem(item, sectionTitle);
   const favorited = isFavorite(item.id);
+  const heartControls = useAnimation();
+  const [isBursting, setIsBursting] = useState(false);
 
   const handleFavoriteClick = () => {
     if (isHydrated && !isLoggedIn) {
       router.push(`/login?redirect=${encodeURIComponent(router.asPath)}`);
       return;
     }
+
+    const willFavorite = !favorited;
     toggleFavorite(item, sectionTitle);
+
+    if (willFavorite) {
+      playFavoriteAddedSound();
+      heartControls.start({
+        scale: [1, 1.45, 0.9, 1.12, 1],
+        rotate: [0, -12, 8, 0],
+        transition: { duration: 0.45, ease: "easeOut" },
+      });
+      setIsBursting(true);
+      setTimeout(() => setIsBursting(false), 700);
+    } else {
+      playFavoriteRemovedSound();
+      heartControls.start({ scale: [1, 0.85, 1], transition: { duration: 0.2 } });
+    }
   };
 
   return (
-    <article className="flex h-full flex-col bg-white">
+    <button
+      type="button"
+      onClick={handleFavoriteClick}
+      aria-pressed={favorited}
+      aria-label={favorited ? `Remove ${item.title} from favourites` : `Save ${item.title} to favourites`}
+      className="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center overflow-visible rounded-full bg-white/90 shadow-md backdrop-blur-sm transition-transform duration-150 active:scale-90"
+    >
+      <AnimatePresence>
+        {isBursting
+          ? CONFETTI_PARTICLES.map((particle) => (
+              <ConfettiParticle key={particle.angle} {...particle} />
+            ))
+          : null}
+      </AnimatePresence>
+      <motion.span animate={heartControls} className="inline-flex">
+        <LuHeart
+          className={`h-4 w-4 transition-colors duration-150 ${
+            favorited ? "fill-[#ef4f61] text-[#ef4f61]" : "text-[#8b8580]"
+          }`}
+        />
+      </motion.span>
+    </button>
+  );
+}
+
+export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecrement }) {
+  const trait = foodTraitForItem(item, sectionTitle);
+  const TraitIcon = trait.icon;
+  const isVeg = isVegItem(item, sectionTitle);
+
+  return (
+    <article className="relative flex h-full flex-col bg-white">
       <div className="relative h-[150px] w-full overflow-hidden rounded-[20px] bg-white">
         <Image
           src={imageForItem(item, sectionTitle)}
@@ -434,20 +523,8 @@ export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecre
           sizes="(max-width: 640px) 50vw, 220px"
           className="object-cover"
         />
-        <button
-          type="button"
-          onClick={handleFavoriteClick}
-          aria-pressed={favorited}
-          aria-label={favorited ? `Remove ${item.title} from favourites` : `Save ${item.title} to favourites`}
-          className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition-transform duration-150 active:scale-90"
-        >
-          <LuHeart
-            className={`h-4 w-4 transition-colors duration-150 ${
-              favorited ? "fill-[#ef4f61] text-[#ef4f61]" : "text-[#8b8580]"
-            }`}
-          />
-        </button>
       </div>
+      <FavoriteButton item={item} sectionTitle={sectionTitle} />
 
       <div className="flex flex-1 flex-col px-1 pb-2 pt-1.5">
         <div className="mb-1 flex items-center justify-between gap-2">
@@ -487,34 +564,50 @@ export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecre
 
           {quantity > 0 ? (
             <div className="inline-flex h-10 min-w-[86px] items-center justify-between overflow-hidden rounded-xl border border-[#36a46a] bg-white text-[#36a46a]">
-              <button
+              <motion.button
                 type="button"
                 aria-label={`Remove ${item.title}`}
                 onClick={onDecrement}
+                whileTap={{ scale: 0.85 }}
                 className="grid h-full w-8 place-items-center"
               >
                 <LuMinus className="h-4 w-4" />
-              </button>
-              <span className="text-[14px] font-black">{quantity}</span>
-              <button
+              </motion.button>
+              <span className="grid overflow-hidden text-[14px] font-black">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={quantity}
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -10, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="col-start-1 row-start-1 text-center"
+                  >
+                    {quantity}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+              <motion.button
                 type="button"
                 aria-label={`Add ${item.title}`}
                 onClick={onIncrement}
+                whileTap={{ scale: 0.85 }}
                 className="grid h-full w-8 place-items-center"
               >
                 <LuPlus className="h-4 w-4" />
-              </button>
+              </motion.button>
             </div>
           ) : (
-            <button
+            <motion.button
               type="button"
               aria-label={`Add ${item.title}`}
               onClick={onIncrement}
+              whileTap={{ scale: 0.9 }}
               className="inline-flex h-10 min-w-[76px] items-center justify-center gap-1 rounded-xl border border-[#d8d3cf] bg-white px-3 text-[14px] font-black text-[#36a46a] transition-transform duration-200 active:scale-95"
             >
               ADD
               <LuPlus className="h-4 w-4" />
-            </button>
+            </motion.button>
           )}
         </div>
       </div>
@@ -534,17 +627,18 @@ function CollapsibleSection({
       id={sectionId(title)}
       className="scroll-mt-[150px]"
     >
-      <button
+      <motion.button
         type="button"
         aria-expanded={isOpen}
         onClick={onToggle}
+        whileTap={{ scale: 0.99 }}
         className={`mb-3 flex w-full items-center justify-between gap-3 text-left ${titleSize} font-semibold leading-tight text-[#202020]`}
       >
         <span>{title}</span>
         <LuChevronDown
           className={`h-5 w-5 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
         />
-      </button>
+      </motion.button>
 
       {isOpen ? children : null}
     </section>
@@ -606,19 +700,20 @@ function MenuNavigator({ entries, onSelect }) {
         </nav>
       ) : null}
 
-      <button
+      <motion.button
         type="button"
         aria-label="Open menu navigator"
         aria-expanded={isOpen}
         aria-controls="menu-category-navigator"
         onClick={() => setIsOpen((current) => !current)}
+        whileTap={{ scale: 0.93 }}
         style={{ right: rightEdge }}
         className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] z-50 inline-flex h-12 items-center gap-1.5 overflow-hidden rounded-[18px] border border-white/30 bg-[#232329]/75 px-4 text-base font-black text-white shadow-[0_12px_28px_rgba(0,0,0,0.26)] backdrop-blur-[22px] backdrop-saturate-150"
       >
         <span className="pointer-events-none absolute inset-[1px] rounded-[17px] bg-gradient-to-b from-white/15 via-white/[0.03] to-transparent" />
         <LuUtensils className="relative z-10 h-5 w-5" />
         <span className="relative z-10">Menu</span>
-      </button>
+      </motion.button>
     </>
   );
 }

@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { motion } from "motion/react";
 import {
   IoChevronForward,
   IoHeartOutline,
@@ -80,18 +81,27 @@ export default function BottomNav({ checkoutSummary }) {
         const isActive = router.pathname === href;
 
         return (
-          <button
+          <motion.button
             type="button"
             key={label}
             aria-current={isActive ? "page" : undefined}
             onClick={() => goTo(href, requiresAuth)}
+            whileTap={{ scale: 0.88 }}
+            transition={{ type: "spring", stiffness: 500, damping: 22 }}
             className={`relative z-10 flex h-16 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-black transition-colors duration-150 ${
               isActive ? "text-[#b3402a]" : "text-black"
             }`}
           >
+            {isActive ? (
+              <motion.span
+                layoutId="bottomNavActivePill"
+                transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                className="absolute inset-1 -z-10 rounded-2xl bg-white/70 shadow-sm"
+              />
+            ) : null}
             <Icon className="h-7 w-7 shrink-0" />
             <span className="leading-none">{label}</span>
-          </button>
+          </motion.button>
         );
       })}
     </nav>
