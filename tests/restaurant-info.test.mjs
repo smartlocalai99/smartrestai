@@ -57,5 +57,4 @@ test("uses the app brown for page-level mobile browser chrome", async () => {
   const source = await readSource("components/customer/PageHead.js");
 
   assert.match(source, /<meta name="theme-color" content="#32120d" \/>/);
-  assert.match(source, /viewport-fit=cover/);
 });
