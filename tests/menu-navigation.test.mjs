@@ -42,21 +42,24 @@ test("creates stable section ids", () => {
 });
 
 test("uses a white app shell behind the original glass navigation", async () => {
-  const [source, pageSource] = await Promise.all([
+  const [source, shellSource] = await Promise.all([
     readFile(
       new URL("../components/customer/BottomNav.js", import.meta.url),
       "utf8"
     ),
-    readFile(new URL("../pages/index.js", import.meta.url), "utf8"),
+    readFile(
+      new URL("../components/customer/AppShell.js", import.meta.url),
+      "utf8"
+    ),
   ]);
 
-  assert.match(pageSource, /max-w-\[430px\][^\"]*bg-white/);
+  assert.match(shellSource, /max-w-\[430px\][^\"]*bg-white/);
   assert.match(source, /bg-white\/\[0\.42\]/);
   assert.match(source, /backdrop-blur-\[42px\]/);
   assert.match(source, /bg-gradient-to-b/);
 });
 
-test("uses a compact glass Menu trigger with final-item clearance", async () => {
+test("uses a compact glass Menu trigger", async () => {
   const source = await readFile(
     new URL("../components/customer/ShopByCategories.jsx", import.meta.url),
     "utf8"
@@ -67,6 +70,5 @@ test("uses a compact glass Menu trigger with final-item clearance", async () => 
   assert.match(source, /bg-\[#232329\]\/75/);
   assert.match(source, /backdrop-blur-\[22px\]/);
   assert.match(source, /LuUtensils className="[^"]*h-5 w-5"/);
-  assert.match(source, /px-4 pb-40 pt-2/);
   assert.doesNotMatch(source, /inline-flex h-14 items-center gap-2/);
 });

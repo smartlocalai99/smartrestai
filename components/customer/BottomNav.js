@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import {
   IoChevronForward,
   IoHeartOutline,
@@ -6,20 +7,22 @@ import {
   IoReceiptOutline,
   IoRestaurantOutline,
 } from "react-icons/io5";
+import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
-  { label: "Home", icon: IoHome, active: true },
-  { label: "Fav", icon: IoHeartOutline },
-  { label: "Orders", icon: IoReceiptOutline },
-  { label: "Account", icon: IoPersonOutline },
+  { label: "Home", href: "/", icon: IoHome, protected: false },
+  { label: "Fav", href: "/favorites", icon: IoHeartOutline, protected: true },
+  { label: "Orders", href: "/orders", icon: IoReceiptOutline, protected: true },
+  { label: "Account", href: "/account", icon: IoPersonOutline, protected: true },
 ];
 
-function CheckoutButton({ summary }) {
+function CheckoutButton({ summary, onClick }) {
   return (
     <div className="absolute inset-x-4 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40">
       <button
         type="button"
-        className="flex h-[72px] w-full items-center justify-between rounded-[30px] bg-[#128647] px-5 text-white shadow-[0_18px_38px_rgba(18,134,71,0.32)]"
+        onClick={onClick}
+        className="flex h-[72px] w-full items-center justify-between rounded-[30px] bg-[#128647] px-5 text-white shadow-[0_18px_38px_rgba(18,134,71,0.32)] transition-transform duration-200 active:scale-[0.98]"
       >
         <span className="flex items-center gap-3">
           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-white/15">
@@ -45,8 +48,24 @@ function CheckoutButton({ summary }) {
 }
 
 export default function BottomNav({ checkoutSummary }) {
+  const router = useRouter();
+  const { isLoggedIn, isHydrated } = useAuth();
+
+  const goTo = (href, requiresAuth) => {
+    if (requiresAuth && isHydrated && !isLoggedIn) {
+      router.push(`/login?redirect=${encodeURIComponent(href)}`);
+      return;
+    }
+    router.push(href);
+  };
+
   if (checkoutSummary?.totalItems > 0) {
-    return <CheckoutButton summary={checkoutSummary} />;
+    return (
+      <CheckoutButton
+        summary={checkoutSummary}
+        onClick={() => goTo("/checkout", true)}
+      />
+    );
   }
 
   return (
@@ -57,17 +76,24 @@ export default function BottomNav({ checkoutSummary }) {
       <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/70 via-white/35 to-white/15" />
       <span className="pointer-events-none absolute inset-x-5 top-1 h-7 rounded-full bg-white/60 blur-lg" />
       <span className="pointer-events-none absolute inset-0 rounded-[30px] ring-1 ring-inset ring-white/45" />
-      {navItems.map(({ label, icon: Icon, active }) => (
-        <button
-          type="button"
-          key={label}
-          aria-current={active ? "page" : undefined}
-          className="relative z-10 flex h-16 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-black text-black"
-        >
-          <Icon className="h-7 w-7 shrink-0" />
-          <span className="leading-none">{label}</span>
-        </button>
-      ))}
+      {navItems.map(({ label, href, icon: Icon, protected: requiresAuth }) => {
+        const isActive = router.pathname === href;
+
+        return (
+          <button
+            type="button"
+            key={label}
+            aria-current={isActive ? "page" : undefined}
+            onClick={() => goTo(href, requiresAuth)}
+            className={`relative z-10 flex h-16 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-black transition-colors duration-150 ${
+              isActive ? "text-[#b3402a]" : "text-black"
+            }`}
+          >
+            <Icon className="h-7 w-7 shrink-0" />
+            <span className="leading-none">{label}</span>
+          </button>
+        );
+      })}
     </nav>
   );
 }

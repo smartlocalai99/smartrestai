@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Fraunces, Inter } from "next/font/google";
+import AppProviders from "@/context/AppProviders";
 import "@/styles/globals.css";
 
 const fraunces = Fraunces({
@@ -47,7 +48,9 @@ export default function App({ Component, pageProps }) {
 
   return (
     <div className={`${fraunces.variable} ${inter.variable}`}>
-      <Component {...pageProps} />
+      <AppProviders>
+        <Component {...pageProps} />
+      </AppProviders>
     </div>
   );
 }

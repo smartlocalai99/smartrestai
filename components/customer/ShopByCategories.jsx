@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import {
   LuBicepsFlexed,
   LuCakeSlice,
@@ -8,6 +9,7 @@ import {
   LuDrumstick,
   LuFish,
   LuFlame,
+  LuHeart,
   LuMinus,
   LuPlus,
   LuSoup,
@@ -15,6 +17,9 @@ import {
   LuWheat,
   LuX,
 } from "react-icons/lu";
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
+import { useFavorites } from "@/context/FavoritesContext";
 import { getExactMenuImage } from "./menuImageMappings.mjs";
 import {
   createInitialOpenSections,
@@ -289,7 +294,7 @@ const menuNavigatorEntries = createMenuNavigatorEntries(
   orderedMenuSections
 );
 
-const imageForItem = (item, sectionTitle = "") => {
+export const imageForItem = (item, sectionTitle = "") => {
   const exactImage = getExactMenuImage(item.title, sectionTitle);
   if (exactImage) return exactImage;
 
@@ -401,10 +406,22 @@ export const getMenuSearchSuggestions = (query, vegOnly = false) => {
   return suggestions.slice(0, 6);
 };
 
-function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecrement }) {
+export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecrement }) {
+  const router = useRouter();
+  const { isLoggedIn, isHydrated } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const trait = foodTraitForItem(item, sectionTitle);
   const TraitIcon = trait.icon;
   const isVeg = isVegItem(item, sectionTitle);
+  const favorited = isFavorite(item.id);
+
+  const handleFavoriteClick = () => {
+    if (isHydrated && !isLoggedIn) {
+      router.push(`/login?redirect=${encodeURIComponent(router.asPath)}`);
+      return;
+    }
+    toggleFavorite(item, sectionTitle);
+  };
 
   return (
     <article className="flex h-full flex-col bg-white">
@@ -417,6 +434,19 @@ function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecrement })
           sizes="(max-width: 640px) 50vw, 220px"
           className="object-cover"
         />
+        <button
+          type="button"
+          onClick={handleFavoriteClick}
+          aria-pressed={favorited}
+          aria-label={favorited ? `Remove ${item.title} from favourites` : `Save ${item.title} to favourites`}
+          className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition-transform duration-150 active:scale-90"
+        >
+          <LuHeart
+            className={`h-4 w-4 transition-colors duration-150 ${
+              favorited ? "fill-[#ef4f61] text-[#ef4f61]" : "text-[#8b8580]"
+            }`}
+          />
+        </button>
       </div>
 
       <div className="flex flex-1 flex-col px-1 pb-2 pt-1.5">
@@ -593,12 +623,8 @@ function MenuNavigator({ entries, onSelect }) {
   );
 }
 
-export default function PopularChoices({
-  vegOnly = false,
-  cart = {},
-  onCartChange = () => {},
-  searchQuery = "",
-}) {
+export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
+  const { cart, changeQuantity } = useCart();
   const [openSections, setOpenSections] = useState(() =>
     createInitialOpenSections(menuNavigatorEntries)
   );
@@ -620,18 +646,6 @@ export default function PopularChoices({
     });
   };
 
-  const changeQuantity = (item, nextQuantity) => {
-    onCartChange((current) => {
-      const updated = { ...current };
-      if (nextQuantity <= 0) {
-        delete updated[item.id];
-      } else {
-        updated[item.id] = { item, quantity: nextQuantity };
-      }
-      return updated;
-    });
-  };
-
   const renderProduct = (item, sectionTitle) => {
     const quantity = cart[item.id]?.quantity || 0;
 
@@ -641,8 +655,8 @@ export default function PopularChoices({
         item={item}
         sectionTitle={sectionTitle}
         quantity={quantity}
-        onIncrement={() => changeQuantity(item, quantity + 1)}
-        onDecrement={() => changeQuantity(item, quantity - 1)}
+        onIncrement={() => changeQuantity(item, quantity + 1, sectionTitle)}
+        onDecrement={() => changeQuantity(item, quantity - 1, sectionTitle)}
       />
     );
   };
@@ -676,7 +690,7 @@ export default function PopularChoices({
     searchQuery.trim().length === 0 || searchedRecommendedItems.length > 0;
 
   return (
-    <section className="w-full bg-transparent px-4 pb-40 pt-2 sm:px-6 lg:pb-40 lg:pt-8">
+    <section className="w-full bg-transparent px-4 pb-8 pt-2 sm:px-6 lg:pb-8 lg:pt-8">
       <div className="mx-auto max-w-3xl">
         {showRecommended ? (
           <CollapsibleSection
