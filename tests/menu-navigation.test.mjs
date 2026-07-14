@@ -59,6 +59,26 @@ test("uses a white app shell behind the original glass navigation", async () => 
   assert.match(source, /bg-gradient-to-b/);
 });
 
+test("uses a shorter bottom navigation and matching content clearance", async () => {
+  const [source, shellSource] = await Promise.all([
+    readFile(
+      new URL("../components/customer/BottomNav.js", import.meta.url),
+      "utf8"
+    ),
+    readFile(
+      new URL("../components/customer/AppShell.js", import.meta.url),
+      "utf8"
+    ),
+  ]);
+
+  assert.match(source, /px-2 py-1\.5/);
+  assert.match(source, /flex h-14 min-w-0/);
+  assert.match(source, /Icon className="h-6 w-6 shrink-0"/);
+  assert.doesNotMatch(source, /flex h-16 min-w-0/);
+  assert.match(shellSource, /pb-24/);
+  assert.doesNotMatch(shellSource, /pb-28/);
+});
+
 test("uses a compact glass Menu trigger", async () => {
   const source = await readFile(
     new URL("../components/customer/ShopByCategories.jsx", import.meta.url),

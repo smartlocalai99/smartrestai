@@ -75,11 +75,11 @@ export default function BottomNav({
   return (
     <nav
       aria-label="Primary navigation"
-      className="absolute inset-x-4 bottom-3 z-30 grid grid-cols-4 overflow-hidden rounded-[30px] border border-white/45 bg-white/[0.42] px-2 py-2 backdrop-blur-[42px] backdrop-saturate-150"
+      className="absolute inset-x-4 bottom-3 z-30 grid grid-cols-4 overflow-hidden rounded-[26px] border border-white/45 bg-white/[0.42] px-2 py-1.5 backdrop-blur-[42px] backdrop-saturate-150"
     >
       <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/70 via-white/35 to-white/15" />
       <span className="pointer-events-none absolute inset-x-5 top-1 h-7 rounded-full bg-white/60 blur-lg" />
-      <span className="pointer-events-none absolute inset-0 rounded-[30px] ring-1 ring-inset ring-white/45" />
+      <span className="pointer-events-none absolute inset-0 rounded-[26px] ring-1 ring-inset ring-white/45" />
       {navItems.map(({ label, href, icon: Icon, protected: requiresAuth }) => {
         const isActive = router.pathname === href;
 
@@ -91,11 +91,11 @@ export default function BottomNav({
             onClick={() => goTo(href, requiresAuth)}
             whileTap={{ scale: 0.88 }}
             transition={{ type: "spring", stiffness: 500, damping: 22 }}
-            className={`relative z-10 flex h-16 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-black transition-colors duration-150 ${
+            className={`relative z-10 flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-black transition-colors duration-150 ${
               isActive ? "text-[#b3402a]" : "text-black"
             }`}
           >
-            <Icon className="h-7 w-7 shrink-0" />
+            <Icon className="h-6 w-6 shrink-0" />
             <span className="leading-none">{label}</span>
           </motion.button>
         );
