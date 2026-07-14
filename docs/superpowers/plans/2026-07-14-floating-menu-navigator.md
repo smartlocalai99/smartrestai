@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a floating Zomato-style Menu button that opens every collapsible category with a count, navigates to and expands the selected section, and makes the normal footer solid white.
+**Goal:** Add a floating Zomato-style Menu button that opens every collapsible category with a count, navigates to and expands the selected section, and remains compact enough that the final item stays tappable above the original glass footer.
 
-**Architecture:** Extract category-entry and collapse-state helpers into a pure ES module tested with Node's built-in test runner. Keep visual and interaction state inside `ShopByCategories.jsx`, using the existing menu data as the single source of category titles/counts, and simplify `BottomNav.js` to solid-white styling.
+**Architecture:** Extract category-entry and collapse-state helpers into a pure ES module tested with Node's built-in test runner. Keep visual and interaction state inside `ShopByCategories.jsx`, using the existing menu data as the single source of category titles/counts. Preserve the original glass `BottomNav` over a white app shell, and give the menu content enough bottom clearance for the compact glass Menu trigger.
 
 **Tech Stack:** Next.js 16.2.10 Pages Router, React 19.2.4, Tailwind CSS 4, React Icons 5, Node.js `node:test`, ESLint 9.
 
@@ -14,7 +14,7 @@
 - Every existing category remains individually collapsible and initially open.
 - The floating Menu panel lists Recommended and all menu categories with total item counts.
 - Selecting a category closes the panel, expands the category, and smoothly scrolls it into view.
-- The normal four-item footer becomes solid white; the green checkout footer remains unchanged.
+- The original glass four-item footer remains unchanged over a white app shell; the green checkout footer remains unchanged.
 - Do not stage or commit implementation files unless explicitly requested.
 
 ---
@@ -295,31 +295,38 @@ Expected: exit code 0 with no errors.
 
 ---
 
-### Task 3: Make the normal footer solid white
+### Task 3: Keep the glass footer over a white app shell
 
 **Files:**
 - Modify: `components/customer/BottomNav.js:52-75`
+- Modify: `pages/index.js`
 - Modify: `tests/menu-navigation.test.mjs`
 
 **Interfaces:**
 - Preserves: `BottomNav({ checkoutSummary })` and the green `CheckoutButton` branch.
-- Changes: only the normal four-item navigation appearance.
+- Preserves: the original glass normal navigation appearance.
+- Changes: the centered app shell behind the footer to white.
 
-- [ ] **Step 1: Add a failing footer-style regression test**
+- [ ] **Step 1: Add a failing app-shell and footer regression test**
 
 Append to `tests/menu-navigation.test.mjs`:
 
 ```js
 import { readFile } from "node:fs/promises";
 
-test("uses a solid white normal footer without glass overlays", async () => {
-  const source = await readFile(
-    new URL("../components/customer/BottomNav.js", import.meta.url),
-    "utf8"
-  );
+test("uses a white app shell behind the original glass navigation", async () => {
+  const [source, pageSource] = await Promise.all([
+    readFile(
+      new URL("../components/customer/BottomNav.js", import.meta.url),
+      "utf8"
+    ),
+    readFile(new URL("../pages/index.js", import.meta.url), "utf8"),
+  ]);
 
-  assert.match(source, /bg-white shadow/);
-  assert.doesNotMatch(source, /backdrop-blur|bg-gradient-to-b/);
+  assert.match(pageSource, /max-w-\[430px\][^\"]*bg-white/);
+  assert.match(source, /bg-white\/\[0\.42\]/);
+  assert.match(source, /backdrop-blur-\[42px\]/);
+  assert.match(source, /bg-gradient-to-b/);
 });
 ```
 
@@ -327,14 +334,16 @@ test("uses a solid white normal footer without glass overlays", async () => {
 
 Run: `node --test tests/menu-navigation.test.mjs`
 
-Expected: FAIL because the current footer uses `bg-white/[0.42]`, `backdrop-blur`, and a gradient overlay.
+Expected: FAIL while the centered app shell still uses the old dark background.
 
-- [ ] **Step 3: Simplify the normal footer styling**
+- [ ] **Step 3: Change the app shell background and preserve the glass footer**
 
-Use this normal-nav class and remove the three decorative overlay spans:
+Change the inner centered shell in `pages/index.js` from the old dark background to `bg-white`. Keep the original normal-nav glass class and decorative overlays in `BottomNav.js`, including:
 
 ```jsx
-className="absolute inset-x-4 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 grid grid-cols-4 overflow-hidden rounded-[30px] border border-[#ebe5e1] bg-white px-2 py-2 shadow-[0_16px_36px_rgba(33,23,18,0.16)]"
+bg-white/[0.42]
+backdrop-blur-[42px]
+bg-gradient-to-b
 ```
 
 Keep the existing four navigation buttons unchanged.
@@ -348,3 +357,70 @@ Expected: PASS, 7 tests passed and 0 failed.
 - [ ] **Step 5: Run final verification**
 
 Run targeted ESLint on both changed components and both test/helper modules, run `npm run build`, verify the floating Menu panel and category navigation at mobile width, verify every category/count appears exactly once, and run `git diff --check`.
+
+---
+
+### Task 4: Make the Menu trigger compact and glassy with final-item clearance
+
+**Files:**
+- Modify: `components/customer/ShopByCategories.jsx:580-590,677`
+- Modify: `tests/menu-navigation.test.mjs`
+
+**Interfaces:**
+- Preserves: the existing Menu popup size, entries, counts, and navigation behavior.
+- Changes: only the floating trigger styling and the bottom clearance after the last menu category.
+
+- [ ] **Step 1: Add a failing compact-trigger regression test**
+
+Append to `tests/menu-navigation.test.mjs`:
+
+```js
+test("uses a compact glass Menu trigger with final-item clearance", async () => {
+  const source = await readFile(
+    new URL("../components/customer/ShopByCategories.jsx", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(source, /aria-label="Open menu navigator"/);
+  assert.match(source, /inline-flex h-12/);
+  assert.match(source, /bg-\[#232329\]\/75/);
+  assert.match(source, /backdrop-blur-\[22px\]/);
+  assert.match(source, /<LuUtensils className="h-5 w-5" \/>/);
+  assert.match(source, /px-4 pb-40 pt-2/);
+  assert.doesNotMatch(source, /inline-flex h-14 items-center gap-2/);
+});
+```
+
+- [ ] **Step 2: Run the focused test and verify RED**
+
+Run: `node --test tests/menu-navigation.test.mjs`
+
+Expected: FAIL because the trigger is still 56px high, solid, and the menu section has only 24px bottom padding.
+
+- [ ] **Step 3: Apply the compact glass trigger and content clearance**
+
+Keep the trigger position and click behavior. Add `aria-label="Open menu navigator"`, then use a 48px trigger with a 20px icon, 16px label, smoky translucent background, glass blur/saturation, border, inner highlight, and soft shadow:
+
+```jsx
+className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] z-50 inline-flex h-12 items-center gap-1.5 overflow-hidden rounded-[18px] border border-white/30 bg-[#232329]/75 px-4 text-base font-black text-white shadow-[0_12px_28px_rgba(0,0,0,0.26)] backdrop-blur-[22px] backdrop-saturate-150"
+```
+
+Render a non-interactive inset highlight inside the trigger and keep the icon and label above it:
+
+```jsx
+<span className="pointer-events-none absolute inset-[1px] rounded-[17px] bg-gradient-to-b from-white/15 via-white/[0.03] to-transparent" />
+<LuUtensils className="relative z-10 h-5 w-5" />
+<span className="relative z-10">Menu</span>
+```
+
+Change the outer menu section to `px-4 pb-40 pt-2` while preserving its existing responsive horizontal/top spacing. Do not resize or move product cards, Add buttons, or the category popup.
+
+- [ ] **Step 4: Run focused tests and verify GREEN**
+
+Run: `node --test tests/menu-navigation.test.mjs tests/menu-image-mappings.test.mjs`
+
+Expected: PASS, 8 tests passed and 0 failed.
+
+- [ ] **Step 5: Run final verification**
+
+Run targeted ESLint, `npm run build`, and `git diff --check`. Confirm the rendered source contains one compact Menu trigger, the popup retains its existing dimensions, and the menu content has enough bottom space for the final Add button to scroll above the floating controls.
