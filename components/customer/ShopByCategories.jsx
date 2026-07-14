@@ -13,7 +13,15 @@ import {
   LuSoup,
   LuUtensils,
   LuWheat,
+  LuX,
 } from "react-icons/lu";
+import { getExactMenuImage } from "./menuImageMappings.mjs";
+import {
+  createInitialOpenSections,
+  createMenuNavigatorEntries,
+  expandSection,
+  sectionId,
+} from "./menuNavigation.mjs";
 
 const images = {
   fish: "/fish.jpg",
@@ -53,6 +61,13 @@ const images = {
   mughlaiChickenWithRoti: "/mughalichickenroti.jpg",
   fryMuttonMandi: "/frymuttonmandi.webp",
   muttonRoastMandi: "/muttonroastmandi.jpg",
+  muttonGheeRoastMandi: "/gheerostmuttonmandi.webp",
+  chickenAlFahamMandi: "/alfarmchickenmandi.webp",
+  chickenFryMandi: "/chickenfrypiecemandi.webp",
+  chickenGheeRoastMandi: "/gheeroastchickenmandi.jpg",
+  tangdiKababMandi: "/kandikababmandi.webp",
+  chickenMiniMandi: "/chickenminimandi.jpeg",
+  chickenMalaiKebabMandi: "/malaikababmandi.png",
 };
 
 const menuItem = (title, price, description = "") => ({
@@ -122,10 +137,10 @@ const menuSections = [
     heading: "Chicken Mandi",
     items: [
       menuItem("Chicken Al-faham Mandi", 269, "Chicken barbequed on slow heat with Middle Eastern spices."),
-      menuItem("Chicken Fry Mandi", 249, "Deep fried chicken with traditional mandi spices."),
+      menuItem("Chicken Fry piece Mandi", 249, "Deep fried chicken with traditional mandi spices."),
       menuItem("Chicken Ghee Roast Mandi", 269),
       menuItem("Chicken Juicy Mandi", 269),
-      menuItem("Chicken Malai Kebab [Serves 2 Persons]", 349, "Chicken thigh charred on coal with Mediterranean spices."),
+      menuItem("Chicken Malai Kebab Mandi [Serves 2 Persons]", 349, "Chicken thigh charred on coal with Mediterranean spices."),
       menuItem("Chicken Mini Mandi", 199),
       menuItem("Tangdi Kabab Mandi", 279),
     ],
@@ -154,7 +169,6 @@ const menuSections = [
       menuItem("Chicken Al-faham", 249, "Chicken barbequed on slow heat with Middle Eastern spices."),
       menuItem("Chicken Tikka", 229, "Boneless chicken pieces marinated in spiced yogurt."),
       menuItem("Haryali Chicken", 239, "Chicken marinated with fresh herbs and spices."),
-      menuItem("Labnies Cream Shawarma", 179),
       menuItem("Lahori Chicken Seekh Kebab [4 Pcs]", 249, "Minced chicken mixed with simple spices."),
       menuItem("Lebanese Cream Chicken", 279, "Chicken thigh charred on coal with Mediterranean spices."),
     ],
@@ -266,7 +280,19 @@ const regularMenuSections = menuSections.filter(
   (section) => section.heading !== "Special Platters"
 );
 
+const orderedMenuSections = specialPlattersSection
+  ? [specialPlattersSection, ...regularMenuSections]
+  : regularMenuSections;
+
+const menuNavigatorEntries = createMenuNavigatorEntries(
+  recommendedItems,
+  orderedMenuSections
+);
+
 const imageForItem = (item, sectionTitle = "") => {
+  const exactImage = getExactMenuImage(item.title, sectionTitle);
+  if (exactImage) return exactImage;
+
   const text = `${item.title} ${sectionTitle}`.toLowerCase();
 
   if (/bbq fish chefs special/.test(text)) return images.bbqFish;
@@ -282,6 +308,13 @@ const imageForItem = (item, sectionTitle = "") => {
   if (/turkish chicken chefs special/.test(text)) return images.turkishChicken;
   if (/fry mutton mandi/.test(text)) return images.fryMuttonMandi;
   if (/mutton dum roast mandi|mutton dum roast single/.test(text)) return images.muttonRoastMandi;
+  if (/mutton ghee roast mandi/.test(text)) return images.muttonGheeRoastMandi;
+  if (/chicken al-faham mandi/.test(text)) return images.chickenAlFahamMandi;
+  if (/chicken fry mandi/.test(text)) return images.chickenFryMandi;
+  if (/chicken ghee roast mandi/.test(text)) return images.chickenGheeRoastMandi;
+  if (/tangdi kabab mandi/.test(text)) return images.tangdiKababMandi;
+  if (/chicken mini mandi/.test(text)) return images.chickenMiniMandi;
+  if (/chicken malai kebab mandi/.test(text)) return images.chickenMalaiKebabMandi;
   if (/paneer butter masala/.test(text)) return images.paneerButterMasala;
   if (/continental mini spl\. platter/.test(text)) return images.miniSpecialPlatter;
   if (/broasted mix platter/.test(text)) return images.broastedMixPlatter;
@@ -367,12 +400,6 @@ export const getMenuSearchSuggestions = (query, vegOnly = false) => {
 
   return suggestions.slice(0, 6);
 };
-
-const sectionId = (heading) =>
-  `section-${heading
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")}`;
 
 function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecrement }) {
   const trait = foodTraitForItem(item, sectionTitle);
@@ -465,9 +492,13 @@ function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecrement })
   );
 }
 
-function CollapsibleSection({ title, children, titleSize = "text-[22px]" }) {
-  const [isOpen, setIsOpen] = useState(true);
-
+function CollapsibleSection({
+  title,
+  children,
+  isOpen,
+  onToggle,
+  titleSize = "text-[22px]",
+}) {
   return (
     <section
       id={sectionId(title)}
@@ -476,7 +507,7 @@ function CollapsibleSection({ title, children, titleSize = "text-[22px]" }) {
       <button
         type="button"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen((value) => !value)}
+        onClick={onToggle}
         className={`mb-3 flex w-full items-center justify-between gap-3 text-left ${titleSize} font-semibold leading-tight text-[#202020]`}
       >
         <span>{title}</span>
@@ -490,12 +521,105 @@ function CollapsibleSection({ title, children, titleSize = "text-[22px]" }) {
   );
 }
 
+function MenuNavigator({ entries, onSelect }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const rightEdge = "max(1.25rem, calc((100vw - 430px) / 2 + 1.25rem))";
+
+  const selectCategory = (title) => {
+    setIsOpen(false);
+    onSelect(title);
+  };
+
+  return (
+    <>
+      {isOpen ? (
+        <button
+          type="button"
+          aria-label="Close menu categories"
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-40 bg-black/25"
+        />
+      ) : null}
+
+      {isOpen ? (
+        <nav
+          id="menu-category-navigator"
+          aria-label="Menu categories"
+          style={{ right: rightEdge }}
+          className="fixed bottom-[calc(10.75rem+env(safe-area-inset-bottom))] z-50 max-h-[62vh] w-[min(320px,calc(100vw-2.5rem))] overflow-hidden rounded-[24px] border border-white/10 bg-[#232329] p-3 text-white shadow-2xl"
+        >
+          <div className="flex items-center justify-between px-2 pb-2">
+            <p className="text-lg font-black">Menu</p>
+            <button
+              type="button"
+              aria-label="Close menu categories"
+              onClick={() => setIsOpen(false)}
+              className="grid h-9 w-9 place-items-center rounded-full bg-white/10"
+            >
+              <LuX className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="max-h-[calc(62vh-3.5rem)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {entries.map((entry) => (
+              <button
+                type="button"
+                key={entry.title}
+                onClick={() => selectCategory(entry.title)}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm font-bold active:bg-white/10"
+              >
+                <span>{entry.title}</span>
+                <span className="text-white/60">{entry.count}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+      ) : null}
+
+      <button
+        type="button"
+        aria-label="Open menu navigator"
+        aria-expanded={isOpen}
+        aria-controls="menu-category-navigator"
+        onClick={() => setIsOpen((current) => !current)}
+        style={{ right: rightEdge }}
+        className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] z-50 inline-flex h-12 items-center gap-1.5 overflow-hidden rounded-[18px] border border-white/30 bg-[#232329]/75 px-4 text-base font-black text-white shadow-[0_12px_28px_rgba(0,0,0,0.26)] backdrop-blur-[22px] backdrop-saturate-150"
+      >
+        <span className="pointer-events-none absolute inset-[1px] rounded-[17px] bg-gradient-to-b from-white/15 via-white/[0.03] to-transparent" />
+        <LuUtensils className="relative z-10 h-5 w-5" />
+        <span className="relative z-10">Menu</span>
+      </button>
+    </>
+  );
+}
+
 export default function PopularChoices({
   vegOnly = false,
   cart = {},
   onCartChange = () => {},
   searchQuery = "",
 }) {
+  const [openSections, setOpenSections] = useState(() =>
+    createInitialOpenSections(menuNavigatorEntries)
+  );
+
+  const toggleSection = (title) => {
+    setOpenSections((current) => ({
+      ...current,
+      [title]: !current[title],
+    }));
+  };
+
+  const navigateToSection = (title) => {
+    setOpenSections((current) => expandSection(current, title));
+    requestAnimationFrame(() => {
+      document.getElementById(sectionId(title))?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  };
+
   const changeQuantity = (item, nextQuantity) => {
     onCartChange((current) => {
       const updated = { ...current };
@@ -531,10 +655,6 @@ export default function PopularChoices({
     matchesSearch(item, "Recommended", searchQuery)
   );
 
-  const orderedMenuSections = specialPlattersSection
-    ? [specialPlattersSection, ...regularMenuSections]
-    : regularMenuSections;
-
   const visibleMenuSections = orderedMenuSections
     .map((section) => ({
       ...section,
@@ -556,11 +676,13 @@ export default function PopularChoices({
     searchQuery.trim().length === 0 || searchedRecommendedItems.length > 0;
 
   return (
-    <section className="w-full bg-transparent px-4 pb-6 pt-2 sm:px-6 lg:py-8">
+    <section className="w-full bg-transparent px-4 pb-40 pt-2 sm:px-6 lg:pb-40 lg:pt-8">
       <div className="mx-auto max-w-3xl">
         {showRecommended ? (
           <CollapsibleSection
             title="Recommended"
+            isOpen={openSections.Recommended}
+            onToggle={() => toggleSection("Recommended")}
             titleSize="text-[26px] sm:text-[32px]"
           >
             <div className="grid grid-cols-2 gap-4">
@@ -583,6 +705,8 @@ export default function PopularChoices({
             <CollapsibleSection
               key={section.heading}
               title={section.heading}
+              isOpen={openSections[section.heading]}
+              onToggle={() => toggleSection(section.heading)}
             >
               <div className="grid grid-cols-2 gap-4">
                 {section.items.map((item) => renderProduct(item, section.heading))}
@@ -591,6 +715,10 @@ export default function PopularChoices({
           ))}
         </div>
       </div>
+      <MenuNavigator
+        entries={menuNavigatorEntries}
+        onSelect={navigateToSection}
+      />
     </section>
   );
 }
