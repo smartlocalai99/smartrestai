@@ -48,7 +48,10 @@ function CheckoutButton({ summary, onClick }) {
   );
 }
 
-export default function BottomNav({ checkoutSummary }) {
+export default function BottomNav({
+  checkoutSummary,
+  showCheckoutButton = true,
+}) {
   const router = useRouter();
   const { isLoggedIn, isHydrated } = useAuth();
 
@@ -60,7 +63,7 @@ export default function BottomNav({ checkoutSummary }) {
     router.push(href);
   };
 
-  if (checkoutSummary?.totalItems > 0) {
+  if (showCheckoutButton && checkoutSummary?.totalItems > 0) {
     return (
       <CheckoutButton
         summary={checkoutSummary}

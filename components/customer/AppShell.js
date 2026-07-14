@@ -1,7 +1,11 @@
 import { useCart } from "@/context/CartContext";
 import BottomNav from "@/components/customer/BottomNav";
 
-export default function AppShell({ children, contentClassName = "" }) {
+export default function AppShell({
+  children,
+  contentClassName = "",
+  showCheckoutButton = true,
+}) {
   const { checkoutSummary } = useCart();
 
   return (
@@ -12,7 +16,10 @@ export default function AppShell({ children, contentClassName = "" }) {
         >
           {children}
         </div>
-        <BottomNav checkoutSummary={checkoutSummary} />
+        <BottomNav
+          checkoutSummary={checkoutSummary}
+          showCheckoutButton={showCheckoutButton}
+        />
       </section>
     </main>
   );

@@ -66,3 +66,32 @@ test("uses a glossy category popup with the preview plus beside the name", async
     /onClick=\{\(\) => onToggleExpand\(entry\.title\)\}/
   );
 });
+
+test("keeps primary navigation available on the saved addresses page", async () => {
+  const [addresses, appShell, bottomNav] = await Promise.all([
+    readSource("pages/addresses.js"),
+    readSource("components/customer/AppShell.js"),
+    readSource("components/customer/BottomNav.js"),
+  ]);
+
+  assert.match(addresses, /<AppShell showCheckoutButton=\{false\}>/);
+  assert.match(appShell, /showCheckoutButton = true/);
+  assert.match(
+    appShell,
+    /<BottomNav[\s\S]*?showCheckoutButton=\{showCheckoutButton\}/
+  );
+  assert.match(bottomNav, /showCheckoutButton = true/);
+  assert.match(
+    bottomNav,
+    /if \(showCheckoutButton && checkoutSummary\?\.totalItems > 0\)/
+  );
+});
+
+test("paints the mobile top safe area with the app primary color", async () => {
+  const source = await readSource("styles/globals.css");
+
+  assert.match(source, /body::before\s*\{/);
+  assert.match(source, /height:\s*env\(safe-area-inset-top\)/);
+  assert.match(source, /background:\s*#32120d/);
+  assert.match(source, /pointer-events:\s*none/);
+});

@@ -279,7 +279,7 @@ export default function Addresses() {
     <>
       <PageHead title="Saved Addresses - SmartRest" />
 
-      <AppShell>
+      <AppShell showCheckoutButton={false}>
         <div className="min-h-full bg-white">
           <TabPageHeader title="Saved Addresses" subtitle="Where should we deliver your order?" />
 
