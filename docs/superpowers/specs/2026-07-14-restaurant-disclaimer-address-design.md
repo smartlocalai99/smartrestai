@@ -12,9 +12,9 @@ This change affects the customer home page only. It does not change menu data, p
 
 ## Page Structure
 
-Create a focused `RestaurantInfo` component and render it on the home page immediately after `ShopByCategories` inside the existing white scrollable content area.
+Create a focused `RestaurantInfo` component and render it on the home page immediately after `ShopByCategories` inside the existing home scrollable area.
 
-Reduce the menu list's current large white bottom padding so the information panel follows the final category naturally. Move the required floating-control clearance to the bottom of the information panel. This replaces the empty white block with useful content while still allowing the last content to scroll above the Menu trigger and bottom navigation.
+Reduce the menu list's large white bottom padding so the information panel follows the final category naturally. Use compact padding on the information panel and rely on the app shell's existing navigation clearance. This replaces the empty white block with useful content while still allowing the last content to scroll above the Menu trigger and bottom navigation.
 
 ## Restaurant Information Panel
 
@@ -38,7 +38,9 @@ Do not add the Swiggy Seal row, report-an-issue row, FSSAI license row, or any l
 
 The compact glass Menu trigger and the existing glass bottom navigation remain unchanged. The category popup dimensions and behavior also remain unchanged.
 
-The information panel owns the final bottom clearance. Its background continues through that clearance so the lower page no longer appears as an unexplained white block. The address must be fully readable and scrollable above both floating controls.
+The shared app shell already reserves approximately 112px of bottom clearance for the navigation. Do not stack the previous 160px panel padding on top of that clearance. Use compact 32px bottom padding on the information panel and rely on the existing shell clearance for safe scrolling.
+
+On the home page, set the scroll-area background to the panel's light grey `#f5f5fa`. The grey must continue through the app shell's reserved bottom clearance so there is no white strip beneath the disclaimer/address panel. The address must remain readable and scrollable above both floating controls.
 
 ## Mobile Top Safe Area
 
@@ -61,7 +63,8 @@ Add a focused regression test that verifies:
 - The exact Mandi King name and address are present.
 - The restaurant information panel is rendered after `ShopByCategories` on the home page.
 - The menu list no longer owns the large blank bottom clearance.
-- The information panel owns enough colored bottom clearance for the floating controls.
+- The information panel uses compact 32px bottom padding rather than the previous 160px.
+- The home scroll area uses `#f5f5fa`, allowing the existing app-shell bottom clearance to remain light grey with no white strip.
 - Shared page metadata contains `theme-color` set to `#32120d`.
 - Existing Menu navigator, image mapping, footer, lint, and production build checks continue to pass.
 
@@ -71,3 +74,4 @@ Add a focused regression test that verifies:
 - No report-an-issue workflow.
 - No FSSAI or licensing content.
 - No changes to the Menu popup, product cards, Add controls, or bottom navigation styling.
+- No global reduction to `AppShell` bottom clearance because other customer pages rely on it.
