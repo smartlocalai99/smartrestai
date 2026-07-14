@@ -50,7 +50,13 @@ function PhoneStep({ phone, onChange, onSubmit, isSending }) {
           autoComplete="tel-national"
           autoFocus
           value={phone}
-          onChange={(event) => onChange(event.target.value.replace(/\D/g, "").slice(0, 10))}
+          onChange={(event) => {
+            const nextValue = event.target.value.replace(/\D/g, "").slice(0, 10);
+            onChange(nextValue);
+            if (nextValue.length === 10 && phone.length < 10) {
+              onSubmit();
+            }
+          }}
           placeholder="98765 43210"
           aria-label="Mobile number"
           className="min-w-0 flex-1 bg-transparent text-[16px] font-bold tracking-wide text-white outline-none placeholder:text-white/30"
@@ -303,6 +309,7 @@ export default function Login() {
   }, [isHydrated, isLoggedIn, redirectTarget, router]);
 
   const handleSendOtp = () => {
+    if (isSending) return;
     setIsSending(true);
     setTimeout(() => {
       setIsSending(false);

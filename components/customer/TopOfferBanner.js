@@ -232,8 +232,8 @@ export default function TopOfferBanner({
         <Image
           src="/mandi99.png"
           alt="Mini mandi special offer"
-          width={1500}
-          height={1024}
+          width={550}
+          height={550}
           priority
           className="absolute left-[218px] top-[108px] w-[275px] max-w-none rotate-1 object-contain drop-shadow-2xl"
         />

@@ -68,7 +68,7 @@ export default function Account() {
             </div>
           </section>
 
-          <TabPageHeader title="Settings" />
+          <TabPageHeader title="Settings" variant="section" />
 
           <div className="px-5 pb-4">
             <div className="overflow-hidden rounded-2xl border border-[#f0e9e0]">
