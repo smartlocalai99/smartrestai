@@ -95,3 +95,14 @@ test("paints the mobile top safe area with the app primary color", async () => {
   assert.match(source, /background:\s*#32120d/);
   assert.match(source, /pointer-events:\s*none/);
 });
+
+test("sends viewport-fit cover globally before protected pages hydrate", async () => {
+  const [app, pageHead] = await Promise.all([
+    readSource("pages/_app.js"),
+    readSource("components/customer/PageHead.js"),
+  ]);
+
+  assert.match(app, /import Head from "next\/head"/);
+  assert.match(app, /<meta[\s\S]*?name="viewport"[\s\S]*?viewport-fit=cover/);
+  assert.doesNotMatch(pageHead, /name="viewport"/);
+});
