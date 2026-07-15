@@ -121,7 +121,7 @@ function SuccessScreen({ orderId, total, router }) {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 380, damping: 16 }}
-        className="grid h-24 w-24 place-items-center rounded-full bg-[#1c9b5f]"
+        className="grid h-24 w-24 place-items-center rounded-full bg-[#32120d]"
       >
         <motion.svg viewBox="0 0 24 24" className="h-12 w-12" fill="none">
           <motion.path
@@ -158,7 +158,7 @@ function SuccessScreen({ orderId, total, router }) {
         <button
           type="button"
           onClick={() => router.push("/orders")}
-          className="flex h-[52px] items-center justify-center rounded-2xl bg-[#128647] text-[15px] font-black text-white shadow-[0_14px_26px_rgba(18,134,71,0.3)]"
+          className="flex h-[52px] items-center justify-center rounded-2xl bg-[#32120d] text-[15px] font-black text-white shadow-[0_14px_26px_rgba(50,18,13,0.3)]"
         >
           Track order
         </button>
@@ -297,7 +297,7 @@ export default function Checkout() {
                       type="button"
                       onClick={() => router.push("/")}
                       whileTap={{ scale: 0.98 }}
-                      className="mt-3 flex h-11 w-full items-center justify-center rounded-xl border border-dashed border-[#c9d9cf] text-[13px] font-black text-[#128647]"
+                      className="mt-3 flex h-11 w-full items-center justify-center rounded-xl border border-dashed border-[#d8c6c2] text-[13px] font-black text-[#32120d]"
                     >
                       + Add More Items
                     </motion.button>
@@ -370,7 +370,7 @@ export default function Checkout() {
                             whileTap={{ scale: 0.98 }}
                             className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
                               isApplied
-                                ? "border-[#128647] bg-[#ecfff4]"
+                                ? "border-[#32120d] bg-[#f5ecea]"
                                 : "border-[#e4dcd2] bg-white"
                             }`}
                           >
@@ -385,7 +385,7 @@ export default function Checkout() {
                                 {coupon.description}
                               </span>
                             </span>
-                            <span className={`shrink-0 text-[11px] font-black ${isApplied ? "text-[#128647]" : "text-[#8b8580]"}`}>
+                            <span className={`shrink-0 text-[11px] font-black ${isApplied ? "text-[#32120d]" : "text-[#8b8580]"}`}>
                               {isApplied ? "Applied" : "Tap to apply"}
                             </span>
                           </motion.button>
@@ -404,7 +404,7 @@ export default function Checkout() {
                       <span>₹{deliveryFee}</span>
                     </div>
                     {discount > 0 ? (
-                      <div className="flex items-center justify-between text-[13px] font-semibold text-[#1c9b5f]">
+                      <div className="flex items-center justify-between text-[13px] font-semibold text-[#32120d]">
                         <span>Discount</span>
                         <span>-₹{discount}</span>
                       </div>
@@ -429,7 +429,7 @@ export default function Checkout() {
                         : () => router.push("/addresses?redirect=%2Fcheckout")
                     }
                     disabled={isPlacing}
-                    className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#128647] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(18,134,71,0.32)] transition-transform duration-150 active:scale-[0.98] disabled:opacity-60"
+                    className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#32120d] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(50,18,13,0.32)] transition-transform duration-150 active:scale-[0.98] disabled:opacity-60"
                   >
                     {isPlacing ? (
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />

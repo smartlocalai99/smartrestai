@@ -416,11 +416,11 @@ export const getMenuSearchSuggestions = (query, vegOnly = false) => {
 const CONFETTI_PARTICLES = [
   { angle: 0, distance: 26, color: "#ef4f61", shape: "circle", delay: 0 },
   { angle: 36, distance: 30, color: "#f4c45f", shape: "square", delay: 0.02 },
-  { angle: 72, distance: 23, color: "#1c9b5f", shape: "circle", delay: 0.05 },
+  { angle: 72, distance: 23, color: "#32120d", shape: "circle", delay: 0.05 },
   { angle: 108, distance: 28, color: "#f4915f", shape: "square", delay: 0.01 },
   { angle: 144, distance: 25, color: "#ef4f61", shape: "circle", delay: 0.06 },
   { angle: 180, distance: 32, color: "#f4c45f", shape: "square", delay: 0.03 },
-  { angle: 216, distance: 23, color: "#1c9b5f", shape: "circle", delay: 0.02 },
+  { angle: 216, distance: 23, color: "#32120d", shape: "circle", delay: 0.02 },
   { angle: 252, distance: 29, color: "#ef4f61", shape: "square", delay: 0.07 },
   { angle: 288, distance: 27, color: "#f4c45f", shape: "circle", delay: 0.01 },
   { angle: 324, distance: 24, color: "#f4915f", shape: "square", delay: 0.05 },
@@ -533,12 +533,12 @@ export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecre
 
       <div className="flex flex-1 flex-col px-1 pb-2 pt-1.5">
         <div className="mb-1 flex items-center justify-between gap-2">
-          <span className={`inline-flex items-center gap-1 text-[12px] font-black ${isVeg ? "text-[#1c9b5f]" : "text-[#ef4f61]"}`}>
+          <span className={`inline-flex items-center gap-1 text-[12px] font-black ${isVeg ? "text-[#32120d]" : "text-[#ef4f61]"}`}>
             <span
               aria-label={isVeg ? "Veg" : "Non veg"}
-              className={`grid h-4 w-4 place-items-center rounded-[4px] border ${isVeg ? "border-[#1c9b5f]" : "border-[#ef4f61]"}`}
+              className={`grid h-4 w-4 place-items-center rounded-[4px] border ${isVeg ? "border-[#32120d]" : "border-[#ef4f61]"}`}
             >
-              <span className={`h-2 w-2 rounded-full ${isVeg ? "bg-[#1c9b5f]" : "bg-[#ef4f61]"}`} />
+              <span className={`h-2 w-2 rounded-full ${isVeg ? "bg-[#32120d]" : "bg-[#ef4f61]"}`} />
             </span>
             Bestseller
           </span>
@@ -667,7 +667,7 @@ function CategoryRow({ entry, items, isExpanded, onSelect, onToggleExpand }) {
           whileTap={{ scale: 0.88 }}
           aria-label={isExpanded ? `Hide ${entry.title} items` : `Preview ${entry.title} items`}
           aria-expanded={isExpanded}
-          className="grid h-8 w-8 shrink-0 place-items-center bg-transparent text-[#128647]"
+          className="grid h-8 w-8 shrink-0 place-items-center bg-transparent text-[#32120d]"
         >
           <motion.span
             animate={{ rotate: isExpanded ? 45 : 0 }}

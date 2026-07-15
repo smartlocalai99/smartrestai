@@ -47,7 +47,7 @@ function Toggle({ checked, onChange, disabled }) {
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${
-        checked ? "bg-[#128647]" : "bg-[#e4dcd2]"
+        checked ? "bg-[#32120d]" : "bg-[#e4dcd2]"
       } ${disabled ? "opacity-60" : ""}`}
     >
       <motion.span

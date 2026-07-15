@@ -58,7 +58,7 @@ export default function EmptyState({
         <button
           type="button"
           onClick={() => router.push(ctaHref)}
-          className="mt-6 rounded-full bg-[#128647] px-7 py-3.5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(18,134,71,0.28)] transition-transform duration-150 active:scale-95"
+          className="mt-6 rounded-full bg-[#32120d] px-7 py-3.5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(50,18,13,0.28)] transition-transform duration-150 active:scale-95"
         >
           {ctaLabel}
         </button>

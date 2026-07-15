@@ -23,7 +23,7 @@ function CheckoutButton({ summary, onClick }) {
       <button
         type="button"
         onClick={onClick}
-        className="flex h-[72px] w-full items-center justify-between rounded-[30px] bg-[#128647] px-5 text-white shadow-[0_18px_38px_rgba(18,134,71,0.32)] transition-transform duration-200 active:scale-[0.98]"
+        className="flex h-[72px] w-full items-center justify-between rounded-[30px] bg-[#32120d] px-5 text-white shadow-[0_18px_38px_rgba(50,18,13,0.32)] transition-transform duration-200 active:scale-[0.98]"
       >
         <span className="flex items-center gap-3">
           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-white/15">

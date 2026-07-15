@@ -61,7 +61,7 @@ function PhoneStep({ phone, onChange, onSubmit, isSending }) {
         type="submit"
         disabled={!isValid || isSending}
         whileTap={isValid ? { scale: 0.97 } : undefined}
-        className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#128647] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(18,134,71,0.35)] transition-opacity duration-150 disabled:opacity-35"
+        className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#32120d] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(50,18,13,0.35)] transition-opacity duration-150 disabled:opacity-35"
       >
         {isSending ? (
           <>
@@ -186,7 +186,7 @@ function OtpStep({ phone, onBack, onVerified }) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 400, damping: 18 }}
-              className="grid h-20 w-20 place-items-center rounded-full bg-[#1c9b5f]"
+              className="grid h-20 w-20 place-items-center rounded-full bg-[#32120d]"
             >
               <motion.svg viewBox="0 0 24 24" className="h-10 w-10" fill="none">
                 <motion.path
@@ -263,7 +263,7 @@ function OtpStep({ phone, onBack, onVerified }) {
               type="button"
               disabled={code.length !== OTP_LENGTH || isVerifying}
               onClick={() => attemptVerify(code)}
-              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#128647] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(18,134,71,0.35)] transition-opacity duration-150 disabled:opacity-35"
+              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#32120d] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(50,18,13,0.35)] transition-opacity duration-150 disabled:opacity-35"
             >
               {isVerifying ? (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />

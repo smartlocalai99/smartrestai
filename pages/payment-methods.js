@@ -40,12 +40,12 @@ export default function PaymentMethods() {
                   transition={{ delay: index * 0.05, duration: 0.25 }}
                   whileTap={{ scale: 0.98 }}
                   className={`flex w-full items-start gap-3 rounded-[20px] border p-4 text-left transition-colors duration-150 ${
-                    isSelected ? "border-[#128647] bg-[#eafff2]" : "border-[#f0e9e0] bg-white"
+                    isSelected ? "border-[#32120d] bg-[#f5ecea]" : "border-[#f0e9e0] bg-white"
                   }`}
                 >
                   <span
                     className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${
-                      isSelected ? "bg-[#128647] text-white" : "bg-[#f7f0e8] text-[#b3402a]"
+                      isSelected ? "bg-[#32120d] text-white" : "bg-[#f7f0e8] text-[#b3402a]"
                     }`}
                   >
                     <Icon className="h-[18px] w-[18px]" />
@@ -63,7 +63,7 @@ export default function PaymentMethods() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                      className="shrink-0 text-[#128647]"
+                      className="shrink-0 text-[#32120d]"
                     >
                       <IoCheckmarkCircle className="h-6 w-6" />
                     </motion.span>

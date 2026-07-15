@@ -89,7 +89,7 @@ function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
               whileTap={{ scale: 0.93 }}
               className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-[13px] font-black transition-colors duration-150 ${
                 form.label === id
-                  ? "border-[#128647] bg-[#eafff2] text-[#128647]"
+                  ? "border-[#32120d] bg-[#f5ecea] text-[#32120d]"
                   : "border-[#e4dcd2] text-[#5f554c]"
               }`}
             >
@@ -104,10 +104,10 @@ function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
           onClick={handleUseCurrentLocation}
           disabled={isLocating}
           whileTap={isLocating ? undefined : { scale: 0.97 }}
-          className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#128647] text-[13px] font-black text-[#128647] disabled:opacity-60"
+          className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#32120d] text-[13px] font-black text-[#32120d] disabled:opacity-60"
         >
           {isLocating ? (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#128647]/30 border-t-[#128647]" />
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#32120d]/30 border-t-[#32120d]" />
           ) : (
             <IoNavigateOutline className="h-4 w-4" />
           )}
@@ -129,7 +129,7 @@ function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
             value={form.line}
             onChange={(event) => setForm((f) => ({ ...f, line: event.target.value }))}
             placeholder="House / flat no., street, area"
-            className="mt-1 w-full resize-none rounded-xl border border-[#e4dcd2] px-3 py-2.5 text-[14px] font-semibold text-[#241610] outline-none focus:border-[#128647]"
+            className="mt-1 w-full resize-none rounded-xl border border-[#e4dcd2] px-3 py-2.5 text-[14px] font-semibold text-[#241610] outline-none focus:border-[#32120d]"
           />
         </label>
 
@@ -140,7 +140,7 @@ function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
             value={form.landmark}
             onChange={(event) => setForm((f) => ({ ...f, landmark: event.target.value }))}
             placeholder="Near…"
-            className="mt-1 w-full rounded-xl border border-[#e4dcd2] px-3 py-2.5 text-[14px] font-semibold text-[#241610] outline-none focus:border-[#128647]"
+            className="mt-1 w-full rounded-xl border border-[#e4dcd2] px-3 py-2.5 text-[14px] font-semibold text-[#241610] outline-none focus:border-[#32120d]"
           />
         </label>
 
@@ -154,7 +154,7 @@ function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
               setForm((f) => ({ ...f, phone: event.target.value.replace(/\D/g, "").slice(0, 10) }))
             }
             placeholder="98765 43210"
-            className="mt-1 w-full rounded-xl border border-[#e4dcd2] px-3 py-2.5 text-[14px] font-semibold text-[#241610] outline-none focus:border-[#128647]"
+            className="mt-1 w-full rounded-xl border border-[#e4dcd2] px-3 py-2.5 text-[14px] font-semibold text-[#241610] outline-none focus:border-[#32120d]"
           />
         </label>
 
@@ -171,7 +171,7 @@ function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
             type="submit"
             disabled={!isValid || isSaving}
             whileTap={isValid && !isSaving ? { scale: 0.96 } : undefined}
-            className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[#128647] text-[14px] font-black text-white disabled:opacity-40"
+            className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[#32120d] text-[14px] font-black text-white disabled:opacity-40"
           >
             {isSaving ? "Saving…" : "Save address"}
           </motion.button>
@@ -201,7 +201,7 @@ function AddressCard({ address, onEdit, onDelete, onSetDefault, isBusy }) {
           <div className="flex items-center gap-2">
             <p className="text-[14px] font-black text-[#241610]">{address.label}</p>
             {address.isDefault ? (
-              <span className="rounded-full bg-[#eafff2] px-2 py-0.5 text-[10px] font-black text-[#128647]">
+              <span className="rounded-full bg-[#f5ecea] px-2 py-0.5 text-[10px] font-black text-[#32120d]">
                 DEFAULT
               </span>
             ) : null}
@@ -318,7 +318,7 @@ export default function Addresses() {
 
           {isLoadingAddresses ? (
             <div className="grid min-h-48 place-items-center">
-              <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#128647]/25 border-t-[#128647]" />
+              <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#32120d]/25 border-t-[#32120d]" />
             </div>
           ) : addresses.length === 0 ? (
             <EmptyState
@@ -349,7 +349,7 @@ export default function Addresses() {
               onClick={() => setSheet("new")}
               disabled={isLoadingAddresses || isMutatingAddress}
               whileTap={isLoadingAddresses || isMutatingAddress ? undefined : { scale: 0.97 }}
-              className="flex h-12 w-full items-center justify-center rounded-xl border border-dashed border-[#c9d9cf] text-[13px] font-black text-[#128647]"
+              className="flex h-12 w-full items-center justify-center rounded-xl border border-dashed border-[#d8c6c2] text-[13px] font-black text-[#32120d]"
             >
               + Add New Address
             </motion.button>
@@ -379,7 +379,7 @@ export default function Addresses() {
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
             className="fixed left-1/2 top-[calc(1rem+env(safe-area-inset-top))] z-[60] flex items-center gap-2 rounded-full bg-[#241610] px-4 py-2.5 text-white shadow-xl"
           >
-            <IoCheckmarkCircle className="h-4 w-4 text-[#1c9b5f]" />
+            <IoCheckmarkCircle className="h-4 w-4 text-[#32120d]" />
             <span className="text-[13px] font-bold">Address saved</span>
           </motion.div>
         ) : null}

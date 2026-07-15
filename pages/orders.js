@@ -33,7 +33,7 @@ export default function Orders() {
               <button
                 type="button"
                 onClick={() => refreshOrders().catch(() => {})}
-                className="shrink-0 text-[12px] font-black text-[#128647]"
+                className="shrink-0 text-[12px] font-black text-[#32120d]"
               >
                 Retry
               </button>
@@ -42,7 +42,7 @@ export default function Orders() {
 
           {isLoadingOrders ? (
             <div className="grid min-h-48 place-items-center">
-              <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#128647]/25 border-t-[#128647]" />
+              <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#32120d]/25 border-t-[#32120d]" />
             </div>
           ) : isEmpty ? (
             <EmptyState
