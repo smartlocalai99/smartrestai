@@ -177,7 +177,7 @@ function SuccessScreen({ orderId, total, router }) {
 export default function Checkout() {
   const { isReady } = useRequireAuth();
   const { items, changeQuantity, checkoutSummary, clearCart } = useCart();
-  const { placeOrder } = useOrders();
+  const { placeOrder, ordersError } = useOrders();
   const { defaultAddress } = useAddresses();
   const { method } = usePayment();
   const router = useRouter();
@@ -185,6 +185,7 @@ export default function Checkout() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isPlacing, setIsPlacing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
+  const [placementError, setPlacementError] = useState("");
 
   if (!isReady) return null;
 
@@ -197,21 +198,31 @@ export default function Checkout() {
     setAppliedCoupon(coupon);
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     setIsPlacing(true);
-    setTimeout(() => {
+    setPlacementError("");
+    try {
       const order = {
         id: Math.random().toString(36).slice(2, 8).toUpperCase(),
         items,
         totalItems: checkoutSummary.totalItems,
+        subtotal,
+        discount,
+        deliveryFee,
         total,
+        status: "preparing",
+        deliveryAddress: defaultAddress,
+        paymentMethod: method,
         placedAt: new Date().toISOString(),
       };
-      placeOrder(order);
+      const savedOrder = await placeOrder(order);
       clearCart();
-      setPlacedOrder(order);
+      setPlacedOrder(savedOrder);
+    } catch {
+      setPlacementError("Could not place your order. Your cart is still safe.");
+    } finally {
       setIsPlacing(false);
-    }, 900);
+    }
   };
 
   return (
@@ -415,6 +426,12 @@ export default function Checkout() {
                       <span>₹{total}</span>
                     </div>
                   </section>
+
+                  {placementError || ordersError ? (
+                    <p className="mt-4 rounded-xl bg-[#fdf1ef] px-3 py-2 text-center text-[12px] font-bold text-[#c0402a]">
+                      {placementError || ordersError}
+                    </p>
+                  ) : null}
 
                   <button
                     type="button"

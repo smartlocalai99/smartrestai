@@ -64,7 +64,7 @@ function OrderCard({ order }) {
 
 export default function Orders() {
   const { isReady } = useRequireAuth();
-  const { orders } = useOrders();
+  const { orders, isLoadingOrders, ordersError, refreshOrders } = useOrders();
 
   if (!isReady) return null;
 
@@ -76,7 +76,24 @@ export default function Orders() {
         <div className="min-h-full bg-white">
           <TabPageHeader title="Orders" subtitle="Track your current and past orders" />
 
-          {orders.length === 0 ? (
+          {ordersError ? (
+            <div className="mx-4 mt-2 flex items-center gap-3 rounded-xl bg-[#fdf1ef] px-3 py-2.5">
+              <p className="min-w-0 flex-1 text-[12px] font-bold text-[#c0402a]">{ordersError}</p>
+              <button
+                type="button"
+                onClick={() => refreshOrders().catch(() => {})}
+                className="shrink-0 text-[12px] font-black text-[#128647]"
+              >
+                Retry
+              </button>
+            </div>
+          ) : null}
+
+          {isLoadingOrders ? (
+            <div className="grid min-h-48 place-items-center">
+              <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#128647]/25 border-t-[#128647]" />
+            </div>
+          ) : orders.length === 0 ? (
             <EmptyState
               icon={IoReceiptOutline}
               title="No orders yet"
