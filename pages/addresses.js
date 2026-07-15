@@ -35,7 +35,7 @@ function LabelIcon({ label, className }) {
   return <Icon className={className} />;
 }
 
-function AddressSheet({ initialValue, onClose, onSave }) {
+function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
   const [form, setForm] = useState(initialValue ?? emptyForm);
   const [isLocating, setIsLocating] = useState(false);
   const [locateError, setLocateError] = useState("");
@@ -169,19 +169,22 @@ function AddressSheet({ initialValue, onClose, onSave }) {
           </motion.button>
           <motion.button
             type="submit"
-            disabled={!isValid}
-            whileTap={isValid ? { scale: 0.96 } : undefined}
+            disabled={!isValid || isSaving}
+            whileTap={isValid && !isSaving ? { scale: 0.96 } : undefined}
             className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[#128647] text-[14px] font-black text-white disabled:opacity-40"
           >
-            Save address
+            {isSaving ? "Saving…" : "Save address"}
           </motion.button>
         </div>
+        {saveError ? (
+          <p className="mt-3 text-center text-[12px] font-bold text-[#c0402a]">{saveError}</p>
+        ) : null}
       </motion.form>
     </motion.div>
   );
 }
 
-function AddressCard({ address, onEdit, onDelete, onSetDefault }) {
+function AddressCard({ address, onEdit, onDelete, onSetDefault, isBusy }) {
   return (
     <motion.div
       layout
@@ -217,8 +220,8 @@ function AddressCard({ address, onEdit, onDelete, onSetDefault }) {
         <motion.button
           type="button"
           onClick={onSetDefault}
-          disabled={address.isDefault}
-          whileTap={address.isDefault ? undefined : { scale: 0.94 }}
+          disabled={address.isDefault || isBusy}
+          whileTap={address.isDefault || isBusy ? undefined : { scale: 0.94 }}
           className="inline-flex items-center gap-1 text-[12px] font-black text-[#a56a10] disabled:opacity-40"
         >
           {address.isDefault ? <IoStar className="h-4 w-4" /> : <IoStarOutline className="h-4 w-4" />}
@@ -227,7 +230,8 @@ function AddressCard({ address, onEdit, onDelete, onSetDefault }) {
         <motion.button
           type="button"
           onClick={onEdit}
-          whileTap={{ scale: 0.94 }}
+          disabled={isBusy}
+          whileTap={isBusy ? undefined : { scale: 0.94 }}
           className="ml-auto inline-flex items-center gap-1 text-[12px] font-black text-[#5f554c]"
         >
           <IoPencilOutline className="h-4 w-4" />
@@ -236,7 +240,8 @@ function AddressCard({ address, onEdit, onDelete, onSetDefault }) {
         <motion.button
           type="button"
           onClick={onDelete}
-          whileTap={{ scale: 0.94 }}
+          disabled={isBusy}
+          whileTap={isBusy ? undefined : { scale: 0.94 }}
           className="inline-flex items-center gap-1 text-[12px] font-black text-[#ef4f61]"
         >
           <IoTrashOutline className="h-4 w-4" />
@@ -249,7 +254,16 @@ function AddressCard({ address, onEdit, onDelete, onSetDefault }) {
 
 export default function Addresses() {
   const { isReady } = useRequireAuth();
-  const { addresses, addAddress, updateAddress, removeAddress, setDefault } = useAddresses();
+  const {
+    addresses,
+    addAddress,
+    updateAddress,
+    removeAddress,
+    setDefault,
+    isLoadingAddresses,
+    isMutatingAddress,
+    addressError,
+  } = useAddresses();
   const [sheet, setSheet] = useState(null); // null | "new" | address object
   const [justSaved, setJustSaved] = useState(false);
   const router = useRouter();
@@ -258,21 +272,25 @@ export default function Addresses() {
 
   const redirectParam = typeof router.query.redirect === "string" ? router.query.redirect : null;
 
-  const handleSave = (data) => {
-    if (sheet && sheet !== "new") {
-      updateAddress(sheet.id, data);
-    } else {
-      addAddress(data);
-    }
-    setSheet(null);
+  const handleSave = async (data) => {
+    try {
+      if (sheet && sheet !== "new") {
+        await updateAddress(sheet.id, data);
+      } else {
+        await addAddress(data);
+      }
+      setSheet(null);
 
-    if (redirectParam) {
-      router.push(safeRedirect(redirectParam));
-      return;
-    }
+      if (redirectParam) {
+        router.push(safeRedirect(redirectParam));
+        return;
+      }
 
-    setJustSaved(true);
-    setTimeout(() => setJustSaved(false), 1800);
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1800);
+    } catch {
+      // The context keeps the sheet open and provides the readable error.
+    }
   };
 
   return (
@@ -292,7 +310,17 @@ export default function Addresses() {
             </div>
           ) : null}
 
-          {addresses.length === 0 ? (
+          {addressError && !sheet ? (
+            <p className="mx-4 mt-3 rounded-xl bg-[#fdf1ef] px-3 py-2 text-[12px] font-bold text-[#c0402a]">
+              {addressError}
+            </p>
+          ) : null}
+
+          {isLoadingAddresses ? (
+            <div className="grid min-h-48 place-items-center">
+              <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#128647]/25 border-t-[#128647]" />
+            </div>
+          ) : addresses.length === 0 ? (
             <EmptyState
               icon={IoLocationOutline}
               title="No saved addresses"
@@ -305,9 +333,10 @@ export default function Addresses() {
                   <AddressCard
                     key={address.id}
                     address={address}
+                    isBusy={isMutatingAddress}
                     onEdit={() => setSheet(address)}
-                    onDelete={() => removeAddress(address.id)}
-                    onSetDefault={() => setDefault(address.id)}
+                    onDelete={() => removeAddress(address.id).catch(() => {})}
+                    onSetDefault={() => setDefault(address.id).catch(() => {})}
                   />
                 ))}
               </AnimatePresence>
@@ -318,7 +347,8 @@ export default function Addresses() {
             <motion.button
               type="button"
               onClick={() => setSheet("new")}
-              whileTap={{ scale: 0.97 }}
+              disabled={isLoadingAddresses || isMutatingAddress}
+              whileTap={isLoadingAddresses || isMutatingAddress ? undefined : { scale: 0.97 }}
               className="flex h-12 w-full items-center justify-center rounded-xl border border-dashed border-[#c9d9cf] text-[13px] font-black text-[#128647]"
             >
               + Add New Address
@@ -334,6 +364,8 @@ export default function Addresses() {
             initialValue={sheet !== "new" ? sheet : null}
             onClose={() => setSheet(null)}
             onSave={handleSave}
+            isSaving={isMutatingAddress}
+            saveError={addressError}
           />
         ) : null}
       </AnimatePresence>

@@ -17,3 +17,23 @@ test("upserts the phone customer before completing login", async () => {
   assert.match(login, /Unable to connect your account/);
   assert.match(login, /const VALID_OTP = "1234"/);
 });
+
+test("loads and mutates addresses for the logged-in phone", async () => {
+  const [context, page] = await Promise.all([
+    read("context/AddressContext.js"),
+    read("pages/addresses.js"),
+  ]);
+
+  assert.match(context, /useAuth\(\)/);
+  assert.match(context, /const phone = user\?\.phone/);
+  assert.match(context, /listAddresses\(phone\)/);
+  assert.match(context, /await createAddress\(phone/);
+  assert.match(context, /await updateCustomerAddress\(phone/);
+  assert.match(context, /await deleteAddress\(phone/);
+  assert.match(context, /await makeDefaultAddress\(phone/);
+  assert.match(context, /isLoadingAddresses/);
+  assert.match(context, /addressError/);
+  assert.match(page, /const handleSave = async \(data\)/);
+  assert.match(page, /await updateAddress\(sheet\.id, data\)/);
+  assert.match(page, /await addAddress\(data\)/);
+});

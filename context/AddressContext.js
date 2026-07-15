@@ -1,69 +1,179 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import {
+  createAddress,
+  deleteAddress,
+  listAddresses,
+  makeDefaultAddress,
+  updateAddress as updateCustomerAddress,
+} from "@/lib/customerData.mjs";
 
 const AddressContext = createContext(null);
 const STORAGE_KEY = "smartrest_addresses";
 
-const makeId = () => Math.random().toString(36).slice(2, 10);
+function readLegacyAddresses() {
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    const parsed = stored ? JSON.parse(stored) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 export function AddressProvider({ children }) {
+  const { user, isHydrated: isAuthHydrated } = useAuth();
+  const phone = user?.phone;
   const [addresses, setAddresses] = useState([]);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
+  const [isMutatingAddress, setIsMutatingAddress] = useState(false);
+  const [addressError, setAddressError] = useState("");
+
+  const refreshAddresses = async () => {
+    if (!phone) return [];
+    const remoteAddresses = await listAddresses(phone);
+    setAddresses(remoteAddresses);
+    return remoteAddresses;
+  };
 
   useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored) setAddresses(JSON.parse(stored));
-    } catch {
-      // ignore corrupt storage
+    if (!isAuthHydrated) return undefined;
+    let active = true;
+
+    async function loadAddresses() {
+      await Promise.resolve();
+      if (!phone) {
+        if (active) {
+          setAddresses([]);
+          setAddressError("");
+          setIsLoadingAddresses(false);
+        }
+        return;
+      }
+
+      setIsLoadingAddresses(true);
+      setAddressError("");
+      try {
+        let remoteAddresses = await listAddresses(phone);
+        const legacyAddresses = readLegacyAddresses();
+
+        if (remoteAddresses.length === 0 && legacyAddresses.length > 0) {
+          const hasDefault = legacyAddresses.some((address) => address.isDefault);
+          for (const [index, address] of legacyAddresses.entries()) {
+            await createAddress(phone, {
+              ...address,
+              isDefault: hasDefault ? Boolean(address.isDefault) : index === 0,
+            });
+          }
+          remoteAddresses = await listAddresses(phone);
+          window.localStorage.removeItem(STORAGE_KEY);
+        }
+
+        if (active) setAddresses(remoteAddresses);
+      } catch {
+        if (active) {
+          setAddressError("Could not load your saved addresses. Please try again.");
+        }
+      } finally {
+        if (active) setIsLoadingAddresses(false);
+      }
     }
-    setIsHydrated(true);
-  }, []);
 
-  useEffect(() => {
-    if (!isHydrated) return;
+    loadAddresses();
+    return () => {
+      active = false;
+    };
+  }, [isAuthHydrated, phone]);
+
+  const addAddress = async (data) => {
+    if (!phone) throw new Error("Log in to save an address.");
+    setIsMutatingAddress(true);
+    setAddressError("");
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(addresses));
-    } catch {
-      // ignore storage failures
+      const saved = await createAddress(phone, {
+        ...data,
+        isDefault: addresses.length === 0,
+      });
+      setAddresses((current) => [...current, saved]);
+      return saved;
+    } catch (error) {
+      setAddressError("Could not save your address. Please try again.");
+      throw error;
+    } finally {
+      setIsMutatingAddress(false);
     }
-  }, [addresses, isHydrated]);
-
-  const addAddress = (data) => {
-    setAddresses((current) => {
-      const entry = { id: makeId(), ...data };
-      const next = current.length === 0 ? [{ ...entry, isDefault: true }] : [...current, entry];
-      return next;
-    });
   };
 
-  const updateAddress = (id, data) => {
-    setAddresses((current) => current.map((addr) => (addr.id === id ? { ...addr, ...data } : addr)));
+  const updateAddress = async (id, data) => {
+    if (!phone) throw new Error("Log in to update an address.");
+    setIsMutatingAddress(true);
+    setAddressError("");
+    try {
+      const currentAddress = addresses.find((address) => address.id === id);
+      const saved = await updateCustomerAddress(phone, id, {
+        ...data,
+        isDefault: Boolean(currentAddress?.isDefault),
+      });
+      setAddresses((current) =>
+        current.map((address) => (address.id === id ? saved : address))
+      );
+      return saved;
+    } catch (error) {
+      setAddressError("Could not update your address. Please try again.");
+      throw error;
+    } finally {
+      setIsMutatingAddress(false);
+    }
   };
 
-  const removeAddress = (id) => {
-    setAddresses((current) => {
-      const wasDefault = current.find((addr) => addr.id === id)?.isDefault;
-      const next = current.filter((addr) => addr.id !== id);
-      if (wasDefault && next.length > 0) next[0] = { ...next[0], isDefault: true };
-      return next;
-    });
+  const removeAddress = async (id) => {
+    if (!phone) throw new Error("Log in to delete an address.");
+    setIsMutatingAddress(true);
+    setAddressError("");
+    try {
+      const removedWasDefault = addresses.find((address) => address.id === id)?.isDefault;
+      await deleteAddress(phone, id);
+      let remaining = await listAddresses(phone);
+      if (removedWasDefault && remaining.length > 0) {
+        await makeDefaultAddress(phone, remaining[0].id);
+        remaining = await listAddresses(phone);
+      }
+      setAddresses(remaining);
+    } catch (error) {
+      setAddressError("Could not delete your address. Please try again.");
+      throw error;
+    } finally {
+      setIsMutatingAddress(false);
+    }
   };
 
-  const setDefault = (id) => {
-    setAddresses((current) => current.map((addr) => ({ ...addr, isDefault: addr.id === id })));
+  const setDefault = async (id) => {
+    if (!phone) throw new Error("Log in to choose a default address.");
+    setIsMutatingAddress(true);
+    setAddressError("");
+    try {
+      await makeDefaultAddress(phone, id);
+      await refreshAddresses();
+    } catch (error) {
+      setAddressError("Could not change your default address. Please try again.");
+      throw error;
+    } finally {
+      setIsMutatingAddress(false);
+    }
   };
 
-  const value = useMemo(
-    () => ({
-      addresses,
-      addAddress,
-      updateAddress,
-      removeAddress,
-      setDefault,
-      defaultAddress: addresses.find((addr) => addr.isDefault) ?? addresses[0] ?? null,
-    }),
-    [addresses]
-  );
+  const value = {
+    addresses,
+    addAddress,
+    updateAddress,
+    removeAddress,
+    setDefault,
+    refreshAddresses,
+    isLoadingAddresses,
+    isMutatingAddress,
+    addressError,
+    defaultAddress: addresses.find((address) => address.isDefault) ?? addresses[0] ?? null,
+  };
 
   return <AddressContext.Provider value={value}>{children}</AddressContext.Provider>;
 }
