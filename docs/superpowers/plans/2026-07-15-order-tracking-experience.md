@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a reference-matched Orders page that highlights the newest real customer order on a free OpenFreeMap map and lists all older orders below.
+**Goal:** Build a reference-matched Orders page that highlights the newest real customer order on a free OpenFreeMap map, lists older orders below, and gives basket, favourites, and orders a shared branded empty-plate experience.
 
 **Architecture:** Keep `/orders` as the loading/error/empty-state coordinator. Move deterministic order formatting and map geometry into testable ESM helpers, render the delivery and history UI in a focused customer component, and isolate browser-only MapLibre setup in its own component so server rendering stays safe.
 
@@ -17,6 +17,8 @@
 - Treat the red route as visual tracking only; do not label it live navigation or traffic-aware routing.
 - Keep loading, retry, authentication, and empty-order behavior.
 - Do not add database migrations, geocoding, live rider tracking, working chat/calling, reorder, or order-detail actions.
+- Use `public/emptyplate.webp` only for basket, favourites, and orders empty states; keep the address empty state icon-based.
+- Use the exact approved empty-state titles, messages, and CTA labels from the design specification.
 - Before editing Next.js files, follow the checked-in guides under `node_modules/next/dist/docs/02-pages/` for CSS and client-only library loading.
 
 ## File Structure
@@ -25,7 +27,10 @@
 - `lib/orderTrackingMap.mjs`: Fixed restaurant coordinates, visual customer endpoint, route GeoJSON, and MapLibre options.
 - `components/customer/OrderTrackingMap.js`: Client-only MapLibre lifecycle, markers, route layers, endpoint labels, and provider-failure fallback.
 - `components/customer/OrderTrackingExperience.js`: Active delivery sheet and previous-order cards.
+- `components/customer/EmptyState.js`: Shared image-or-icon empty-state presentation.
 - `pages/orders.js`: Authenticated data-state coordinator that passes orders and the account phone to the experience.
+- `pages/checkout.js`: Branded empty-basket copy and artwork.
+- `pages/favorites.js`: Branded empty-favourites copy and artwork.
 - `pages/_app.js`: Global MapLibre stylesheet import, as required by the Pages Router.
 - `test/orderView.test.mjs`: Unit coverage for order derivation.
 - `test/orderTrackingMap.test.mjs`: Unit coverage for free-map configuration and visual route geometry.
@@ -668,7 +673,197 @@ Expected: component test and ESLint PASS, then the commit succeeds.
 
 ---
 
-### Task 4: Orders route integration and end-to-end verification
+### Task 4: Shared branded food empty states
+
+**Files:**
+- Modify: `components/customer/EmptyState.js`
+- Modify: `pages/checkout.js`
+- Modify: `pages/favorites.js`
+- Modify: `pages/orders.js`
+- Create: `test/EmptyState.test.jsx`
+
+**Interfaces:**
+- Consumes: existing `icon`, `title`, `message`, `ctaLabel`, and `ctaHref` props plus optional `imageSrc` and `imageAlt`.
+- Produces: a backward-compatible `<EmptyState />` that renders either branded artwork or the existing icon treatment.
+
+- [ ] **Step 1: Write the failing shared-component test**
+
+Create `test/EmptyState.test.jsx`:
+
+```jsx
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { IoHeartOutline } from "react-icons/io5";
+import EmptyState from "@/components/customer/EmptyState";
+
+const push = vi.fn();
+
+vi.mock("next/router", () => ({ useRouter: () => ({ push }) }));
+vi.mock("next/image", () => ({ default: ({ fill, ...props }) => <img {...props} /> }));
+
+describe("EmptyState", () => {
+  it("renders branded artwork and follows the CTA destination", () => {
+    render(
+      <EmptyState
+        imageSrc="/emptyplate.webp"
+        imageAlt="Empty MANDI KING serving plate"
+        title="Your first feast awaits"
+        message="Place your first order and follow every delicious detail from our kitchen to your doorstep."
+        ctaLabel="Start your order"
+        ctaHref="/"
+      />
+    );
+
+    expect(screen.getByAltText("Empty MANDI KING serving plate")).toHaveAttribute(
+      "src",
+      "/emptyplate.webp"
+    );
+    expect(screen.getByText("Your first feast awaits")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Start your order" }));
+    expect(push).toHaveBeenCalledWith("/");
+  });
+
+  it("keeps the existing icon variant for non-food empty states", () => {
+    render(
+      <EmptyState
+        icon={IoHeartOutline}
+        title="No addresses"
+        message="Add an address."
+      />
+    );
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByText("No addresses")).toBeInTheDocument();
+  });
+});
+```
+
+- [ ] **Step 2: Run the test and verify RED**
+
+Run:
+
+```bash
+npm test -- test/EmptyState.test.jsx
+```
+
+Expected: FAIL because `EmptyState` does not yet accept or render `imageSrc`.
+
+- [ ] **Step 3: Add the backward-compatible image variant**
+
+Update `components/customer/EmptyState.js` to this interface and conditional visual block while retaining the existing text and CTA button:
+
+```jsx
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { motion } from "motion/react";
+
+export default function EmptyState({
+  icon: Icon,
+  imageSrc,
+  imageAlt = "",
+  title,
+  message,
+  ctaLabel,
+  ctaHref,
+}) {
+  const router = useRouter();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="flex min-h-[430px] flex-col items-center justify-center px-7 py-10 text-center"
+    >
+      {imageSrc ? (
+        <motion.div
+          initial={{ scale: 0.82, y: 10 }}
+          animate={{ scale: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 180, damping: 18, delay: 0.05 }}
+          className="relative h-48 w-full max-w-[330px] before:absolute before:inset-x-10 before:bottom-3 before:h-12 before:rounded-full before:bg-[#d9b879]/25 before:blur-2xl"
+        >
+          <Image src={imageSrc} alt={imageAlt} fill sizes="330px" className="object-contain" priority />
+        </motion.div>
+      ) : Icon ? (
+        <motion.span
+          initial={{ scale: 0.7, rotate: -6 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 16, delay: 0.05 }}
+          className="grid h-20 w-20 place-items-center rounded-full bg-[#f7f0e8]"
+        >
+          <Icon className="h-9 w-9 text-[#b3402a]" />
+        </motion.span>
+      ) : null}
+
+      <p className="mt-4 text-[21px] font-black text-[#241610]">{title}</p>
+      <p className="mt-2 max-w-[290px] text-[13px] font-semibold leading-5 text-[#7d7169]">{message}</p>
+      {ctaLabel ? (
+        <button
+          type="button"
+          onClick={() => router.push(ctaHref)}
+          className="mt-6 rounded-full bg-[#128647] px-7 py-3.5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(18,134,71,0.28)] transition-transform duration-150 active:scale-95"
+        >
+          {ctaLabel}
+        </button>
+      ) : null}
+    </motion.div>
+  );
+}
+```
+
+- [ ] **Step 4: Apply exact approved copy to all three food states**
+
+Use these props on the Orders and Favourites pages:
+
+```jsx
+imageSrc="/emptyplate.webp"
+imageAlt="Empty MANDI KING serving plate"
+```
+
+Orders:
+
+```jsx
+title="Your first feast awaits"
+message="Place your first order and follow every delicious detail from our kitchen to your doorstep."
+ctaLabel="Start your order"
+ctaHref="/"
+```
+
+Favourites:
+
+```jsx
+title="Save room for your favourites"
+message="Tap the heart on dishes you love and they’ll be waiting for you here."
+ctaLabel="Discover dishes"
+ctaHref="/"
+```
+
+Replace the custom checkout empty-basket markup with the shared `EmptyState` using:
+
+```jsx
+imageSrc="/emptyplate.webp"
+imageAlt="Empty MANDI KING serving plate"
+title="Your basket is waiting"
+message="The feast hasn’t started yet. Pick something delicious and let’s fill this plate."
+ctaLabel="Explore the menu"
+ctaHref="/"
+```
+
+- [ ] **Step 5: Run GREEN, lint, and commit**
+
+Run:
+
+```bash
+npm test -- test/EmptyState.test.jsx
+npx eslint components/customer/EmptyState.js pages/checkout.js pages/favorites.js pages/orders.js test/EmptyState.test.jsx
+git add components/customer/EmptyState.js pages/checkout.js pages/favorites.js pages/orders.js test/EmptyState.test.jsx
+git commit -m "feat: add branded food empty states"
+```
+
+Expected: tests and ESLint pass, and the address empty state remains icon-based.
+
+---
+
+### Task 5: Orders route integration and end-to-end verification
 
 **Files:**
 - Modify: `pages/orders.js`

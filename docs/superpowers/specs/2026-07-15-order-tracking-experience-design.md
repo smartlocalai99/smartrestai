@@ -6,7 +6,7 @@ Redesign the authenticated `/orders` page to closely follow the supplied mobile 
 
 ## Scope
 
-This change is limited to the customer Orders page and focused helpers or tests needed to support it. It will not add paid map services, live rider tracking, address geocoding, chat, calling, or database migrations.
+This change covers the customer Orders page plus the basket, favourites, and orders empty states. Focused helpers or tests may be added to support them. It will not add paid map services, live rider tracking, address geocoding, chat, calling, or database migrations.
 
 ## Page Structure
 
@@ -105,6 +105,26 @@ Pure formatting helpers cover status, dates, money, contact fallback, and active
 - Missing contact phone displays the authenticated account phone when available, then `Contact unavailable`.
 - An order with an empty items array still displays its stored item count and total without crashing.
 
+## Branded Empty States
+
+The existing `public/emptyplate.webp` artwork becomes the shared visual for the three food-related empty states only: basket, favourites, and orders. Address management keeps its current icon-based empty state.
+
+`EmptyState` accepts an optional image source while preserving its existing icon behavior for other consumers. The image treatment uses a large responsive plate, soft glow, subtle entrance animation, warm copy, and a prominent green CTA.
+
+The exact empty-state copy is:
+
+- Basket title: `Your basket is waiting`
+- Basket message: `The feast hasn’t started yet. Pick something delicious and let’s fill this plate.`
+- Basket CTA: `Explore the menu`
+- Favourites title: `Save room for your favourites`
+- Favourites message: `Tap the heart on dishes you love and they’ll be waiting for you here.`
+- Favourites CTA: `Discover dishes`
+- Orders title: `Your first feast awaits`
+- Orders message: `Place your first order and follow every delicious detail from our kitchen to your doorstep.`
+- Orders CTA: `Start your order`
+
+The artwork uses meaningful alternative text on each screen. Empty-state content must fit above the bottom navigation on common mobile heights without horizontal overflow.
+
 ## Testing and Verification
 
 Implementation follows test-first development.
@@ -116,6 +136,8 @@ Automated coverage will verify the pure order-view derivation behavior, includin
 - Ordered item line totals derived from quantity and item price
 - Delivery address and contact fallbacks
 - Empty and malformed optional fields handled safely
+- Image-based and icon-based `EmptyState` variants render correctly
+- Basket, favourites, and orders use their exact approved copy and CTA labels
 
 Verification will include targeted tests, ESLint on touched files, a production build, and browser inspection at mobile and wider viewport sizes. Browser inspection must confirm the active order uses real stored items/address data and that previous orders appear only when older orders exist.
 
