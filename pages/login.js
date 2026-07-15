@@ -104,10 +104,18 @@ function OtpStep({ phone, onBack, onVerified }) {
   const attemptVerify = (candidate) => {
     setIsVerifying(true);
     setError("");
-    setTimeout(() => {
+    setTimeout(async () => {
       if (candidate === VALID_OTP) {
-        setIsVerified(true);
-        setTimeout(onVerified, 700);
+        try {
+          await onVerified();
+          setIsVerified(true);
+        } catch (verificationError) {
+          setIsVerifying(false);
+          setError(
+            verificationError?.message ||
+              "Unable to connect your account. Please try again."
+          );
+        }
       } else {
         setIsVerifying(false);
         setError("That code doesn't match. Try 1234 for this demo.");
@@ -311,9 +319,9 @@ export default function Login() {
     }, 700);
   };
 
-  const handleVerified = () => {
-    login(phone);
-    router.replace(redirectTarget);
+  const handleVerified = async () => {
+    await login(phone);
+    setTimeout(() => router.replace(redirectTarget), 700);
   };
 
   return (
