@@ -18,14 +18,16 @@ export default function EmptyState({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="flex min-h-[430px] flex-col items-center justify-center px-7 py-10 text-center"
+      className={`flex min-h-[430px] flex-col items-center justify-center px-7 py-10 text-center ${
+        imageSrc ? "bg-[#f6f6f6]" : ""
+      }`}
     >
       {imageSrc ? (
         <motion.div
           initial={{ scale: 0.82, y: 10 }}
           animate={{ scale: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 180, damping: 18, delay: 0.05 }}
-          className="relative h-48 w-full max-w-[330px] before:absolute before:inset-x-10 before:bottom-3 before:h-12 before:rounded-full before:bg-[#d9b879]/25 before:blur-2xl"
+          className="relative h-48 w-full max-w-[330px]"
         >
           <Image
             src={imageSrc}

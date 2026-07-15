@@ -9,7 +9,7 @@ vi.mock("next/router", () => ({
   useRouter: () => ({ push }),
 }));
 vi.mock("next/image", () => ({
-  default: ({ fill, alt = "", ...props }) => (
+  default: ({ fill, priority, alt = "", ...props }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img alt={alt} {...props} />
   ),
@@ -28,10 +28,13 @@ describe("EmptyState", () => {
       />
     );
 
-    expect(screen.getByAltText("Empty MANDI KING serving plate")).toHaveAttribute(
-      "src",
-      "/emptyplate.webp"
-    );
+    const plate = screen.getByAltText("Empty MANDI KING serving plate");
+    const artwork = plate.parentElement;
+    const emptyState = artwork.parentElement;
+
+    expect(plate).toHaveAttribute("src", "/emptyplate.webp");
+    expect(emptyState).toHaveClass("bg-[#f6f6f6]");
+    expect(artwork.className).not.toMatch(/border|shadow|blur|before:/);
     expect(screen.getByText("Your first feast awaits")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Start your order" }));
