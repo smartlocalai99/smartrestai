@@ -13,6 +13,7 @@ test("declares the Supabase client and customer schema", async () => {
   ]);
 
   assert.match(pkg, /"@supabase\/supabase-js"/);
+  assert.match(pkg, /"type": "module"/);
   assert.match(example, /NEXT_PUBLIC_SUPABASE_URL=/);
   assert.match(client, /export function getSupabase/);
   assert.match(migration, /create table if not exists public\.customers/);
