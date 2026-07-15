@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "motion/react";
 import {
   IoArrowBack,
-  IoBagHandleOutline,
   IoCardOutline,
   IoCashOutline,
   IoChevronForward,
@@ -14,6 +13,7 @@ import {
   IoTrashOutline,
 } from "react-icons/io5";
 import { LuMinus, LuPlus } from "react-icons/lu";
+import EmptyState from "@/components/customer/EmptyState";
 import PageHead from "@/components/customer/PageHead";
 import { imageForItem } from "@/components/customer/ShopByCategories";
 import { useAddresses } from "@/context/AddressContext";
@@ -255,27 +255,15 @@ export default function Checkout() {
                   router={router}
                 />
               ) : items.length === 0 ? (
-                <motion.div
+                <EmptyState
                   key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-1 flex-col items-center justify-center px-8 text-center"
-                >
-                  <span className="grid h-20 w-20 place-items-center rounded-full bg-[#f7f0e8] text-[#b3402a]">
-                    <IoBagHandleOutline className="h-9 w-9" />
-                  </span>
-                  <p className="mt-5 text-[19px] font-black text-[#241610]">Your basket is empty</p>
-                  <p className="mt-2 max-w-[240px] text-[13px] font-semibold leading-5 text-[#7d7169]">
-                    Add a few dishes from the menu to get started.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => router.push("/")}
-                    className="mt-6 rounded-full bg-[#128647] px-6 py-3 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(18,134,71,0.28)]"
-                  >
-                    Browse menu
-                  </button>
-                </motion.div>
+                  imageSrc="/emptyplate.webp"
+                  imageAlt="Empty MANDI KING serving plate"
+                  title="Your basket is waiting"
+                  message="The feast hasn’t started yet. Pick something delicious and let’s fill this plate."
+                  ctaLabel="Explore the menu"
+                  ctaHref="/"
+                />
               ) : (
                 <motion.div
                   key="basket"

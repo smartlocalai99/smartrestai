@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { IoReceiptOutline } from "react-icons/io5";
 import AppShell from "@/components/customer/AppShell";
 import EmptyState from "@/components/customer/EmptyState";
 import PageHead from "@/components/customer/PageHead";
@@ -95,10 +94,11 @@ export default function Orders() {
             </div>
           ) : orders.length === 0 ? (
             <EmptyState
-              icon={IoReceiptOutline}
-              title="No orders yet"
-              message="When you place an order, you'll be able to track it here from kitchen to doorstep."
-              ctaLabel="Order now"
+              imageSrc="/emptyplate.webp"
+              imageAlt="Empty MANDI KING serving plate"
+              title="Your first feast awaits"
+              message="Place your first order and follow every delicious detail from our kitchen to your doorstep."
+              ctaLabel="Start your order"
               ctaHref="/"
             />
           ) : (

@@ -1,4 +1,3 @@
-import { IoHeartOutline } from "react-icons/io5";
 import AppShell from "@/components/customer/AppShell";
 import EmptyState from "@/components/customer/EmptyState";
 import PageHead from "@/components/customer/PageHead";
@@ -25,10 +24,11 @@ export default function Favorites() {
 
           {items.length === 0 ? (
             <EmptyState
-              icon={IoHeartOutline}
-              title="No favourites yet"
-              message="Tap the heart on any dish while browsing the menu to save it here."
-              ctaLabel="Explore the menu"
+              imageSrc="/emptyplate.webp"
+              imageAlt="Empty MANDI KING serving plate"
+              title="Save room for your favourites"
+              message="Tap the heart on dishes you love and they’ll be waiting for you here."
+              ctaLabel="Discover dishes"
               ctaHref="/"
             />
           ) : (
