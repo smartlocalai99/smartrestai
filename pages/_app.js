@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Head from "next/head";
 import AppProviders from "@/context/AppProviders";
 import "@/styles/globals.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 export default function App({ Component, pageProps }) {
   useEffect(() => {
