@@ -59,6 +59,11 @@ drop trigger if exists customer_addresses_set_updated_at on public.customer_addr
 create trigger customer_addresses_set_updated_at before update on public.customer_addresses
 for each row execute function public.set_updated_at();
 
+-- Explicit Data API grants are required for projects created after May 30, 2026.
+grant select, insert, update, delete on table public.customers to anon, authenticated, service_role;
+grant select, insert, update, delete on table public.customer_addresses to anon, authenticated, service_role;
+grant select, insert, update, delete on table public.customer_orders to anon, authenticated, service_role;
+
 alter table public.customers enable row level security;
 alter table public.customer_addresses enable row level security;
 alter table public.customer_orders enable row level security;

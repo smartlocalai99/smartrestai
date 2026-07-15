@@ -20,5 +20,17 @@ test("declares the Supabase client and customer schema", async () => {
   assert.match(migration, /phone text primary key/);
   assert.match(migration, /create table if not exists public\.customer_addresses/);
   assert.match(migration, /create table if not exists public\.customer_orders/);
+  assert.match(
+    migration,
+    /grant select, insert, update, delete on table public\.customers to anon, authenticated, service_role/
+  );
+  assert.match(
+    migration,
+    /grant select, insert, update, delete on table public\.customer_addresses to anon, authenticated, service_role/
+  );
+  assert.match(
+    migration,
+    /grant select, insert, update, delete on table public\.customer_orders to anon, authenticated, service_role/
+  );
   assert.match(migration, /Development-only public client access/);
 });
