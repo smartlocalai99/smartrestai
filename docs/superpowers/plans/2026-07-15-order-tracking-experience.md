@@ -18,6 +18,7 @@
 - Keep loading, retry, authentication, and empty-order behavior.
 - Do not add database migrations, geocoding, live rider tracking, working chat/calling, reorder, or order-detail actions.
 - Use `public/emptyplate.webp` only for basket, favourites, and orders empty states; keep the address empty state icon-based.
+- Give every image-based empty state a `#f6f6f6` content background and render the plate without borders, shadows, glows, halos, or framing.
 - Use the exact approved empty-state titles, messages, and CTA labels from the design specification.
 - Before editing Next.js files, follow the checked-in guides under `node_modules/next/dist/docs/02-pages/` for CSS and client-only library loading.
 

@@ -109,7 +109,7 @@ Pure formatting helpers cover status, dates, money, contact fallback, and active
 
 The existing `public/emptyplate.webp` artwork becomes the shared visual for the three food-related empty states only: basket, favourites, and orders. Address management keeps its current icon-based empty state.
 
-`EmptyState` accepts an optional image source while preserving its existing icon behavior for other consumers. The image treatment uses a large responsive plate, soft glow, subtle entrance animation, warm copy, and a prominent green CTA.
+`EmptyState` accepts an optional image source while preserving its existing icon behavior for other consumers. Every image-based empty state uses `#f6f6f6` across its full content area. The image treatment uses a large responsive plate and subtle entrance animation with no border, shadow, glow, halo, or framed container. Copy remains warm and the CTA remains prominent and green.
 
 The exact empty-state copy is:
 
