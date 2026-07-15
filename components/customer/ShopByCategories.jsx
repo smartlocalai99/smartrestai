@@ -667,7 +667,7 @@ function CategoryRow({ entry, items, isExpanded, onSelect, onToggleExpand }) {
           whileTap={{ scale: 0.88 }}
           aria-label={isExpanded ? `Hide ${entry.title} items` : `Preview ${entry.title} items`}
           aria-expanded={isExpanded}
-          className="grid h-8 w-8 shrink-0 place-items-center bg-transparent text-[#32120d]"
+          className="grid h-8 w-8 shrink-0 place-items-center bg-transparent text-white"
         >
           <motion.span
             animate={{ rotate: isExpanded ? 45 : 0 }}

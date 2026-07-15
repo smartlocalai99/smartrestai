@@ -58,7 +58,7 @@ test("uses a glossy category popup with the preview plus beside the name", async
   assert.match(source, /pointer-events-none absolute inset-\[1px\]/);
   assert.match(
     source,
-    /\{entry\.title\}[\s\S]*?text-\[#32120d\][\s\S]*?<LuPlus[\s\S]*?ml-auto mr-1 text-white\/60[\s\S]*?\{entry\.count\}/
+    /\{entry\.title\}[\s\S]*?text-white[\s\S]*?<LuPlus[\s\S]*?ml-auto mr-1 text-white\/60[\s\S]*?\{entry\.count\}/
   );
   assert.doesNotMatch(source, /rounded-full bg-\[#b3402a\] text-white/);
   assert.match(
