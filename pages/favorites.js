@@ -11,6 +11,7 @@ export default function Favorites() {
   const { isReady } = useRequireAuth();
   const { items } = useFavorites();
   const { cart, changeQuantity } = useCart();
+  const isEmpty = items.length === 0;
 
   if (!isReady) return null;
 
@@ -18,15 +19,15 @@ export default function Favorites() {
     <>
       <PageHead title="Favourites - SmartRest" />
 
-      <AppShell>
+      <AppShell contentClassName={isEmpty ? "bg-[#f6f6f6]" : ""}>
         <div
-          className={`min-h-full ${
+          className={`flex min-h-full flex-col ${
             items.length === 0 ? "bg-[#f6f6f6]" : "bg-white"
           }`}
         >
           <TabPageHeader title="Favourites" subtitle="Dishes you've saved for later" />
 
-          {items.length === 0 ? (
+          {isEmpty ? (
             <EmptyState
               imageSrc="/emptyplate.webp"
               imageAlt="Empty MANDI KING serving plate"

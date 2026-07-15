@@ -12,7 +12,17 @@ test("extends the branded empty-state background to the bottom navigation", asyn
   assert.match(emptyState, /imageSrc \? "flex-1 self-stretch bg-\[#f6f6f6\]"/);
   assert.match(favorites, /items\.length === 0 \? "bg-\[#f6f6f6\]" : "bg-white"/);
   assert.match(
+    favorites,
+    /<AppShell contentClassName={isEmpty \? "bg-\[#f6f6f6\]" : ""}>/
+  );
+  assert.match(favorites, /className={`flex min-h-full flex-col/);
+  assert.match(
     orders,
     /!isLoadingOrders && orders\.length === 0 \? "bg-\[#f6f6f6\]" : "bg-white"/
   );
+  assert.match(
+    orders,
+    /<AppShell contentClassName={isEmpty \? "bg-\[#f6f6f6\]" : ""}>/
+  );
+  assert.match(orders, /className={`flex min-h-full flex-col/);
 });

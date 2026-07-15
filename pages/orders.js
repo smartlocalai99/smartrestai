@@ -11,6 +11,7 @@ export default function Orders() {
   const { isReady } = useRequireAuth();
   const { user } = useAuth();
   const { orders, isLoadingOrders, ordersError, refreshOrders } = useOrders();
+  const isEmpty = !isLoadingOrders && orders.length === 0;
 
   if (!isReady) return null;
 
@@ -18,9 +19,9 @@ export default function Orders() {
     <>
       <PageHead title="Your Orders - SmartRest" />
 
-      <AppShell>
+      <AppShell contentClassName={isEmpty ? "bg-[#f6f6f6]" : ""}>
         <div
-          className={`min-h-full ${
+          className={`flex min-h-full flex-col ${
             !isLoadingOrders && orders.length === 0 ? "bg-[#f6f6f6]" : "bg-white"
           }`}
         >
@@ -43,7 +44,7 @@ export default function Orders() {
             <div className="grid min-h-48 place-items-center">
               <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#128647]/25 border-t-[#128647]" />
             </div>
-          ) : orders.length === 0 ? (
+          ) : isEmpty ? (
             <EmptyState
               imageSrc="/emptyplate.webp"
               imageAlt="Empty MANDI KING serving plate"
