@@ -19,7 +19,7 @@ export default function EmptyState({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
       className={`flex min-h-[430px] flex-col items-center justify-center px-7 py-10 text-center ${
-        imageSrc ? "bg-[#f6f6f6]" : ""
+        imageSrc ? "flex-1 self-stretch bg-[#f6f6f6]" : ""
       }`}
     >
       {imageSrc ? (

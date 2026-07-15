@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+test("extends the branded empty-state background to the bottom navigation", async () => {
+  const [emptyState, favorites, orders] = await Promise.all([
+    readFile(new URL("../components/customer/EmptyState.jsx", import.meta.url), "utf8"),
+    readFile(new URL("../pages/favorites.js", import.meta.url), "utf8"),
+    readFile(new URL("../pages/orders.js", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(emptyState, /imageSrc \? "flex-1 self-stretch bg-\[#f6f6f6\]"/);
+  assert.match(favorites, /items\.length === 0 \? "bg-\[#f6f6f6\]" : "bg-white"/);
+  assert.match(
+    orders,
+    /!isLoadingOrders && orders\.length === 0 \? "bg-\[#f6f6f6\]" : "bg-white"/
+  );
+});

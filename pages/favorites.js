@@ -19,7 +19,11 @@ export default function Favorites() {
       <PageHead title="Favourites - SmartRest" />
 
       <AppShell>
-        <div className="min-h-full bg-white">
+        <div
+          className={`min-h-full ${
+            items.length === 0 ? "bg-[#f6f6f6]" : "bg-white"
+          }`}
+        >
           <TabPageHeader title="Favourites" subtitle="Dishes you've saved for later" />
 
           {items.length === 0 ? (

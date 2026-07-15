@@ -19,7 +19,11 @@ export default function Orders() {
       <PageHead title="Your Orders - SmartRest" />
 
       <AppShell>
-        <div className="min-h-full bg-white">
+        <div
+          className={`min-h-full ${
+            !isLoadingOrders && orders.length === 0 ? "bg-[#f6f6f6]" : "bg-white"
+          }`}
+        >
           <TabPageHeader title="Orders" subtitle="Track your current and past orders" />
 
           {ordersError ? (
