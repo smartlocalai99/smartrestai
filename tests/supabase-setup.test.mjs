@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import test from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
@@ -33,4 +33,21 @@ test("declares the Supabase client and customer schema", async () => {
     /grant select, insert, update, delete on table public\.customer_orders to anon, authenticated, service_role/
   );
   assert.match(migration, /Development-only public client access/);
+});
+
+test("hardens the shared timestamp trigger function", async () => {
+  const migrationsDirectory = new URL("../supabase/migrations/", import.meta.url);
+  const migrationFiles = await readdir(migrationsDirectory);
+  const migrations = await Promise.all(
+    migrationFiles
+      .filter((file) => file.endsWith(".sql"))
+      .map((file) => readFile(new URL(file, migrationsDirectory), "utf8"))
+  );
+  const sql = migrations.join("\n");
+
+  assert.match(sql, /alter function public\.set_updated_at\(\) set search_path = ''/);
+  assert.match(
+    sql,
+    /revoke execute on function public\.set_updated_at\(\) from public, anon, authenticated/
+  );
 });
