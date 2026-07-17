@@ -525,6 +525,7 @@ export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecre
           alt=""
           aria-hidden="true"
           fill
+          quality={65}
           sizes="(max-width: 640px) 50vw, 220px"
           className="object-cover"
         />

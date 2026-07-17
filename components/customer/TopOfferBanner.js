@@ -246,6 +246,7 @@ export default function TopOfferBanner() {
         alt="Mini mandi special offer"
         width={550}
         height={550}
+        quality={75}
         priority
         className="absolute left-[218px] top-[108px] w-[275px] max-w-none rotate-1 object-contain drop-shadow-2xl"
       />
