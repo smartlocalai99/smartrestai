@@ -11,21 +11,41 @@ import {
   IoWalletOutline,
 } from "react-icons/io5";
 import AppShell from "@/components/customer/AppShell";
+import EmptyState from "@/components/customer/EmptyState";
 import PageHead from "@/components/customer/PageHead";
 import TabPageHeader from "@/components/customer/TabPageHeader";
 import { useAddresses } from "@/context/AddressContext";
 import { useAuth } from "@/context/AuthContext";
 import { usePayment } from "@/context/PaymentContext";
-import useRequireAuth from "@/hooks/useRequireAuth";
 
 export default function Account() {
-  const { isReady } = useRequireAuth();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoggedIn, isHydrated } = useAuth();
   const { defaultAddress } = useAddresses();
   const { method } = usePayment();
   const router = useRouter();
 
-  if (!isReady) return null;
+  if (!isHydrated) return null;
+
+  if (!isLoggedIn) {
+    return (
+      <>
+        <PageHead title="Account - SmartRest" />
+        <AppShell contentClassName="bg-[#f6f6f6]">
+          <div className="flex min-h-full flex-col bg-[#f6f6f6]">
+            <TabPageHeader title="Account" subtitle="Manage your settings" />
+            <EmptyState
+              imageSrc="/emptyplate.webp"
+              imageAlt="Empty serving plate"
+              title="You haven't logged in"
+              message="Please log in to manage your account."
+              ctaLabel="Log in with Mobile Number"
+              ctaHref={`/login?redirect=${encodeURIComponent(router.asPath)}`}
+            />
+          </div>
+        </AppShell>
+      </>
+    );
+  }
 
   const rows = [
     {

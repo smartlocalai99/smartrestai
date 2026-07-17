@@ -12,9 +12,9 @@ import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { label: "Home", href: "/", icon: IoHome, protected: false },
-  { label: "Fav", href: "/favorites", icon: IoHeartOutline, protected: true },
-  { label: "Orders", href: "/orders", icon: IoReceiptOutline, protected: true },
-  { label: "Account", href: "/account", icon: IoPersonOutline, protected: true },
+  { label: "Fav", href: "/favorites", icon: IoHeartOutline, protected: false },
+  { label: "Orders", href: "/orders", icon: IoReceiptOutline, protected: false },
+  { label: "Account", href: "/account", icon: IoPersonOutline, protected: false },
 ];
 
 function CheckoutButton({ summary, onClick }) {

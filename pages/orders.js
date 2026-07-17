@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import AppShell from "@/components/customer/AppShell";
 import EmptyState from "@/components/customer/EmptyState";
 import OrderTrackingExperience from "@/components/customer/OrderTrackingExperience";
@@ -5,15 +6,35 @@ import PageHead from "@/components/customer/PageHead";
 import TabPageHeader from "@/components/customer/TabPageHeader";
 import { useAuth } from "@/context/AuthContext";
 import { useOrders } from "@/context/OrdersContext";
-import useRequireAuth from "@/hooks/useRequireAuth";
 
 export default function Orders() {
-  const { isReady } = useRequireAuth();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, isLoggedIn, isHydrated } = useAuth();
   const { orders, isLoadingOrders, ordersError, refreshOrders } = useOrders();
   const isEmpty = !isLoadingOrders && orders.length === 0;
 
-  if (!isReady) return null;
+  if (!isHydrated) return null;
+
+  if (!isLoggedIn) {
+    return (
+      <>
+        <PageHead title="Your Orders - SmartRest" />
+        <AppShell contentClassName="bg-[#f6f6f6]">
+          <div className="flex min-h-full flex-col bg-[#f6f6f6]">
+            <TabPageHeader title="Orders" subtitle="Track your current and past orders" />
+            <EmptyState
+              imageSrc="/emptyplate.webp"
+              imageAlt="Empty serving plate"
+              title="You haven't logged in"
+              message="Please log in to view your orders."
+              ctaLabel="Log in with Mobile Number"
+              ctaHref={`/login?redirect=${encodeURIComponent(router.asPath)}`}
+            />
+          </div>
+        </AppShell>
+      </>
+    );
+  }
 
   return (
     <>
