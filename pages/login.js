@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import { AnimatePresence, motion, useAnimation } from "motion/react";
-import { IoArrowBack, IoCallOutline, IoCheckmark, IoShieldCheckmark } from "react-icons/io5";
+import { IoArrowBack } from "react-icons/io5";
 import { useAuth } from "@/context/AuthContext";
 import PageHead from "@/components/customer/PageHead";
 import { safeRedirect } from "@/lib/safeRedirect";
@@ -20,24 +21,29 @@ function PhoneStep({ phone, onChange, onSubmit, isSending }) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -24 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
+      className="flex flex-col h-full items-center px-6 pt-12"
       onSubmit={(event) => {
         event.preventDefault();
         if (isValid) onSubmit();
       }}
     >
-      <h1 className="text-[28px] font-black leading-[1.05] text-white">
-        What&apos;s your
-        <br />
-        mobile number?
-      </h1>
-      <p className="mt-3 text-[14px] font-semibold leading-5 text-white/60">
-        We&apos;ll text you a one-time code to verify it&apos;s you.
-      </p>
+      <div className="relative w-full max-w-[280px] h-[220px]">
+        <Image src="/bannerlogin.png" alt="Welcome Foodie" fill className="object-contain" priority />
+      </div>
 
-      <div className="mt-8 flex h-14 items-center gap-3 rounded-2xl bg-white/10 px-4 ring-1 ring-white/15 focus-within:ring-2 focus-within:ring-[#f4c45f]">
-        <IoCallOutline className="h-5 w-5 shrink-0 text-white/50" />
-        <span className="text-[16px] font-black text-white/80">+91</span>
-        <span className="h-6 w-px bg-white/15" />
+      <div className="text-center mt-6">
+        <h1 className="text-[28px] font-black text-[#222222]">
+          Fuel your <span className="text-[#de4d4b]">Cravings!</span>
+        </h1>
+        <p className="mt-2 text-[13px] font-medium text-gray-400 max-w-[260px] mx-auto leading-relaxed">
+          Please enter your valid mobile number to get verified
+        </p>
+      </div>
+
+      <div className="mt-8 flex h-14 w-full max-w-md items-center gap-3 rounded-[12px] bg-[#f2f2f2] px-4 border border-transparent focus-within:border-[#de4d4b]/30 focus-within:bg-white transition-colors duration-200">
+        <span className="text-[18px]">🇮🇳</span>
+        <span className="text-[15px] font-black text-gray-700">+91</span>
+        <span className="h-6 w-px bg-gray-300" />
         <input
           type="tel"
           inputMode="numeric"
@@ -51,9 +57,9 @@ function PhoneStep({ phone, onChange, onSubmit, isSending }) {
               onSubmit();
             }
           }}
-          placeholder="98765 43210"
+          placeholder="9866531011"
           aria-label="Mobile number"
-          className="min-w-0 flex-1 bg-transparent text-[16px] font-bold tracking-wide text-white outline-none placeholder:text-white/30"
+          className="min-w-0 flex-1 bg-transparent text-[16px] font-bold tracking-wide text-gray-800 outline-none placeholder:text-gray-400"
         />
       </div>
 
@@ -61,30 +67,22 @@ function PhoneStep({ phone, onChange, onSubmit, isSending }) {
         type="submit"
         disabled={!isValid || isSending}
         whileTap={isValid ? { scale: 0.97 } : undefined}
-        className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#32120d] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(50,18,13,0.35)] transition-opacity duration-150 disabled:opacity-35"
+        className="mt-6 flex h-[54px] w-full max-w-md items-center justify-center gap-2 rounded-[24px] bg-[#de4d4b] text-[16px] font-bold text-white shadow-md transition-opacity duration-150 disabled:opacity-50"
       >
         {isSending ? (
-          <>
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-            Sending OTP…
-          </>
+          <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
         ) : (
-          "Send OTP"
+          "Login"
         )}
       </motion.button>
-
-      <p className="mt-5 text-center text-[11px] font-semibold leading-4 text-white/35">
-        By continuing you agree to our Terms of Service and Privacy Policy.
-      </p>
     </motion.form>
   );
 }
 
-function OtpStep({ phone, onBack, onVerified }) {
+function OtpStep({ phone, onVerified, onBack }) {
   const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
   const inputRefs = useRef([]);
   const shakeControls = useAnimation();
@@ -108,12 +106,11 @@ function OtpStep({ phone, onBack, onVerified }) {
       if (candidate === VALID_OTP) {
         try {
           await onVerified();
-          setIsVerified(true);
         } catch (verificationError) {
           setIsVerifying(false);
           setError(
             verificationError?.message ||
-              "Unable to connect your account. Please try again."
+            "Unable to connect your account. Please try again."
           );
         }
       } else {
@@ -173,121 +170,84 @@ function OtpStep({ phone, onBack, onVerified }) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -24 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
+      className="flex flex-col h-full items-center px-6 pt-12"
     >
-      <AnimatePresence mode="wait">
-        {isVerified ? (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center py-6 text-center"
-          >
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 400, damping: 18 }}
-              className="grid h-20 w-20 place-items-center rounded-full bg-[#32120d]"
-            >
-              <motion.svg viewBox="0 0 24 24" className="h-10 w-10" fill="none">
-                <motion.path
-                  d="M5 13l4 4L19 7"
-                  stroke="white"
-                  strokeWidth={2.5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                />
-              </motion.svg>
-            </motion.span>
-            <p className="mt-5 text-[20px] font-black text-white">You&apos;re in!</p>
-            <p className="mt-1 text-[13px] font-semibold text-white/55">Taking you back now…</p>
-          </motion.div>
+      <div className="relative w-full max-w-[280px] h-[220px]">
+        <Image src="/bannerlogin.png" alt="Verification" fill className="object-contain" priority />
+      </div>
+
+      <div className="text-center mt-6">
+        <h1 className="text-[28px] font-black text-[#222222]">Verification</h1>
+        <p className="mt-2 text-[13px] font-medium text-gray-400 max-w-[280px] mx-auto leading-relaxed">
+          We just sent you an SMS With 6 digit verification code on your number
+        </p>
+      </div>
+
+      <motion.div
+        animate={shakeControls}
+        onPaste={handlePaste}
+        className="mt-8 flex justify-between gap-2 w-full max-w-[320px]"
+      >
+        {digits.map((digit, index) => (
+          <input
+            key={index}
+            ref={(el) => {
+              inputRefs.current[index] = el;
+            }}
+            type="text"
+            inputMode="numeric"
+            maxLength={1}
+            value={digit}
+            disabled={isVerifying}
+            onChange={(event) => setDigitAt(index, event.target.value)}
+            onKeyDown={(event) => handleKeyDown(index, event)}
+            aria-label={`Digit ${index + 1}`}
+            className={`h-14 w-12 rounded-[12px] border-2 text-center text-[18px] font-bold text-gray-800 outline-none transition-colors duration-150 ${error
+              ? "border-[#ef4f61] bg-white"
+              : digit
+                ? "border-[#de4d4b] bg-white"
+                : "border-gray-100 bg-[#f8f8f8] focus:bg-white focus:border-[#de4d4b]"
+              }`}
+          />
+        ))}
+      </motion.div>
+
+      <div className="mt-3 min-h-[20px] text-center">
+        {error ? (
+          <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-[12px] font-bold text-[#ef4f61]">
+            {error}
+          </motion.p>
+        ) : null}
+      </div>
+
+      <motion.button
+        type="button"
+        disabled={code.length !== OTP_LENGTH || isVerifying}
+        onClick={() => attemptVerify(code)}
+        whileTap={code.length === OTP_LENGTH ? { scale: 0.97 } : undefined}
+        className="mt-2 flex h-[54px] w-full max-w-md items-center justify-center gap-2 rounded-[24px] bg-[#de4d4b] text-[16px] font-bold text-white shadow-md transition-opacity duration-150 disabled:opacity-50"
+      >
+        {isVerifying ? (
+          <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
         ) : (
-          <motion.div key="form" exit={{ opacity: 0 }}>
-            <button
-              type="button"
-              onClick={onBack}
-              className="mb-5 inline-flex items-center gap-1 text-[13px] font-bold text-white/50"
-            >
-              <IoArrowBack className="h-4 w-4" />
-              Change number
-            </button>
-
-            <h1 className="text-[26px] font-black leading-[1.1] text-white">Enter the code</h1>
-            <p className="mt-2 text-[14px] font-semibold leading-5 text-white/60">
-              We sent a {OTP_LENGTH}-digit code to{" "}
-              <span className="text-white">+91 {phone}</span>
-            </p>
-
-            <motion.div
-              animate={shakeControls}
-              onPaste={handlePaste}
-              className="mt-8 flex justify-between gap-3"
-            >
-              {digits.map((digit, index) => (
-                <input
-                  key={index}
-                  ref={(el) => {
-                    inputRefs.current[index] = el;
-                  }}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  disabled={isVerifying}
-                  onChange={(event) => setDigitAt(index, event.target.value)}
-                  onKeyDown={(event) => handleKeyDown(index, event)}
-                  aria-label={`Digit ${index + 1}`}
-                  className={`h-16 w-16 rounded-2xl border-2 bg-white/10 text-center text-[24px] font-black text-white outline-none transition-colors duration-150 ${
-                    error ? "border-[#ef4f61]" : "border-white/15 focus:border-[#f4c45f]"
-                  }`}
-                />
-              ))}
-            </motion.div>
-
-            <div className="mt-4 min-h-[20px] text-center">
-              {error ? (
-                <motion.p
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-[12px] font-bold text-[#ef4f61]"
-                >
-                  {error}
-                </motion.p>
-              ) : null}
-            </div>
-
-            <button
-              type="button"
-              disabled={code.length !== OTP_LENGTH || isVerifying}
-              onClick={() => attemptVerify(code)}
-              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#32120d] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(50,18,13,0.35)] transition-opacity duration-150 disabled:opacity-35"
-            >
-              {isVerifying ? (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-              ) : (
-                "Verify & Continue"
-              )}
-            </button>
-
-            <div className="mt-6 text-center text-[13px] font-semibold text-white/45">
-              {secondsLeft > 0 ? (
-                <span>Resend code in 0:{String(secondsLeft).padStart(2, "0")}</span>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setSecondsLeft(RESEND_SECONDS)}
-                  className="font-black text-[#f4c45f]"
-                >
-                  Resend OTP
-                </button>
-              )}
-            </div>
-          </motion.div>
+          "Verify"
         )}
-      </AnimatePresence>
+      </motion.button>
+
+      <div className="mt-5 flex flex-col gap-4 text-center text-[13px] font-semibold text-gray-400">
+        <div>
+          {secondsLeft > 0 ? (
+            <span>Resend code in 0:{String(secondsLeft).padStart(2, "0")}</span>
+          ) : (
+            <button type="button" onClick={() => setSecondsLeft(RESEND_SECONDS)} className="font-bold text-[#de4d4b]">
+              Resend OTP
+            </button>
+          )}
+        </div>
+        <button type="button" onClick={onBack} className="font-bold text-gray-500 underline decoration-gray-300 underline-offset-4 hover:text-gray-700 transition-colors">
+          Change mobile number
+        </button>
+      </div>
     </motion.div>
   );
 }
@@ -324,31 +284,32 @@ export default function Login() {
     setTimeout(() => router.replace(redirectTarget), 700);
   };
 
+  const handleBack = () => {
+    if (step === "otp") {
+      setStep("phone");
+    } else {
+      router.back();
+    }
+  };
+
   return (
     <>
       <PageHead title="Log in - SmartRest" />
 
-      <main className="h-full w-full overflow-hidden bg-[#1c0f0a]">
-        <section className="relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-hidden bg-[#32120d]">
-          <div className="pointer-events-none absolute -right-20 -top-16 h-72 w-72 rounded-full bg-[#8f2f1d]/30 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-[#f4c45f]/10 blur-3xl" />
-
-          <div className="relative z-10 flex items-center gap-3 px-5 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+      <main className="h-full w-full overflow-hidden bg-white">
+        <section className="relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-hidden bg-white">
+          <div className="absolute top-0 left-0 z-20 flex items-center px-5 pt-[calc(1.5rem+env(safe-area-inset-top))]">
             <button
               type="button"
               aria-label="Go back"
-              onClick={() => router.back()}
-              className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white"
+              onClick={handleBack}
+              className="grid h-10 w-10 place-items-center rounded-full bg-gray-100 text-gray-800 transition-colors hover:bg-gray-200"
             >
               <IoArrowBack className="h-5 w-5" />
             </button>
-            <span className="inline-flex items-center gap-1.5 text-[12px] font-black uppercase tracking-[0.14em] text-white/40">
-              <IoShieldCheckmark className="h-4 w-4" />
-              Secure login
-            </span>
           </div>
 
-          <div className="relative z-10 flex flex-1 flex-col justify-center px-6 pb-24">
+          <div className="relative z-10 flex flex-1 flex-col pb-8">
             <AnimatePresence mode="wait">
               {step === "phone" ? (
                 <PhoneStep
@@ -362,8 +323,8 @@ export default function Login() {
                 <OtpStep
                   key="otp-step"
                   phone={phone}
-                  onBack={() => setStep("phone")}
                   onVerified={handleVerified}
+                  onBack={() => setStep("phone")}
                 />
               )}
             </AnimatePresence>
