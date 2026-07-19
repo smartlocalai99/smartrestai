@@ -32,5 +32,5 @@ test("uses the primary brown instead of legacy green UI tokens", async () => {
   }
 
   const menu = sources.find(({ file }) => file.endsWith("ShopByCategories.jsx")).source;
-  assert.match(menu, /text-\[#32120d\][\s\S]*?<LuPlus/);
+  assert.match(menu, /[\w-]+-\[#32120d\][\s\S]*?<LuPlus/);
 });

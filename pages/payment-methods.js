@@ -3,14 +3,14 @@ import { IoCardOutline, IoCashOutline, IoCheckmarkCircle, IoPhonePortraitOutline
 import AppShell from "@/components/customer/AppShell";
 import PageHead from "@/components/customer/PageHead";
 import TabPageHeader from "@/components/customer/TabPageHeader";
-import { PAYMENT_METHODS, usePayment } from "@/context/PaymentContext";
+import { usePayment } from "@/context/PaymentContext";
 import useRequireAuth from "@/hooks/useRequireAuth";
 
 const ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline, card: IoCardOutline };
 
 export default function PaymentMethods() {
   const { isReady } = useRequireAuth();
-  const { methodId, setMethodId } = usePayment();
+  const { methodId, setMethodId, methods } = usePayment();
 
   if (!isReady) return null;
 
@@ -26,7 +26,7 @@ export default function PaymentMethods() {
           />
 
           <div className="space-y-3 px-4 pb-6 pt-2">
-            {PAYMENT_METHODS.map((method, index) => {
+            {methods.map((method, index) => {
               const Icon = ICONS[method.id];
               const isSelected = methodId === method.id;
 

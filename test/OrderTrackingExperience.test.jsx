@@ -11,9 +11,6 @@ vi.mock("next/image", () => ({
 vi.mock("@/components/customer/OrderTrackingMap", () => ({
   default: ({ destinationLabel }) => <div aria-label={`map to ${destinationLabel}`} />,
 }));
-vi.mock("@/components/customer/ShopByCategories", () => ({
-  imageForItem: () => "/dish.webp",
-}));
 
 const makeOrder = (id, placedAt, title, address) => ({
   id,

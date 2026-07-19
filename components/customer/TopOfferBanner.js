@@ -8,6 +8,8 @@ import {
   IoMicOutline,
   IoSearch,
 } from "react-icons/io5";
+import { useMenuData } from "@/context/MenuDataContext";
+import LazyImage from "./LazyImage";
 
 function VegModeToggle({ vegOnly, onChange }) {
   return (
@@ -136,14 +138,7 @@ function SearchBar({
             >
               <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#f4eee9]">
                 {suggestion.image ? (
-                  <Image
-                    src={suggestion.image}
-                    alt=""
-                    aria-hidden="true"
-                    fill
-                    sizes="44px"
-                    className="object-cover"
-                  />
+                  <LazyImage src={suggestion.image} alt="" aria-hidden="true" sizes="44px" className="object-cover" />
                 ) : null}
               </span>
               <span className="min-w-0">
@@ -162,41 +157,40 @@ function SearchBar({
   );
 }
 
-function OfferCopy() {
+function OfferCopy({ offer, onOrderNow }) {
   return (
     <div className="relative z-10 max-w-[250px]">
       <p className="text-[18px] font-extrabold uppercase tracking-[0.12em] text-[#f4c45f]">
-        Limited-time offer
+        {offer.subtitle || "Limited-time offer"}
       </p>
 
-      <h1 className="mt-2 text-[35px] font-black leading-[0.95] tracking-tight text-white">
-        Get Your
-        <br />
-        Mini Mandi
+      <h1 className="mt-2 text-[28px] font-black leading-[1.05] tracking-tight text-white">
+        {offer.title}
       </h1>
 
-      <div className="mt-4 flex w-[240px] items-end">
-        <span className="pb-1 text-[21px] font-extrabold text-white/55 line-through decoration-[#ff8a70] decoration-[3px]">
-          ₹129
-        </span>
+      {offer.salePrice != null ? (
+        <div className="mt-4 flex items-end gap-2">
+          {offer.strikePrice != null ? (
+            <span className="pb-1 text-[21px] font-extrabold text-white/55 line-through decoration-[#ff8a70] decoration-[3px]">
+              ₹{offer.strikePrice}
+            </span>
+          ) : null}
 
-        <span
-          className=" font-serif text-[50px] font-black italic leading-none tracking-[-0.03em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
-          style={{
-            WebkitTextStroke: "1.5px #fff4d1",
-            paintOrder: "stroke fill",
-          }}
-        >
-          ₹99
-        </span>
-      </div>
-
-      <p className="mt-4 max-w-[225px] text-[15px] font-bold leading-5 text-white/85">
-        A delicious mini mandi meal packed with flavour at a special price.
-      </p>
+          <span
+            className="font-serif text-[42px] font-black italic leading-none tracking-[-0.03em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
+            style={{
+              WebkitTextStroke: "1.5px #fff4d1",
+              paintOrder: "stroke fill",
+            }}
+          >
+            ₹{offer.salePrice}
+          </span>
+        </div>
+      ) : null}
 
       <button
         type="button"
+        onClick={onOrderNow}
         className="mt-5 flex h-10 items-center gap-2 rounded-full bg-[#f4c45f] px-5 text-sm font-black text-[#3a160f] shadow-xl shadow-black/20 transition-transform duration-200 active:scale-95"
       >
         Order Now
@@ -237,21 +231,46 @@ export function HomeSearchBar({
 }
 
 export default function TopOfferBanner() {
+  const { offers } = useMenuData();
+  const offer = offers[0];
+
+  const scrollToMenu = () => {
+    document.getElementById("menu-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  if (!offer) return null;
+
   return (
-    <section className="relative min-h-[355px] shrink-0 overflow-hidden bg-[#32120d] px-5 pb-8 text-white">
+    <section className="relative min-h-[220px] shrink-0 overflow-hidden bg-[#32120d] px-5 py-7 text-white">
       <div className="pointer-events-none absolute -right-24 top-8 h-[310px] w-[310px] rounded-full bg-[#8f2f1d]/35 blur-3xl" />
 
-      <Image
-        src="/mandi99.png"
-        alt="Mini mandi special offer"
-        width={550}
-        height={550}
-        quality={75}
-        priority
-        className="absolute left-[218px] top-[108px] w-[275px] max-w-none rotate-1 object-contain drop-shadow-2xl"
-      />
+      <div className="relative z-10 flex items-center gap-4">
+        <OfferCopy offer={offer} onOrderNow={scrollToMenu} />
 
-      <OfferCopy />
+        {offer.imageUrl ? (
+          <div className="relative h-[150px] w-[130px] shrink-0 overflow-hidden rounded-3xl bg-white/10 shadow-2xl">
+            <LazyImage
+              src={offer.imageUrl}
+              alt=""
+              sizes="130px"
+              quality={75}
+              priority
+              skeletonClassName="bg-white/10"
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <Image
+            src="/mandi99.png"
+            alt=""
+            width={180}
+            height={180}
+            quality={75}
+            priority
+            className="w-[150px] shrink-0 rotate-1 object-contain drop-shadow-2xl"
+          />
+        )}
+      </div>
     </section>
   );
 }

@@ -10,14 +10,16 @@ import TopOfferBanner, {
   HomeLocationBar,
   HomeSearchBar,
 } from "@/components/customer/TopOfferBanner";
+import { useMenuData } from "@/context/MenuDataContext";
 
 export default function Home() {
+  const { sections } = useMenuData();
   const [vegOnly, setVegOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const searchSuggestions = useMemo(
-    () => getMenuSearchSuggestions(searchQuery, vegOnly),
-    [searchQuery, vegOnly]
+    () => getMenuSearchSuggestions(sections, searchQuery, vegOnly),
+    [sections, searchQuery, vegOnly]
   );
 
   return (
@@ -35,7 +37,7 @@ export default function Home() {
           searchSuggestions={searchSuggestions}
         />
         <TopOfferBanner />
-        <div className="bg-white">
+        <div id="menu-section" className="bg-white">
           <MenuCategories />
           <ShopByCategories vegOnly={vegOnly} searchQuery={searchQuery} />
           <RestaurantInfo />

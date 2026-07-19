@@ -51,6 +51,23 @@ test("maps address fields in both directions", () => {
     landmark: "SBI",
     phone: "9876543210",
     isDefault: true,
+    lat: 14.47924,
+    lng: 78.82171,
+  };
+
+  assert.deepEqual(addressFromRow(addressToRow("9999999999", address)), address);
+});
+
+test("defaults address coordinates to null when not captured", () => {
+  const address = {
+    id: "31dbdd40-ff08-4593-8658-69ea85aa612e",
+    label: "Home",
+    line: "Trunk Rd",
+    landmark: "SBI",
+    phone: "9876543210",
+    isDefault: true,
+    lat: null,
+    lng: null,
   };
 
   assert.deepEqual(addressFromRow(addressToRow("9999999999", address)), address);

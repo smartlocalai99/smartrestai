@@ -28,7 +28,7 @@ const LABELS = [
   { id: "Other", icon: IoLocationOutline },
 ];
 
-const emptyForm = { label: "Home", line: "", landmark: "", phone: "" };
+const emptyForm = { label: "Home", line: "", landmark: "", phone: "", lat: null, lng: null };
 
 function LabelIcon({ label, className }) {
   const Icon = LABELS.find((l) => l.id === label)?.icon ?? IoLocationOutline;
@@ -47,7 +47,7 @@ function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
     try {
       const { lat, lon } = await getCurrentCoords();
       const { line, landmark } = await reverseGeocode(lat, lon);
-      setForm((f) => ({ ...f, line, landmark: landmark || f.landmark }));
+      setForm((f) => ({ ...f, line, landmark: landmark || f.landmark, lat, lng: lon }));
     } catch (error) {
       setLocateError(error.message || "Couldn't get your location. Enter it manually.");
     } finally {

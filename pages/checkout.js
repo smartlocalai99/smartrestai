@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -14,13 +13,15 @@ import {
 } from "react-icons/io5";
 import { LuMinus, LuPlus } from "react-icons/lu";
 import EmptyState from "@/components/customer/EmptyState";
+import LazyImage from "@/components/customer/LazyImage";
 import PageHead from "@/components/customer/PageHead";
-import { imageForItem } from "@/components/customer/ShopByCategories";
 import { useAddresses } from "@/context/AddressContext";
-import { DELIVERY_FEE, useCart } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext";
+import { useMenuData } from "@/context/MenuDataContext";
 import { useOrders } from "@/context/OrdersContext";
 import { usePayment } from "@/context/PaymentContext";
 import useRequireAuth from "@/hooks/useRequireAuth";
+import { calculateDeliveryFee } from "@/lib/deliveryFee.mjs";
 import { playOrderSuccessSound } from "@/lib/sounds";
 
 const PAYMENT_ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline, card: IoCardOutline };
@@ -30,7 +31,7 @@ const AVAILABLE_COUPONS = [
 ];
 
 function BasketRow({ entry, onIncrement, onDecrement, onRemove }) {
-  const { item, sectionTitle, quantity } = entry;
+  const { item, quantity } = entry;
 
   return (
     <motion.div
@@ -42,14 +43,7 @@ function BasketRow({ entry, onIncrement, onDecrement, onRemove }) {
       className="flex items-center gap-3 py-3"
     >
       <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-[#f4eee9]">
-        <Image
-          src={imageForItem(item, sectionTitle)}
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="64px"
-          className="object-cover"
-        />
+        <LazyImage src={item.imageUrl || "/emptyplate.webp"} alt="" aria-hidden="true" sizes="64px" className="object-cover" />
       </span>
 
       <div className="min-w-0 flex-1">
@@ -180,6 +174,7 @@ export default function Checkout() {
   const { placeOrder, ordersError } = useOrders();
   const { defaultAddress } = useAddresses();
   const { method } = usePayment();
+  const { profile } = useMenuData();
   const router = useRouter();
 
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -191,14 +186,23 @@ export default function Checkout() {
 
   const subtotal = checkoutSummary.totalAmount;
   const discount = appliedCoupon ? Math.round(subtotal * appliedCoupon.rate) : 0;
-  const deliveryFee = items.length > 0 ? DELIVERY_FEE : 0;
+  const deliveryFee =
+    items.length > 0 && profile ? calculateDeliveryFee(profile, subtotal, defaultAddress).fee : 0;
   const total = Math.max(subtotal - discount + deliveryFee, 0);
+
+  const isClosed = profile ? profile.busyMode || !profile.isOpen : false;
+  const closedReason = profile?.busyMode
+    ? "The restaurant is very busy right now and isn't accepting new orders."
+    : "The restaurant is currently closed.";
+  const isBelowMinOrder = Boolean(profile) && subtotal > 0 && subtotal < profile.minOrderAmount;
+  const canCheckout = Boolean(defaultAddress) && !isClosed && !isBelowMinOrder;
 
   const handleApplyCoupon = (coupon) => {
     setAppliedCoupon(coupon);
   };
 
   const handlePlaceOrder = async () => {
+    if (!canCheckout) return;
     setIsPlacing(true);
     setPlacementError("");
     try {
@@ -415,6 +419,17 @@ export default function Checkout() {
                     </div>
                   </section>
 
+                  {isClosed ? (
+                    <p className="mt-4 rounded-xl bg-[#fdf1ef] px-3 py-2 text-center text-[12px] font-bold text-[#c0402a]">
+                      {closedReason}
+                    </p>
+                  ) : isBelowMinOrder ? (
+                    <p className="mt-4 rounded-xl bg-[#fdf6ea] px-3 py-2 text-center text-[12px] font-bold text-[#8a5a10]">
+                      Minimum order amount is ₹{profile.minOrderAmount}. Add ₹
+                      {Math.ceil(profile.minOrderAmount - subtotal)} more to checkout.
+                    </p>
+                  ) : null}
+
                   {placementError || ordersError ? (
                     <p className="mt-4 rounded-xl bg-[#fdf1ef] px-3 py-2 text-center text-[12px] font-bold text-[#c0402a]">
                       {placementError || ordersError}
@@ -428,15 +443,19 @@ export default function Checkout() {
                         ? handlePlaceOrder
                         : () => router.push("/addresses?redirect=%2Fcheckout")
                     }
-                    disabled={isPlacing}
+                    disabled={isPlacing || (Boolean(defaultAddress) && !canCheckout)}
                     className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#32120d] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(50,18,13,0.32)] transition-transform duration-150 active:scale-[0.98] disabled:opacity-60"
                   >
                     {isPlacing ? (
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                    ) : defaultAddress ? (
-                      `Checkout · ₹${total}`
-                    ) : (
+                    ) : !defaultAddress ? (
                       "Add Delivery Address to Continue"
+                    ) : isClosed ? (
+                      "Restaurant unavailable"
+                    ) : isBelowMinOrder ? (
+                      "Below minimum order"
+                    ) : (
+                      `Checkout · ₹${total}`
                     )}
                   </button>
                 </motion.div>

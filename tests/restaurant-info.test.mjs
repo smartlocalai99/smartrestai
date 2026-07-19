@@ -5,7 +5,7 @@ import test from "node:test";
 const readSource = (path) =>
   readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("renders the approved Mandi King disclaimer and address", async () => {
+test("renders the approved disclaimer and the owner-managed restaurant profile", async () => {
   const source = await readSource("components/customer/RestaurantInfo.js");
 
   assert.match(source, /aria-label="Restaurant information"/);
@@ -23,13 +23,16 @@ test("renders the approved Mandi King disclaimer and address", async () => {
     source,
     /Dish details might be AI crafted for a better experience\./
   );
-  assert.match(source, /MANDI KING - Arabian Restaurant/);
-  assert.match(
-    source,
-    /Door No 1, Trunk Rd, near SBI Bank, beside 2nd Gandhi Statue,\s*Ganagapeta, Kadapa, Andhra Pradesh 516001/
-  );
+  // Name/address/hours come from the owner-managed restaurant profile, not
+  // hardcoded copy — see context/MenuDataContext.js.
+  assert.match(source, /useMenuData/);
+  assert.match(source, /\{profile\.name\}/);
+  assert.match(source, /\{profile\.addressLine\}/);
+  assert.match(source, /profile\.isOpen/);
+  assert.match(source, /profile\.busyMode/);
   assert.match(source, /<LuMapPin aria-hidden="true"/);
   assert.doesNotMatch(source, /Swiggy Seal|Report an issue|FSSAI|License No/);
+  assert.doesNotMatch(source, /MANDI KING - Arabian Restaurant/);
 });
 
 test("places the information panel after the menu and gives it final clearance", async () => {

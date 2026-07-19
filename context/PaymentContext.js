@@ -1,17 +1,26 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useMenuData } from "@/context/MenuDataContext";
 
 const PaymentContext = createContext(null);
 const STORAGE_KEY = "smartrest_payment_method";
 
-export const PAYMENT_METHODS = [
-  { id: "cod", label: "Cash on Delivery", note: "Pay with cash when your order arrives." },
-  { id: "upi", label: "UPI", note: "Pay via GPay, PhonePe, Paytm or any UPI app at checkout." },
-  { id: "card", label: "Credit / Debit Card", note: "Pay securely by card at checkout." },
-];
+const FALLBACK_METHODS = [{ id: "cod", label: "Cash on Delivery", enabled: true }];
+
+const NOTES = {
+  cod: "Pay with cash when your order arrives.",
+  upi: "Pay via GPay, PhonePe, Paytm or any UPI app at checkout.",
+  card: "Pay securely by card at checkout.",
+};
 
 export function PaymentProvider({ children }) {
+  const { profile } = useMenuData();
   const [methodId, setMethodId] = useState("cod");
   const [isHydrated, setIsHydrated] = useState(false);
+
+  const methods = useMemo(() => {
+    const list = profile?.paymentMethods?.length ? profile.paymentMethods : FALLBACK_METHODS;
+    return list.map((m) => ({ ...m, note: NOTES[m.id] ?? "" }));
+  }, [profile]);
 
   useEffect(() => {
     try {
@@ -32,14 +41,10 @@ export function PaymentProvider({ children }) {
     }
   }, [methodId, isHydrated]);
 
-  const value = useMemo(
-    () => ({
-      methodId,
-      setMethodId,
-      method: PAYMENT_METHODS.find((m) => m.id === methodId) ?? PAYMENT_METHODS[0],
-    }),
-    [methodId]
-  );
+  const value = useMemo(() => {
+    const method = methods.find((m) => m.id === methodId) ?? methods[0];
+    return { methodId, setMethodId, method, methods };
+  }, [methodId, methods]);
 
   return <PaymentContext.Provider value={value}>{children}</PaymentContext.Provider>;
 }

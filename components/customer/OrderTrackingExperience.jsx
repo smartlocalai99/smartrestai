@@ -1,7 +1,6 @@
-import Image from "next/image";
 import { IoBicycleOutline, IoLocationSharp, IoTimeOutline } from "react-icons/io5";
+import LazyImage from "@/components/customer/LazyImage";
 import OrderTrackingMap from "@/components/customer/OrderTrackingMap";
-import { imageForItem } from "@/components/customer/ShopByCategories";
 import {
   createOrderView,
   formatRupees,
@@ -32,13 +31,7 @@ function PreviousOrderCard({ order, accountPhone }) {
               key={row.key}
               className="relative h-11 w-11 overflow-hidden rounded-full border-2 border-white bg-[#f4eee9]"
             >
-              <Image
-                src={imageForItem(row.item, row.sectionTitle)}
-                alt=""
-                fill
-                sizes="44px"
-                className="object-cover"
-              />
+              <LazyImage src={row.item.imageUrl || "/emptyplate.webp"} alt="" sizes="44px" className="object-cover" />
             </span>
           ))}
         </div>

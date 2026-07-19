@@ -2,10 +2,12 @@ import { AddressProvider } from "@/context/AddressContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
+import { MenuDataProvider } from "@/context/MenuDataContext";
 import { OrdersProvider } from "@/context/OrdersContext";
 import { PaymentProvider } from "@/context/PaymentContext";
 
 const providers = [
+  MenuDataProvider,
   AuthProvider,
   CartProvider,
   FavoritesProvider,

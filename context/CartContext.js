@@ -3,8 +3,6 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 const CartContext = createContext(null);
 const STORAGE_KEY = "smartrest_cart";
 
-export const DELIVERY_FEE = 40;
-
 export function CartProvider({ children }) {
   const [cart, setCart] = useState({});
   const [isHydrated, setIsHydrated] = useState(false);
