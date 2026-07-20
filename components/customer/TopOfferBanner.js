@@ -225,7 +225,7 @@ export default function TopOfferBanner() {
   if (offers.length === 0) return null;
 
   return (
-    <section className="relative shrink-0 overflow-hidden bg-[#32120d]">
+    <section className="relative shrink-0 overflow-hidden">
       <div
         ref={trackRef}
         onScroll={handleScroll}
@@ -237,12 +237,12 @@ export default function TopOfferBanner() {
       </div>
 
       {offers.length > 1 ? (
-        <div className="flex items-center justify-center gap-1.5 py-2.5">
+        <div className="pointer-events-none absolute inset-x-0 bottom-2.5 flex items-center justify-center gap-1.5">
           {offers.map((offer, index) => (
             <span
               key={offer.id}
-              className={`h-1.5 rounded-full transition-all duration-200 ${
-                index === activeIndex ? "w-5 bg-[#f4c45f]" : "w-1.5 bg-white/25"
+              className={`h-1.5 rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.5)] transition-all duration-200 ${
+                index === activeIndex ? "w-5 bg-white" : "w-1.5 bg-white/50"
               }`}
             />
           ))}
