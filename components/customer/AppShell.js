@@ -9,7 +9,7 @@ export default function AppShell({
   const { checkoutSummary } = useCart();
 
   return (
-    <main className="h-dvh w-full touch-manipulation overflow-hidden overscroll-none bg-[#32120d] p-0 text-[#211712] [-webkit-tap-highlight-color:transparent]">
+    <main className="fixed inset-0 touch-manipulation overflow-hidden overscroll-none bg-[#32120d] p-0 text-[#211712] [-webkit-tap-highlight-color:transparent]">
       <section className="relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-hidden bg-white">
         <div
           aria-hidden="true"
