@@ -12,6 +12,7 @@ import {
   LuHeart,
   LuMinus,
   LuPlus,
+  LuSearchX,
   LuSoup,
   LuUtensils,
   LuWheat,
@@ -618,9 +619,16 @@ export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
         ) : null}
 
         {!hasResults ? (
-          <div className="mt-8 rounded-2xl bg-[#f7f2ee] px-4 py-6 text-center">
-            <p className="text-lg font-black text-[#241610]">No dishes found</p>
-            <p className="mt-1 text-sm font-semibold text-[#7d7169]">Try a different search.</p>
+          <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl bg-[#f7f2ee] px-4 py-10 text-center">
+            <span className="grid h-14 w-14 place-items-center rounded-full bg-white text-[#a99a8c]">
+              <LuSearchX className="h-6 w-6" />
+            </span>
+            <div>
+              <p className="text-lg font-black text-[#241610]">Item not found</p>
+              <p className="mt-1 text-sm font-semibold text-[#7d7169]">
+                We couldn&apos;t find that on the menu. Try a different search.
+              </p>
+            </div>
           </div>
         ) : null}
 

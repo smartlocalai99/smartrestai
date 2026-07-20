@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AppShell from "@/components/customer/AppShell";
 import MenuCategories from "@/components/customer/MenuCategories";
 import PageHead from "@/components/customer/PageHead";
@@ -11,16 +11,31 @@ import TopOfferBanner, {
   HomeSearchBar,
 } from "@/components/customer/TopOfferBanner";
 import { useMenuData } from "@/context/MenuDataContext";
+import { getScrollParent } from "@/hooks/useInView";
 
 export default function Home() {
   const { sections } = useMenuData();
   const [vegOnly, setVegOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const topRef = useRef(null);
 
   const searchSuggestions = useMemo(
     () => getMenuSearchSuggestions(sections, searchQuery, vegOnly),
     [sections, searchQuery, vegOnly]
   );
+
+  // Results render at the top of the page. If the reader had already
+  // scrolled down before typing, a short results (or "not found") list
+  // can leave them stranded past the end of the now-short content —
+  // bring them back to where the results actually are.
+  const hadQuery = useRef(false);
+  useEffect(() => {
+    const hasQuery = searchQuery.trim().length > 0;
+    if (hasQuery && !hadQuery.current) {
+      getScrollParent(topRef.current)?.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    hadQuery.current = hasQuery;
+  }, [searchQuery]);
 
   return (
     <>
@@ -30,6 +45,7 @@ export default function Home() {
       />
 
       <AppShell contentClassName="bg-[#f5f5fa]">
+        <div ref={topRef} />
         <HomeLocationBar vegOnly={vegOnly} onVegModeChange={setVegOnly} />
         <HomeSearchBar
           searchQuery={searchQuery}

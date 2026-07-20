@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useRouter } from "next/router";
 import { motion } from "motion/react";
 import {
   IoArrowForward,
@@ -8,6 +8,7 @@ import {
   IoMicOutline,
   IoSearch,
 } from "react-icons/io5";
+import { useCart } from "@/context/CartContext";
 import { useMenuData } from "@/context/MenuDataContext";
 import LazyImage from "./LazyImage";
 
@@ -157,44 +158,65 @@ function SearchBar({
   );
 }
 
-function OfferCopy({ offer, onOrderNow }) {
+function OfferCard({ offer, onOrderNow }) {
   return (
-    <div className="relative z-10 max-w-[250px]">
-      <p className="text-[18px] font-extrabold uppercase tracking-[0.12em] text-[#f4c45f]">
-        {offer.subtitle || "Limited-time offer"}
-      </p>
+    <div className="relative flex min-h-[220px] w-full shrink-0 snap-center items-center gap-4 overflow-hidden rounded-[28px] bg-[#3a1712] px-5 py-7">
+      <div className="pointer-events-none absolute -right-24 top-8 h-[310px] w-[310px] rounded-full bg-[#8f2f1d]/35 blur-3xl" />
 
-      <h1 className="mt-2 text-[28px] font-black leading-[1.05] tracking-tight text-white">
-        {offer.title}
-      </h1>
+      <div className="relative z-10 max-w-[250px]">
+        <p className="text-[18px] font-extrabold uppercase tracking-[0.12em] text-[#f4c45f]">
+          {offer.subtitle || "Limited-time offer"}
+        </p>
 
-      {offer.salePrice != null ? (
-        <div className="mt-4 flex items-end gap-2">
-          {offer.strikePrice != null ? (
-            <span className="pb-1 text-[21px] font-extrabold text-white/55 line-through decoration-[#ff8a70] decoration-[3px]">
-              ₹{offer.strikePrice}
+        <h1 className="mt-2 text-[28px] font-black leading-[1.05] tracking-tight text-white">
+          {offer.title}
+        </h1>
+
+        {offer.salePrice != null ? (
+          <div className="mt-4 flex items-end gap-2">
+            {offer.strikePrice != null ? (
+              <span className="pb-1 text-[21px] font-extrabold text-white/55 line-through decoration-[#ff8a70] decoration-[3px]">
+                ₹{offer.strikePrice}
+              </span>
+            ) : null}
+
+            <span
+              className="font-serif text-[42px] font-black italic leading-none tracking-[-0.03em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
+              style={{
+                WebkitTextStroke: "1.5px #fff4d1",
+                paintOrder: "stroke fill",
+              }}
+            >
+              ₹{offer.salePrice}
             </span>
-          ) : null}
+          </div>
+        ) : null}
 
-          <span
-            className="font-serif text-[42px] font-black italic leading-none tracking-[-0.03em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
-            style={{
-              WebkitTextStroke: "1.5px #fff4d1",
-              paintOrder: "stroke fill",
-            }}
-          >
-            ₹{offer.salePrice}
-          </span>
-        </div>
-      ) : null}
+        <button
+          type="button"
+          onClick={() => onOrderNow(offer)}
+          className="mt-5 flex h-10 items-center gap-2 rounded-full bg-[#f4c45f] px-5 text-sm font-black text-[#3a160f] shadow-xl shadow-black/20 transition-transform duration-200 active:scale-95"
+        >
+          Order Now
+          <IoArrowForward className="h-5 w-5" />
+        </button>
+      </div>
 
       <button
         type="button"
-        onClick={onOrderNow}
-        className="mt-5 flex h-10 items-center gap-2 rounded-full bg-[#f4c45f] px-5 text-sm font-black text-[#3a160f] shadow-xl shadow-black/20 transition-transform duration-200 active:scale-95"
+        aria-label={`Order ${offer.title}`}
+        onClick={() => onOrderNow(offer)}
+        className="relative z-10 h-[150px] w-[130px] shrink-0 overflow-hidden rounded-3xl bg-white/10 shadow-2xl transition-transform duration-200 active:scale-95"
       >
-        Order Now
-        <IoArrowForward className="h-5 w-5" />
+        <LazyImage
+          src={offer.imageUrl || "/emptyplate.webp"}
+          alt=""
+          sizes="130px"
+          quality={75}
+          priority
+          skeletonClassName="bg-white/10"
+          className="object-cover"
+        />
       </button>
     </div>
   );
@@ -232,45 +254,49 @@ export function HomeSearchBar({
 
 export default function TopOfferBanner() {
   const { offers } = useMenuData();
-  const offer = offers[0];
+  const { applyOffer } = useCart();
+  const router = useRouter();
+  const trackRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  const scrollToMenu = () => {
-    document.getElementById("menu-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleOrderNow = (offer) => {
+    applyOffer(offer);
+    router.push("/checkout");
   };
 
-  if (!offer) return null;
+  const handleScroll = () => {
+    const track = trackRef.current;
+    if (!track || offers.length < 2) return;
+    const index = Math.round(track.scrollLeft / track.clientWidth);
+    setActiveIndex(Math.min(Math.max(index, 0), offers.length - 1));
+  };
+
+  if (offers.length === 0) return null;
 
   return (
-    <section className="relative min-h-[220px] shrink-0 overflow-hidden bg-[#32120d] px-5 py-7 text-white">
-      <div className="pointer-events-none absolute -right-24 top-8 h-[310px] w-[310px] rounded-full bg-[#8f2f1d]/35 blur-3xl" />
-
-      <div className="relative z-10 flex items-center gap-4">
-        <OfferCopy offer={offer} onOrderNow={scrollToMenu} />
-
-        {offer.imageUrl ? (
-          <div className="relative h-[150px] w-[130px] shrink-0 overflow-hidden rounded-3xl bg-white/10 shadow-2xl">
-            <LazyImage
-              src={offer.imageUrl}
-              alt=""
-              sizes="130px"
-              quality={75}
-              priority
-              skeletonClassName="bg-white/10"
-              className="object-cover"
-            />
-          </div>
-        ) : (
-          <Image
-            src="/mandi99.png"
-            alt=""
-            width={180}
-            height={180}
-            quality={75}
-            priority
-            className="w-[150px] shrink-0 rotate-1 object-contain drop-shadow-2xl"
-          />
-        )}
+    <section className="relative shrink-0 overflow-hidden bg-[#32120d] pb-3 pt-0 text-white">
+      <div
+        ref={trackRef}
+        onScroll={handleScroll}
+        className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {offers.map((offer) => (
+          <OfferCard key={offer.id} offer={offer} onOrderNow={handleOrderNow} />
+        ))}
       </div>
+
+      {offers.length > 1 ? (
+        <div className="mt-3 flex items-center justify-center gap-1.5">
+          {offers.map((offer, index) => (
+            <span
+              key={offer.id}
+              className={`h-1.5 rounded-full transition-all duration-200 ${
+                index === activeIndex ? "w-5 bg-[#f4c45f]" : "w-1.5 bg-white/25"
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

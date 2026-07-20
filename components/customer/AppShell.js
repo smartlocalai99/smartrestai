@@ -17,7 +17,12 @@ export default function AppShell({
           style={{ height: "env(safe-area-inset-top)" }}
         />
         <div
-          className={`min-h-0 flex-1 overflow-y-auto overscroll-contain pb-24 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${contentClassName}`}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-50 bg-[#32120d]"
+          style={{ height: "env(safe-area-inset-bottom)" }}
+        />
+        <div
+          className={`min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[calc(6rem+env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${contentClassName}`}
         >
           {children}
         </div>

@@ -2,15 +2,19 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const CartContext = createContext(null);
 const STORAGE_KEY = "smartrest_cart";
+const OFFER_STORAGE_KEY = "smartrest_applied_offer";
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState({});
+  const [appliedOffer, setAppliedOffer] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) setCart(JSON.parse(stored));
+      const storedOffer = window.localStorage.getItem(OFFER_STORAGE_KEY);
+      if (storedOffer) setAppliedOffer(JSON.parse(storedOffer));
     } catch {
       // ignore corrupt storage
     }
@@ -26,6 +30,19 @@ export function CartProvider({ children }) {
     }
   }, [cart, isHydrated]);
 
+  useEffect(() => {
+    if (!isHydrated) return;
+    try {
+      if (appliedOffer) {
+        window.localStorage.setItem(OFFER_STORAGE_KEY, JSON.stringify(appliedOffer));
+      } else {
+        window.localStorage.removeItem(OFFER_STORAGE_KEY);
+      }
+    } catch {
+      // ignore storage failures
+    }
+  }, [appliedOffer, isHydrated]);
+
   const changeQuantity = (item, nextQuantity, sectionTitle = "") => {
     setCart((current) => {
       const updated = { ...current };
@@ -38,7 +55,37 @@ export function CartProvider({ children }) {
     });
   };
 
-  const clearCart = () => setCart({});
+  const clearCart = () => {
+    setCart({});
+    setAppliedOffer(null);
+  };
+
+  const clearAppliedOffer = () => setAppliedOffer(null);
+
+  // Adds every item bundled in this offer to the cart (leaving quantities
+  // that are already higher untouched) and remembers the offer so checkout
+  // can price those items at the bundle price instead of their sum.
+  const applyOffer = (offer) => {
+    setCart((current) => {
+      const updated = { ...current };
+      for (const item of offer.items) {
+        const existingQuantity = updated[item.id]?.quantity ?? 0;
+        updated[item.id] = {
+          item,
+          quantity: Math.max(existingQuantity, 1),
+          sectionTitle: `Offer: ${offer.title}`,
+        };
+      }
+      return updated;
+    });
+    setAppliedOffer({
+      id: offer.id,
+      title: offer.title,
+      itemIds: offer.items.map((item) => item.id),
+      strikePrice: offer.strikePrice,
+      salePrice: offer.salePrice,
+    });
+  };
 
   const value = useMemo(() => {
     const items = Object.values(cart);
@@ -50,6 +97,14 @@ export function CartProvider({ children }) {
       { totalItems: 0, totalAmount: 0 }
     );
 
+    const isOfferValid = Boolean(
+      appliedOffer && appliedOffer.itemIds.every((id) => (cart[id]?.quantity ?? 0) > 0)
+    );
+    const offerDiscount =
+      isOfferValid && appliedOffer.strikePrice != null
+        ? Math.max(appliedOffer.strikePrice - appliedOffer.salePrice, 0)
+        : 0;
+
     return {
       cart,
       setCart,
@@ -57,8 +112,12 @@ export function CartProvider({ children }) {
       clearCart,
       items,
       checkoutSummary,
+      appliedOffer: isOfferValid ? appliedOffer : null,
+      offerDiscount,
+      applyOffer,
+      clearAppliedOffer,
     };
-  }, [cart]);
+  }, [cart, appliedOffer]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

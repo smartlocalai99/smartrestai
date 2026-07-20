@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-function getScrollParent(node) {
+export function getScrollParent(node) {
   let parent = node?.parentElement ?? null;
   while (parent) {
     const { overflowY } = getComputedStyle(parent);

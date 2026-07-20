@@ -6,6 +6,7 @@ import {
   IoCardOutline,
   IoCashOutline,
   IoChevronForward,
+  IoCloseCircle,
   IoLocationOutline,
   IoPhonePortraitOutline,
   IoPricetagOutline,
@@ -170,7 +171,8 @@ function SuccessScreen({ orderId, total, router }) {
 
 export default function Checkout() {
   const { isReady } = useRequireAuth();
-  const { items, changeQuantity, checkoutSummary, clearCart } = useCart();
+  const { items, changeQuantity, checkoutSummary, clearCart, appliedOffer, offerDiscount, clearAppliedOffer } =
+    useCart();
   const { placeOrder, ordersError } = useOrders();
   const { defaultAddress } = useAddresses();
   const { method } = usePayment();
@@ -185,7 +187,7 @@ export default function Checkout() {
   if (!isReady) return null;
 
   const subtotal = checkoutSummary.totalAmount;
-  const discount = appliedCoupon ? Math.round(subtotal * appliedCoupon.rate) : 0;
+  const discount = appliedOffer ? offerDiscount : appliedCoupon ? Math.round(subtotal * appliedCoupon.rate) : 0;
   const deliveryFee =
     items.length > 0 && profile ? calculateDeliveryFee(profile, subtotal, defaultAddress).fee : 0;
   const total = Math.max(subtotal - discount + deliveryFee, 0);
@@ -360,9 +362,34 @@ export default function Checkout() {
                   </section>
 
                   <section className="mt-5">
-                    <p className="text-[14px] font-black text-[#241610]">Discount Coupon</p>
-                    <div className="mt-2 space-y-2">
-                      {AVAILABLE_COUPONS.map((coupon) => {
+                    {appliedOffer ? (
+                      <div className="flex items-center gap-3 rounded-xl border border-[#32120d]/15 bg-[#f5ecea] p-3">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#32120d] text-white">
+                          <IoPricetagOutline className="h-4 w-4" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[13px] font-black text-[#241610]">
+                            Offer applied: {appliedOffer.title}
+                          </span>
+                          <span className="mt-0.5 block text-[11px] font-semibold text-[#8b8580]">
+                            You save ₹{offerDiscount} on these items
+                          </span>
+                        </span>
+                        <motion.button
+                          type="button"
+                          aria-label="Remove offer"
+                          onClick={clearAppliedOffer}
+                          whileTap={{ scale: 0.85 }}
+                          className="shrink-0 text-[#a99a8c]"
+                        >
+                          <IoCloseCircle className="h-5 w-5" />
+                        </motion.button>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-[14px] font-black text-[#241610]">Discount Coupon</p>
+                        <div className="mt-2 space-y-2">
+                          {AVAILABLE_COUPONS.map((coupon) => {
                         const isApplied = appliedCoupon?.code === coupon.code;
 
                         return (
@@ -395,7 +422,9 @@ export default function Checkout() {
                           </motion.button>
                         );
                       })}
-                    </div>
+                        </div>
+                      </>
+                    )}
                   </section>
 
                   <section className="mt-5 space-y-2 border-t border-[#f4eee9] pt-4">

@@ -19,7 +19,7 @@ const navItems = [
 
 function CheckoutButton({ summary, onClick }) {
   return (
-    <div className="absolute inset-x-4 bottom-0 z-40">
+    <div className="absolute inset-x-4 bottom-[env(safe-area-inset-bottom)] z-40">
       <button
         type="button"
         onClick={onClick}
@@ -75,7 +75,7 @@ export default function BottomNav({
   return (
     <nav
       aria-label="Primary navigation"
-      className="absolute inset-x-4 bottom-0 z-30 grid grid-cols-4 overflow-hidden rounded-[26px] border border-white/45 bg-white/[0.42] px-2 py-1.5 backdrop-blur-[42px] backdrop-saturate-150"
+      className="absolute inset-x-4 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 grid grid-cols-4 overflow-hidden rounded-[26px] border border-white/45 bg-white/[0.42] px-2 py-1.5 backdrop-blur-[42px] backdrop-saturate-150"
     >
       <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/70 via-white/35 to-white/15" />
       <span className="pointer-events-none absolute inset-x-5 top-1 h-7 rounded-full bg-white/60 blur-lg" />
