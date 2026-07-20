@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { motion } from "motion/react";
-import {
-  IoArrowForward,
-  IoChevronDown,
-  IoHome,
-  IoMicOutline,
-  IoSearch,
-} from "react-icons/io5";
+import { IoChevronDown, IoHome, IoMicOutline, IoSearch } from "react-icons/io5";
 import { useCart } from "@/context/CartContext";
 import { useMenuData } from "@/context/MenuDataContext";
 import LazyImage from "./LazyImage";
@@ -160,65 +154,22 @@ function SearchBar({
 
 function OfferCard({ offer, onOrderNow }) {
   return (
-    <div className="relative flex min-h-[220px] w-full shrink-0 snap-center items-center gap-4 overflow-hidden rounded-[28px] bg-[#3a1712] px-5 py-7">
-      <div className="pointer-events-none absolute -right-24 top-8 h-[310px] w-[310px] rounded-full bg-[#8f2f1d]/35 blur-3xl" />
-
-      <div className="relative z-10 max-w-[250px]">
-        <p className="text-[18px] font-extrabold uppercase tracking-[0.12em] text-[#f4c45f]">
-          {offer.subtitle || "Limited-time offer"}
-        </p>
-
-        <h1 className="mt-2 text-[28px] font-black leading-[1.05] tracking-tight text-white">
-          {offer.title}
-        </h1>
-
-        {offer.salePrice != null ? (
-          <div className="mt-4 flex items-end gap-2">
-            {offer.strikePrice != null ? (
-              <span className="pb-1 text-[21px] font-extrabold text-white/55 line-through decoration-[#ff8a70] decoration-[3px]">
-                ₹{offer.strikePrice}
-              </span>
-            ) : null}
-
-            <span
-              className="font-serif text-[42px] font-black italic leading-none tracking-[-0.03em] text-[#ffbd2e] drop-shadow-[0_5px_0_#8f2f1d]"
-              style={{
-                WebkitTextStroke: "1.5px #fff4d1",
-                paintOrder: "stroke fill",
-              }}
-            >
-              ₹{offer.salePrice}
-            </span>
-          </div>
-        ) : null}
-
-        <button
-          type="button"
-          onClick={() => onOrderNow(offer)}
-          className="mt-5 flex h-10 items-center gap-2 rounded-full bg-[#f4c45f] px-5 text-sm font-black text-[#3a160f] shadow-xl shadow-black/20 transition-transform duration-200 active:scale-95"
-        >
-          Order Now
-          <IoArrowForward className="h-5 w-5" />
-        </button>
-      </div>
-
-      <button
-        type="button"
-        aria-label={`Order ${offer.title}`}
-        onClick={() => onOrderNow(offer)}
-        className="relative z-10 h-[150px] w-[130px] shrink-0 overflow-hidden rounded-3xl bg-white/10 shadow-2xl transition-transform duration-200 active:scale-95"
-      >
-        <LazyImage
-          src={offer.imageUrl || "/emptyplate.webp"}
-          alt=""
-          sizes="130px"
-          quality={75}
-          priority
-          skeletonClassName="bg-white/10"
-          className="object-cover"
-        />
-      </button>
-    </div>
+    <button
+      type="button"
+      aria-label={`Order ${offer.title}`}
+      onClick={() => onOrderNow(offer)}
+      className="relative aspect-[16/9] w-full shrink-0 snap-center overflow-hidden bg-[#32120d] transition-opacity duration-150 active:opacity-90"
+    >
+      <LazyImage
+        src={offer.imageUrl || "/emptyplate.webp"}
+        alt={offer.title}
+        sizes="430px"
+        quality={75}
+        priority
+        skeletonClassName="bg-[#32120d]"
+        className="object-cover"
+      />
+    </button>
   );
 }
 
@@ -274,7 +225,7 @@ export default function TopOfferBanner() {
   if (offers.length === 0) return null;
 
   return (
-    <section className="relative shrink-0 overflow-hidden bg-[#32120d] pb-3 pt-0 text-white">
+    <section className="relative shrink-0 overflow-hidden bg-[#32120d]">
       <div
         ref={trackRef}
         onScroll={handleScroll}
@@ -286,7 +237,7 @@ export default function TopOfferBanner() {
       </div>
 
       {offers.length > 1 ? (
-        <div className="mt-3 flex items-center justify-center gap-1.5">
+        <div className="flex items-center justify-center gap-1.5 py-2.5">
           {offers.map((offer, index) => (
             <span
               key={offer.id}
