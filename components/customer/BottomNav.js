@@ -67,7 +67,7 @@ export default function BottomNav({
     return (
       <CheckoutButton
         summary={checkoutSummary}
-        onClick={() => goTo("/checkout", true)}
+        onClick={() => goTo("/checkout", false)}
       />
     );
   }
@@ -91,9 +91,8 @@ export default function BottomNav({
             onClick={() => goTo(href, requiresAuth)}
             whileTap={{ scale: 0.88 }}
             transition={{ type: "spring", stiffness: 500, damping: 22 }}
-            className={`relative z-10 flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-black transition-colors duration-150 ${
-              isActive ? "text-[#b3402a]" : "text-black"
-            }`}
+            className={`relative z-10 flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl text-xs font-black transition-colors duration-150 ${isActive ? "text-[#b3402a]" : "text-black"
+              }`}
           >
             <Icon className="h-6 w-6 shrink-0" />
             <span className="leading-none">{label}</span>

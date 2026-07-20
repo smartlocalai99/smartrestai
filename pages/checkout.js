@@ -17,11 +17,11 @@ import EmptyState from "@/components/customer/EmptyState";
 import LazyImage from "@/components/customer/LazyImage";
 import PageHead from "@/components/customer/PageHead";
 import { useAddresses } from "@/context/AddressContext";
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useMenuData } from "@/context/MenuDataContext";
 import { useOrders } from "@/context/OrdersContext";
 import { usePayment } from "@/context/PaymentContext";
-import useRequireAuth from "@/hooks/useRequireAuth";
 import { calculateDeliveryFee } from "@/lib/deliveryFee.mjs";
 import { playOrderSuccessSound } from "@/lib/sounds";
 
@@ -170,7 +170,7 @@ function SuccessScreen({ orderId, total, router }) {
 }
 
 export default function Checkout() {
-  const { isReady } = useRequireAuth();
+  const { isLoggedIn, isHydrated } = useAuth();
   const { items, changeQuantity, checkoutSummary, clearCart, appliedOffer, offerDiscount, clearAppliedOffer } =
     useCart();
   const { placeOrder, ordersError } = useOrders();
@@ -184,7 +184,7 @@ export default function Checkout() {
   const [placedOrder, setPlacedOrder] = useState(null);
   const [placementError, setPlacementError] = useState("");
 
-  if (!isReady) return null;
+  if (!isHydrated) return null;
 
   const subtotal = checkoutSummary.totalAmount;
   const discount = appliedOffer ? offerDiscount : appliedCoupon ? Math.round(subtotal * appliedCoupon.rate) : 0;
@@ -309,6 +309,52 @@ export default function Checkout() {
                     </motion.button>
                   </section>
 
+                  {!isLoggedIn ? (
+                    <>
+                      {appliedOffer ? (
+                        <section className="mt-5">
+                          <div className="flex items-center gap-3 rounded-xl border border-[#32120d]/15 bg-[#f5ecea] p-3">
+                            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#32120d] text-white">
+                              <IoPricetagOutline className="h-4 w-4" />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-[13px] font-black text-[#241610]">
+                                Offer applied: {appliedOffer.title}
+                              </span>
+                              <span className="mt-0.5 block text-[11px] font-semibold text-[#8b8580]">
+                                You save ₹{offerDiscount} on these items
+                              </span>
+                            </span>
+                          </div>
+                        </section>
+                      ) : null}
+
+                      <section className="mt-5 space-y-2 border-t border-[#f4eee9] pt-4">
+                        <div className="flex items-center justify-between text-[13px] font-semibold text-[#5f554c]">
+                          <span>Sub total</span>
+                          <span>₹{subtotal}</span>
+                        </div>
+                        {discount > 0 ? (
+                          <div className="flex items-center justify-between text-[13px] font-semibold text-[#32120d]">
+                            <span>Discount</span>
+                            <span>-₹{discount}</span>
+                          </div>
+                        ) : null}
+                        <p className="pt-1 text-[12px] font-semibold leading-4 text-[#a99a8c]">
+                          Delivery fee is calculated after you sign in and add an address.
+                        </p>
+                      </section>
+
+                      <button
+                        type="button"
+                        onClick={() => router.push("/login?redirect=%2Fcheckout")}
+                        className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#32120d] text-[16px] font-black text-white shadow-[0_16px_30px_rgba(50,18,13,0.32)] transition-transform duration-150 active:scale-[0.98]"
+                      >
+                        Sign Up to Continue
+                      </button>
+                    </>
+                  ) : (
+                    <>
                   <section className="mt-5 space-y-2">
                     <motion.button
                       type="button"
@@ -487,6 +533,8 @@ export default function Checkout() {
                       `Checkout · ₹${total}`
                     )}
                   </button>
+                    </>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

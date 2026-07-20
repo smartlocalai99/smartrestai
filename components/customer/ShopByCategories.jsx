@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { useRouter } from "next/router";
 import { AnimatePresence, motion, useAnimation } from "motion/react";
 import {
   LuBicepsFlexed,
@@ -18,7 +17,6 @@ import {
   LuWheat,
   LuX,
 } from "react-icons/lu";
-import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useMenuData } from "@/context/MenuDataContext";
@@ -125,19 +123,12 @@ function ConfettiParticle({ angle, distance, color, shape, delay }) {
 }
 
 function FavoriteButton({ item, sectionTitle }) {
-  const router = useRouter();
-  const { isLoggedIn, isHydrated } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(item.id);
   const heartControls = useAnimation();
   const [isBursting, setIsBursting] = useState(false);
 
   const handleFavoriteClick = () => {
-    if (isHydrated && !isLoggedIn) {
-      router.push(`/login?redirect=${encodeURIComponent(router.asPath)}`);
-      return;
-    }
-
     const willFavorite = !favorited;
     toggleFavorite(item, sectionTitle);
 
