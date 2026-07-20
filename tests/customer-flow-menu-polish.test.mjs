@@ -87,11 +87,17 @@ test("keeps primary navigation available on the saved addresses page", async () 
   );
 });
 
-test("uses the app primary color as the mobile document background", async () => {
+test("keeps the document background neutral so iOS safe areas don't leak brand color", async () => {
   const source = await readSource("styles/globals.css");
 
+  // The document background used to be the brand maroon (#32120d), but on an
+  // installed iOS PWA with viewport-fit=cover that color bled into the
+  // bottom safe area (behind the home indicator) whenever a page's own
+  // content didn't fully cover it. Each page paints its own top safe-area
+  // background (see TopOfferBanner/TabPageHeader), so the shared document
+  // background stays neutral white and nothing extra shows at the bottom.
   assert.match(source, /html,[\s\S]*?body,[\s\S]*?#__next\s*\{/);
-  assert.match(source, /background:\s*#32120d/);
+  assert.match(source, /background:\s*#fff/);
   assert.doesNotMatch(source, /body::before\s*\{/);
 });
 

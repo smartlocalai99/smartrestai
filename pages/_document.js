@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en" className="bg-[#32120d]">
+    <Html lang="en">
       <Head>
         <meta name="application-name" content="Mandi Kings" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -61,7 +61,7 @@ export default function Document() {
           media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
         />
       </Head>
-      <body className="bg-[#32120d] antialiased">
+      <body className="antialiased">
         <Main />
         <NextScript />
       </body>
