@@ -33,14 +33,14 @@ function PhoneStep({ phone, onChange, onSubmit, isSending }) {
 
       <div className="text-center mt-6">
         <h1 className="text-[28px] font-black text-[#222222]">
-          Fuel your <span className="text-[#de4d4b]">Cravings!</span>
+          Fuel your <span className="text-[#32120d]">Cravings!</span>
         </h1>
         <p className="mt-2 text-[13px] font-medium text-gray-400 max-w-[260px] mx-auto leading-relaxed">
           Please enter your valid mobile number to get verified
         </p>
       </div>
 
-      <div className="mt-8 flex h-14 w-full max-w-md items-center gap-3 rounded-[12px] bg-[#f2f2f2] px-4 border border-transparent focus-within:border-[#de4d4b]/30 focus-within:bg-white transition-colors duration-200">
+      <div className="mt-8 flex h-14 w-full max-w-md items-center gap-3 rounded-[12px] bg-[#f2f2f2] px-4 border border-transparent focus-within:border-[#32120d]/30 focus-within:bg-white transition-colors duration-200">
         <span className="text-[18px]">🇮🇳</span>
         <span className="text-[15px] font-black text-gray-700">+91</span>
         <span className="h-6 w-px bg-gray-300" />
@@ -67,7 +67,7 @@ function PhoneStep({ phone, onChange, onSubmit, isSending }) {
         type="submit"
         disabled={!isValid || isSending}
         whileTap={isValid ? { scale: 0.97 } : undefined}
-        className="mt-6 flex h-[54px] w-full max-w-md items-center justify-center gap-2 rounded-[24px] bg-[#de4d4b] text-[16px] font-bold text-white shadow-md transition-opacity duration-150 disabled:opacity-50"
+        className="mt-6 flex h-[54px] w-full max-w-md items-center justify-center gap-2 rounded-[24px] bg-[#32120d] text-[16px] font-bold text-white shadow-md transition-opacity duration-150 disabled:opacity-50"
       >
         {isSending ? (
           <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -205,8 +205,8 @@ function OtpStep({ phone, onVerified, onBack }) {
             className={`h-14 w-12 rounded-[12px] border-2 text-center text-[18px] font-bold text-gray-800 outline-none transition-colors duration-150 ${error
               ? "border-[#ef4f61] bg-white"
               : digit
-                ? "border-[#de4d4b] bg-white"
-                : "border-gray-100 bg-[#f8f8f8] focus:bg-white focus:border-[#de4d4b]"
+                ? "border-[#32120d] bg-white"
+                : "border-gray-100 bg-[#f8f8f8] focus:bg-white focus:border-[#32120d]"
               }`}
           />
         ))}
@@ -225,7 +225,7 @@ function OtpStep({ phone, onVerified, onBack }) {
         disabled={code.length !== OTP_LENGTH || isVerifying}
         onClick={() => attemptVerify(code)}
         whileTap={code.length === OTP_LENGTH ? { scale: 0.97 } : undefined}
-        className="mt-2 flex h-[54px] w-full max-w-md items-center justify-center gap-2 rounded-[24px] bg-[#de4d4b] text-[16px] font-bold text-white shadow-md transition-opacity duration-150 disabled:opacity-50"
+        className="mt-2 flex h-[54px] w-full max-w-md items-center justify-center gap-2 rounded-[24px] bg-[#32120d] text-[16px] font-bold text-white shadow-md transition-opacity duration-150 disabled:opacity-50"
       >
         {isVerifying ? (
           <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -239,7 +239,7 @@ function OtpStep({ phone, onVerified, onBack }) {
           {secondsLeft > 0 ? (
             <span>Resend code in 0:{String(secondsLeft).padStart(2, "0")}</span>
           ) : (
-            <button type="button" onClick={() => setSecondsLeft(RESEND_SECONDS)} className="font-bold text-[#de4d4b]">
+            <button type="button" onClick={() => setSecondsLeft(RESEND_SECONDS)} className="font-bold text-[#32120d]">
               Resend OTP
             </button>
           )}

@@ -1,4 +1,4 @@
-const CACHE_NAME = "smartrest-v4";
+const CACHE_NAME = "smartrest-v5";
 const APP_SHELL = [
   "/manifest.webmanifest",
   "/pwa-icon-192.png",

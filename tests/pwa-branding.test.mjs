@@ -47,6 +47,6 @@ test("provides logo splash artwork for matching and fallback iPhones", async () 
 
 test("refreshes cached PWA branding assets", async () => {
   const source = await readSource("public/sw.js");
-  assert.match(source, /const CACHE_NAME = "smartrest-v4"/);
+  assert.match(source, /const CACHE_NAME = "smartrest-v5"/);
   assert.match(source, /"\/splash\/iphone-1290x2796\.png"/);
 });
