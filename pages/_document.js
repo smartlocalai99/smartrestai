@@ -7,7 +7,7 @@ export default function Document() {
         <meta name="application-name" content="Mandi Kings" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Mandi Kings" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#32120d" />
         <meta name="format-detection" content="telephone=no" />

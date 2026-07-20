@@ -16,11 +16,12 @@ test("uses Mandi Kings as the installed app identity", async () => {
   assert.equal(manifest.theme_color, "#32120d");
   assert.match(documentSource, /name="application-name" content="Mandi Kings"/);
   assert.match(documentSource, /name="apple-mobile-web-app-title" content="Mandi Kings"/);
+  // "black-translucent" lets the page's own top background (the brand
+  // colour) show through behind the status bar instead of an opaque bar.
   assert.match(
     documentSource,
-    /name="apple-mobile-web-app-status-bar-style" content="black"/
+    /name="apple-mobile-web-app-status-bar-style" content="black-translucent"/
   );
-  assert.doesNotMatch(documentSource, /content="black-translucent"/);
 });
 
 test("provides logo splash artwork for matching and fallback iPhones", async () => {
