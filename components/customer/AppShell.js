@@ -12,6 +12,11 @@ export default function AppShell({
     <main className="h-dvh w-full touch-manipulation overflow-hidden overscroll-none bg-[#32120d] p-0 text-[#211712] [-webkit-tap-highlight-color:transparent]">
       <section className="relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-hidden bg-white">
         <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 z-50 bg-[#32120d]"
+          style={{ height: "env(safe-area-inset-top)" }}
+        />
+        <div
           className={`min-h-0 flex-1 overflow-y-auto overscroll-contain pb-24 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${contentClassName}`}
         >
           {children}
