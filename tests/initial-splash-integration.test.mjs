@@ -29,14 +29,21 @@ test("replaces the inline menu loading copy with the global splash", async () =>
 });
 
 test("defines branded motion with a reduced-motion override", async () => {
-  const [component, styles] = await Promise.all([
+  const [component, gate, styles] = await Promise.all([
     readSource("components/customer/BrandedSplash.jsx"),
+    readSource("components/customer/StartupGate.jsx"),
     readSource("styles/globals.css"),
   ]);
 
   assert.match(component, /preload/);
+  assert.match(component, /unoptimized/);
+  assert.match(component, /onLogoReady/);
   assert.doesNotMatch(component, /priority/);
   assert.match(component, /sizes="\(max-width: 430px\) 80vw, 360px"/);
+  assert.match(gate, /const MIN_VISIBLE_MS = 900/);
+  assert.match(gate, /logoReady/);
+  assert.match(gate, /minimumElapsed/);
+  assert.match(gate, /onLogoReady/);
   assert.match(styles, /@keyframes startup-logo-breathe/);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
 });

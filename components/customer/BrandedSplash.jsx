@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function BrandedSplash({ isExiting }) {
+export default function BrandedSplash({ isExiting, onLogoReady }) {
   return (
     <div
       role="status"
@@ -14,6 +14,9 @@ export default function BrandedSplash({ isExiting }) {
         height={1280}
         sizes="(max-width: 430px) 80vw, 360px"
         preload
+        unoptimized
+        onLoad={onLogoReady}
+        onError={onLogoReady}
         className="startup-splash__logo"
       />
     </div>

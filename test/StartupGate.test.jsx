@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import StartupGate from "@/components/customer/StartupGate";
 
@@ -30,9 +30,14 @@ vi.mock("@/context/PaymentContext", () => ({
   usePayment: () => ({ isHydrated: readiness.paymentHydrated }),
 }));
 vi.mock("next/image", () => ({
-  default: ({ preload, alt = "", ...props }) => (
+  default: ({ preload, unoptimized, alt = "", ...props }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img alt={alt} data-preload={String(preload)} {...props} />
+    <img
+      alt={alt}
+      data-preload={String(preload)}
+      data-unoptimized={String(unoptimized)}
+      {...props}
+    />
   ),
 }));
 
@@ -80,12 +85,16 @@ describe("StartupGate", () => {
       "data-preload",
       "true"
     );
+    expect(screen.getByAltText("Mandi Kings")).toHaveAttribute(
+      "data-unoptimized",
+      "true"
+    );
     expect(
       screen.getByRole("button", { name: "Open menu", hidden: true }).parentElement
     ).toHaveAttribute("inert");
   });
 
-  it("fades out when critical state settles and never returns", () => {
+  it("keeps the splash until the cached logo paints and the minimum time passes", () => {
     const view = render(
       <StartupGate>
         <button>Open menu</button>
@@ -98,10 +107,33 @@ describe("StartupGate", () => {
       </StartupGate>
     );
 
+    act(() => vi.advanceTimersByTime(900));
+    expect(
+      screen.getByRole("status", { name: "Loading Mandi Kings" })
+    ).not.toHaveClass("startup-splash--exiting");
+
+    fireEvent.load(screen.getByAltText("Mandi Kings"));
     act(() => vi.advanceTimersByTime(0));
     expect(
       screen.getByRole("status", { name: "Loading Mandi Kings" })
     ).toHaveClass("startup-splash--exiting");
+  });
+
+  it("fades out after startup and never returns", () => {
+    const view = render(
+      <StartupGate>
+        <button>Open menu</button>
+      </StartupGate>
+    );
+    setReady();
+    view.rerender(
+      <StartupGate>
+        <button>Open menu</button>
+      </StartupGate>
+    );
+    fireEvent.load(screen.getByAltText("Mandi Kings"));
+    act(() => vi.advanceTimersByTime(900));
+    act(() => vi.advanceTimersByTime(0));
     act(() => vi.advanceTimersByTime(250));
     expect(
       screen.queryByRole("status", { name: "Loading Mandi Kings" })
@@ -144,6 +176,8 @@ describe("StartupGate", () => {
         <button>Open menu</button>
       </StartupGate>
     );
+    fireEvent.load(screen.getByAltText("Mandi Kings"));
+    act(() => vi.advanceTimersByTime(900));
     act(() => vi.advanceTimersByTime(0));
     expect(
       screen.queryByRole("status", { name: "Loading Mandi Kings" })

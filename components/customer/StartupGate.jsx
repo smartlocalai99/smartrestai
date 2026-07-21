@@ -8,6 +8,7 @@ import { useMenuData } from "@/context/MenuDataContext";
 import { usePayment } from "@/context/PaymentContext";
 
 const FAIL_SAFE_MS = 8000;
+const MIN_VISIBLE_MS = 900;
 const EXIT_MS = 250;
 
 const prefersReducedMotion = () =>
@@ -21,6 +22,8 @@ export default function StartupGate({ children }) {
   const { isLoadingAddresses } = useAddresses();
   const { isHydrated: isPaymentHydrated } = usePayment();
   const [phase, setPhase] = useState("visible");
+  const [logoReady, setLogoReady] = useState(false);
+  const [minimumElapsed, setMinimumElapsed] = useState(false);
 
   const isReady =
     !isMenuLoading &&
@@ -31,15 +34,38 @@ export default function StartupGate({ children }) {
     isPaymentHydrated;
 
   useEffect(() => {
+    const timer = window.setTimeout(
+      () => setMinimumElapsed(true),
+      MIN_VISIBLE_MS
+    );
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     if (phase !== "visible") return undefined;
 
-    const timer = window.setTimeout(
-      () => setPhase(prefersReducedMotion() ? "hidden" : "exiting"),
-      isReady ? 0 : FAIL_SAFE_MS
-    );
+    const timer = window.setTimeout(() => {
+      setPhase(prefersReducedMotion() ? "hidden" : "exiting");
+    }, FAIL_SAFE_MS);
 
     return () => window.clearTimeout(timer);
-  }, [isReady, phase]);
+  }, [phase]);
+
+  useEffect(() => {
+    if (
+      phase !== "visible" ||
+      !isReady ||
+      !logoReady ||
+      !minimumElapsed
+    ) {
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => {
+      setPhase(prefersReducedMotion() ? "hidden" : "exiting");
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [isReady, logoReady, minimumElapsed, phase]);
 
   useEffect(() => {
     if (phase !== "exiting") return undefined;
@@ -58,7 +84,12 @@ export default function StartupGate({ children }) {
       >
         {children}
       </div>
-      {isVisible ? <BrandedSplash isExiting={phase === "exiting"} /> : null}
+      {isVisible ? (
+        <BrandedSplash
+          isExiting={phase === "exiting"}
+          onLogoReady={() => setLogoReady(true)}
+        />
+      ) : null}
     </>
   );
 }
