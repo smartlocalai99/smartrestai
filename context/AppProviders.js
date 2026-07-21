@@ -5,6 +5,7 @@ import { FavoritesProvider } from "@/context/FavoritesContext";
 import { MenuDataProvider } from "@/context/MenuDataContext";
 import { OrdersProvider } from "@/context/OrdersContext";
 import { PaymentProvider } from "@/context/PaymentContext";
+import StartupGate from "@/components/customer/StartupGate";
 
 const providers = [
   MenuDataProvider,
@@ -17,5 +18,8 @@ const providers = [
 ];
 
 export default function AppProviders({ children }) {
-  return providers.reduceRight((tree, Provider) => <Provider>{tree}</Provider>, children);
+  return providers.reduceRight(
+    (tree, Provider) => <Provider>{tree}</Provider>,
+    <StartupGate>{children}</StartupGate>
+  );
 }

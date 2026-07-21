@@ -576,11 +576,7 @@ export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
   const showRecommended = searchQuery.trim().length === 0 || searchedRecommendedItems.length > 0;
 
   if (isLoading) {
-    return (
-      <section className="w-full bg-transparent px-4 pb-8 pt-8 text-center sm:px-6">
-        <p className="text-sm font-semibold text-[#7d7169]">Loading menu…</p>
-      </section>
-    );
+    return null;
   }
 
   if (sections.length === 0) {
