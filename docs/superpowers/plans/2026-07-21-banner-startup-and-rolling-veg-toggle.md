@@ -1,16 +1,16 @@
-# Banner Startup and Rolling Veg Toggle Implementation Plan
+# Banner Startup and Veg Image Pill Toggle Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Use the login banner for the one-time white startup screen and replace the home VEG/NON VEG text switch with the supplied food images and a rolling transition.
+**Goal:** Use the login banner for the one-time white startup screen and replace the home VEG/NON VEG text switch with a two-image pill and sliding selector.
 
-**Architecture:** Preserve `StartupGate` as the single readiness owner and change only its presentational `BrandedSplash`. Keep the existing `vegOnly` state and filtering flow, but replace `VegModeToggle` visuals with keyed Motion images so selection transitions animate without changing data behavior.
+**Architecture:** Preserve `StartupGate` as the single readiness owner and change only its presentational `BrandedSplash`. Keep the existing `vegOnly` state and filtering flow, render both food images permanently inside `VegModeToggle`, and animate only a shared selection surface between them.
 
 **Tech Stack:** Next.js 16 Pages Router, React 19, Motion, Next Image, Vitest, Testing Library, Supabase CLI 2.109.1.
 
 ## Global Constraints
 
-- The startup image is `/bannerlogin.png`, centered and uncropped on a pure white full-screen background.
+- The startup image is `/bannerlogin.png`, centered and uncropped on a pure white full-screen background that covers all safe-area regions.
 - The startup gate appears once per root mount and keeps its existing timing, fade, readiness checks, reduced-motion behavior, and fail-safe.
 - The initial toggle state uses `/nonveg.webp` and shows the full menu; `/veg.webp` enables the existing vegetarian-only filter.
 - The control remains an accessible switch and uses no new dependency.
@@ -68,7 +68,7 @@ Run: `npx vitest run test/StartupGate.test.jsx && node --test tests/pwa-branding
 
 Expected: all startup and PWA branding tests pass.
 
-### Task 2: Rolling Food-Image Switch
+### Task 2: Food-Image Pill Switch
 
 **Files:**
 - Create: `test/VegModeToggle.test.jsx`
@@ -77,21 +77,21 @@ Expected: all startup and PWA branding tests pass.
 
 **Interfaces:**
 - Consumes: `VegModeToggle({ vegOnly: boolean, onChange: (next: boolean) => void })`.
-- Produces: an exported switch component that displays `/nonveg.webp` when false and `/veg.webp` when true.
+- Produces: an exported switch component that always displays `/nonveg.webp` and `/veg.webp`, with a sliding selector indicating the active state.
 
 - [ ] **Step 1: Write the failing toggle component test**
 
-Render `VegModeToggle` with `vegOnly={false}` and assert role `switch`, `aria-checked="false"`, the non-veg image, and an `onChange(true)` call after click. Rerender with `vegOnly={true}` and assert the veg image and state-specific accessible label.
+Render `VegModeToggle` with `vegOnly={false}` and assert role `switch`, `aria-checked="false"`, both supplied images, selector position `left`, and an `onChange(true)` call after click. Rerender with `vegOnly={true}` and assert both images remain present, selector position `right`, and the state-specific accessible label.
 
 - [ ] **Step 2: Verify the focused test fails**
 
 Run: `npx vitest run test/VegModeToggle.test.jsx`
 
-Expected: failure because `VegModeToggle` is not exported and does not render either supplied image.
+Expected: failure because the current component renders only one image and uses rotation-based enter/exit animation.
 
-- [ ] **Step 3: Implement the rolling switch**
+- [ ] **Step 3: Implement the sliding-selector pill**
 
-Export `VegModeToggle`, import `Image`, `AnimatePresence`, and `useReducedMotion`, and render the keyed current image inside the switch. Use enter/exit variants with horizontal movement, rotation, opacity, and scale; use a spring transition when motion is allowed and a zero-duration transition when reduced motion is requested. Keep `whileTap={{ scale: 0.92 }}` and call `onChange(!vegOnly)`.
+Render one `motion.span` selection surface with `layout` and `data-position={vegOnly ? "right" : "left"}`. Position it with `left: vegOnly ? 52 : 4`, use a spring transition when motion is allowed and zero duration for reduced motion, and render both static `Image` elements above it in a two-column grid. Remove `AnimatePresence`, keyed image replacement, rotation, image translation, and image fading. Keep `whileTap={{ scale: 0.96 }}` and call `onChange(!vegOnly)`.
 
 - [ ] **Step 4: Verify toggle behavior**
 
