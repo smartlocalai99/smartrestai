@@ -10,15 +10,15 @@ import {
 
 const recommendedItems = [{ id: "one" }, { id: "two" }];
 const sections = [
-  { heading: "Chicken Mandi", items: [{}, {}, {}] },
+  { heading: "Chicken Mandi", items: [{}, {}, {}], badgeText: "OFFER" },
   { heading: "Rotis", items: [{}, {}] },
 ];
 
-test("creates one navigator row per collapsible category with counts", () => {
+test("creates one navigator row per collapsible category with counts and badges", () => {
   assert.deepEqual(createMenuNavigatorEntries(recommendedItems, sections), [
-    { title: "Recommended", count: 2 },
-    { title: "Chicken Mandi", count: 3 },
-    { title: "Rotis", count: 2 },
+    { title: "Recommended", count: 2, badgeText: "" },
+    { title: "Chicken Mandi", count: 3, badgeText: "OFFER" },
+    { title: "Rotis", count: 2, badgeText: "" },
   ]);
 });
 

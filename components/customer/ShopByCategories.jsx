@@ -389,9 +389,14 @@ function CategoryRow({ entry, items, isExpanded, onSelect, onToggleExpand }) {
         <button
           type="button"
           onClick={() => onSelect(entry.title)}
-          className="min-w-0 rounded-xl py-3 text-left text-sm font-bold active:bg-white/10"
+          className="flex min-w-0 items-center gap-2 rounded-xl py-3 text-left text-sm font-bold active:bg-white/10"
         >
-          <span>{entry.title}</span>
+          <span className="truncate">{entry.title}</span>
+          {entry.badgeText ? (
+            <span className="shrink-0 rounded-full bg-[#ef4f61] px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-white">
+              {entry.badgeText}
+            </span>
+          ) : null}
         </button>
         <motion.button
           type="button"

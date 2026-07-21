@@ -5,10 +5,11 @@ export const sectionId = (heading) =>
     .replace(/(^-|-$)/g, "")}`;
 
 export const createMenuNavigatorEntries = (recommendedItems, sections) => [
-  { title: "Recommended", count: recommendedItems.length },
+  { title: "Recommended", count: recommendedItems.length, badgeText: "" },
   ...sections.map((section) => ({
     title: section.heading,
     count: section.items.length,
+    badgeText: section.badgeText || "",
   })),
 ];
 
