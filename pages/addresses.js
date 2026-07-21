@@ -5,6 +5,7 @@ import {
   IoAlertCircleOutline,
   IoBriefcaseOutline,
   IoCheckmarkCircle,
+  IoChevronBack,
   IoHomeOutline,
   IoLocationOutline,
   IoNavigateOutline,
@@ -266,11 +267,21 @@ export default function Addresses() {
   } = useAddresses();
   const [sheet, setSheet] = useState(null); // null | "new" | address object
   const [justSaved, setJustSaved] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const router = useRouter();
 
   if (!isReady) return null;
 
   const redirectParam = typeof router.query.redirect === "string" ? router.query.redirect : null;
+  const closeAddressPage = () => setIsClosing(true);
+  const handlePageAnimationComplete = () => {
+    if (!isClosing) return;
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.replace("/");
+  };
 
   const handleSave = async (data) => {
     try {
@@ -297,65 +308,83 @@ export default function Addresses() {
     <>
       <PageHead title="Saved Addresses - SmartRest" />
 
-      <AppShell showCheckoutButton={false}>
-        <div className="min-h-full bg-white">
-          <TabPageHeader title="Saved Addresses" subtitle="Where should we deliver your order?" />
-
-          {redirectParam && addresses.length === 0 ? (
-            <div className="mx-4 mt-3 rounded-2xl border border-[#f3d4d0] bg-[#fdf6f4] px-4 py-3">
-              <p className="text-[13px] font-black text-[#c0402a]">Add an address to continue</p>
-              <p className="mt-0.5 text-[12px] font-semibold leading-4 text-[#a56a58]">
-                We need a delivery address before you can place your order.
-              </p>
-            </div>
-          ) : null}
-
-          {addressError && !sheet ? (
-            <p className="mx-4 mt-3 rounded-xl bg-[#fdf1ef] px-3 py-2 text-[12px] font-bold text-[#c0402a]">
-              {addressError}
-            </p>
-          ) : null}
-
-          {isLoadingAddresses ? (
-            <div className="grid min-h-48 place-items-center">
-              <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#32120d]/25 border-t-[#32120d]" />
-            </div>
-          ) : addresses.length === 0 ? (
-            <EmptyState
-              icon={IoLocationOutline}
-              title="No saved addresses"
-              message="Add a delivery address so checkout is one tap next time."
-            />
-          ) : (
-            <div className="space-y-3 px-4 pb-4 pt-2">
-              <AnimatePresence>
-                {addresses.map((address) => (
-                  <AddressCard
-                    key={address.id}
-                    address={address}
-                    isBusy={isMutatingAddress}
-                    onEdit={() => setSheet(address)}
-                    onDelete={() => removeAddress(address.id).catch(() => {})}
-                    onSetDefault={() => setDefault(address.id).catch(() => {})}
-                  />
-                ))}
-              </AnimatePresence>
-            </div>
-          )}
-
-          <div className="px-4 pb-6">
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: isClosing ? "100%" : 0 }}
+        transition={{ type: "spring", stiffness: 340, damping: 34 }}
+        onAnimationComplete={handlePageAnimationComplete}
+        className="h-full"
+      >
+        <AppShell showCheckoutButton={false}>
+          <div className="relative min-h-full bg-white">
             <motion.button
               type="button"
-              onClick={() => setSheet("new")}
-              disabled={isLoadingAddresses || isMutatingAddress}
-              whileTap={isLoadingAddresses || isMutatingAddress ? undefined : { scale: 0.97 }}
-              className="flex h-12 w-full items-center justify-center rounded-xl border border-dashed border-[#d8c6c2] text-[13px] font-black text-[#32120d]"
+              aria-label="Back to previous page"
+              onClick={closeAddressPage}
+              whileTap={{ scale: 0.9 }}
+              className="absolute left-4 top-[calc(1.25rem+env(safe-area-inset-top))] z-20 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white"
             >
-              + Add New Address
+              <IoChevronBack className="h-5 w-5" aria-hidden="true" />
             </motion.button>
+
+            <TabPageHeader title="Saved Addresses" subtitle="Where should we deliver your order?" />
+
+            {redirectParam && addresses.length === 0 ? (
+              <div className="mx-4 mt-3 rounded-2xl border border-[#f3d4d0] bg-[#fdf6f4] px-4 py-3">
+                <p className="text-[13px] font-black text-[#c0402a]">Add an address to continue</p>
+                <p className="mt-0.5 text-[12px] font-semibold leading-4 text-[#a56a58]">
+                  We need a delivery address before you can place your order.
+                </p>
+              </div>
+            ) : null}
+
+            {addressError && !sheet ? (
+              <p className="mx-4 mt-3 rounded-xl bg-[#fdf1ef] px-3 py-2 text-[12px] font-bold text-[#c0402a]">
+                {addressError}
+              </p>
+            ) : null}
+
+            {isLoadingAddresses ? (
+              <div className="grid min-h-48 place-items-center">
+                <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#32120d]/25 border-t-[#32120d]" />
+              </div>
+            ) : addresses.length === 0 ? (
+              <EmptyState
+                icon={IoLocationOutline}
+                title="No saved addresses"
+                message="Add a delivery address so checkout is one tap next time."
+              />
+            ) : (
+              <div className="space-y-3 px-4 pb-4 pt-2">
+                <AnimatePresence>
+                  {addresses.map((address) => (
+                    <AddressCard
+                      key={address.id}
+                      address={address}
+                      isBusy={isMutatingAddress}
+                      onEdit={() => setSheet(address)}
+                      onDelete={() => removeAddress(address.id).catch(() => {})}
+                      onSetDefault={() => setDefault(address.id).catch(() => {})}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+
+            <div className="px-4 pb-6">
+              <motion.button
+                type="button"
+                onClick={() => setSheet("new")}
+                disabled={isLoadingAddresses || isMutatingAddress}
+                whileTap={isLoadingAddresses || isMutatingAddress ? undefined : { scale: 0.97 }}
+                className="flex h-12 w-full items-center justify-center rounded-xl border border-dashed border-[#d8c6c2] text-[13px] font-black text-[#32120d]"
+              >
+                + Add New Address
+              </motion.button>
+            </div>
           </div>
-        </div>
-      </AppShell>
+        </AppShell>
+      </motion.div>
 
       <AnimatePresence>
         {sheet ? (

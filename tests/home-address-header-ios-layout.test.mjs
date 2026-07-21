@@ -26,3 +26,18 @@ test("shows the signed-in customer's address in the home location control", asyn
     /aria-label=\{`Change delivery location\. Current location: \$\{displayAddress\}`\}/
   );
 });
+
+test("opens and dismisses the Saved Addresses route from the bottom", async () => {
+  const source = await readSource("pages/addresses.js");
+
+  assert.match(source, /IoChevronBack/);
+  assert.match(source, /const \[isClosing, setIsClosing\] = useState\(false\)/);
+  assert.match(source, /const closeAddressPage = \(\) => setIsClosing\(true\)/);
+  assert.match(source, /initial=\{\{ y: "100%" \}\}/);
+  assert.match(source, /animate=\{\{ y: isClosing \? "100%" : 0 \}\}/);
+  assert.match(source, /onAnimationComplete=\{handlePageAnimationComplete\}/);
+  assert.match(source, /window\.history\.length > 1/);
+  assert.match(source, /router\.back\(\)/);
+  assert.match(source, /router\.replace\("\/"\)/);
+  assert.match(source, /aria-label="Back to previous page"/);
+});
