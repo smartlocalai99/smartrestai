@@ -13,7 +13,10 @@ test("extends the branded empty-state background to the bottom navigation", asyn
     ),
   ]);
 
-  assert.match(emptyState, /imageSrc \? "flex-1 self-stretch bg-\[#f6f6f6\]"/);
+  assert.match(
+    emptyState,
+    /imageSrc \? `flex-1 self-stretch \$\{bgClassName\}`/
+  );
   assert.match(favorites, /items\.length === 0 \? "bg-\[#f6f6f6\]" : "bg-white"/);
   assert.match(
     favorites,
@@ -22,12 +25,13 @@ test("extends the branded empty-state background to the bottom navigation", asyn
   assert.match(favorites, /className={`flex min-h-full flex-col/);
   assert.match(
     orders,
-    /!isLoadingOrders && orders\.length === 0 \? "bg-\[#f6f6f6\]" : "bg-white"/
+    /!isLoadingOrders && orders\.length === 0 \? "bg-\[#f3ede4\]" : "bg-white"/
   );
   assert.match(
     orders,
-    /<AppShell contentClassName={isEmpty \? "bg-\[#f6f6f6\]" : ""}>/
+    /<AppShell contentClassName={isEmpty \? "bg-\[#f3ede4\]" : ""}>/
   );
+  assert.match(orders, /bgClassName="bg-\[#f3ede4\]"/);
   assert.match(orders, /className={`flex min-h-full flex-col/);
   assert.match(orderExperience, /data-testid="previous-orders-surface"/);
   assert.match(orderExperience, /bg-\[#f6f6f6\]/);

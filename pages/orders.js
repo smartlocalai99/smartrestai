@@ -21,8 +21,8 @@ export default function Orders() {
     return (
       <>
         <PageHead title="Your Orders - SmartRest" />
-        <AppShell contentClassName="bg-[#f6f6f6]">
-          <div className="flex min-h-full flex-col bg-[#f6f6f6]">
+        <AppShell contentClassName="bg-[#f3ede4]">
+          <div className="flex min-h-full flex-col bg-[#f3ede4]">
             <TabPageHeader title="Orders" subtitle="Track your current and past orders" />
             <EmptyState
               imageSrc="/emptyplate.webp"
@@ -31,6 +31,7 @@ export default function Orders() {
               message="Please log in to view your orders."
               ctaLabel="Log in with Mobile Number"
               ctaHref={`/login?redirect=${encodeURIComponent(router.asPath)}`}
+              bgClassName="bg-[#f3ede4]"
             />
           </div>
         </AppShell>
@@ -42,10 +43,10 @@ export default function Orders() {
     <>
       <PageHead title="Your Orders - SmartRest" />
 
-      <AppShell contentClassName={isEmpty ? "bg-[#f6f6f6]" : ""}>
+      <AppShell contentClassName={isEmpty ? "bg-[#f3ede4]" : ""}>
         <div
           className={`flex min-h-full flex-col ${
-            !isLoadingOrders && orders.length === 0 ? "bg-[#f6f6f6]" : "bg-white"
+            !isLoadingOrders && orders.length === 0 ? "bg-[#f3ede4]" : "bg-white"
           }`}
         >
           <TabPageHeader title="Orders" subtitle="Track your current and past orders" />
@@ -75,6 +76,7 @@ export default function Orders() {
               message="Place your first order and follow every delicious detail from our kitchen to your doorstep."
               ctaLabel="Start your order"
               ctaHref="/"
+              bgClassName="bg-[#f3ede4]"
             />
           ) : (
             <OrderTrackingExperience
