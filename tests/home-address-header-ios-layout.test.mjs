@@ -41,3 +41,29 @@ test("opens and dismisses the Saved Addresses route from the bottom", async () =
   assert.match(source, /router\.replace\("\/"\)/);
   assert.match(source, /aria-label="Back to previous page"/);
 });
+
+test("does not reserve a separate bottom safe area in the installed app", async () => {
+  const [shell, nav, addresses, globals, app, header, categories] =
+    await Promise.all([
+      readSource("components/customer/AppShell.js"),
+      readSource("components/customer/BottomNav.js"),
+      readSource("pages/addresses.js"),
+      readSource("styles/globals.css"),
+      readSource("pages/_app.js"),
+      readSource("components/customer/TopOfferBanner.js"),
+      readSource("components/customer/MenuCategories.js"),
+    ]);
+
+  assert.doesNotMatch(shell, /safe-area-inset-bottom/);
+  assert.doesNotMatch(nav, /safe-area-inset-bottom/);
+  assert.doesNotMatch(addresses, /safe-area-inset-bottom/);
+  assert.match(shell, /pb-24/);
+  assert.match(nav, /absolute inset-x-4 bottom-0 z-40/);
+  assert.match(nav, /absolute inset-x-4 bottom-3 z-30/);
+  assert.match(addresses, /rounded-t-\[28px\] bg-white p-5 pb-6/);
+
+  assert.match(globals, /height:\s*100dvh/);
+  assert.match(app, /viewport-fit=cover/);
+  assert.match(header, /safe-area-inset-top/);
+  assert.match(categories, /safe-area-inset-top/);
+});

@@ -74,7 +74,7 @@ function AddressSheet({ initialValue, onClose, onSave, isSaving, saveError }) {
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", stiffness: 340, damping: 34 }}
-        className="w-full max-w-[430px] rounded-t-[28px] bg-white p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
+        className="w-full max-w-[430px] rounded-t-[28px] bg-white p-5 pb-6"
       >
         <span className="mx-auto mb-4 block h-1 w-10 rounded-full bg-[#e4dcd2]" />
         <p className="text-[17px] font-black text-[#241610]">
