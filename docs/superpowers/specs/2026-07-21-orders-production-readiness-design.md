@@ -27,6 +27,14 @@ Delivery is free for new customer orders. Checkout no longer calculates or adds 
 
 Previously persisted order totals remain untouched. Previous-order cards continue to display their stored bill amount so historical billing records are not rewritten.
 
+## Payment Methods
+
+Customer payment choices are limited to `Cash on Delivery` and `UPI`. `Card` is removed from the Payment Methods page, checkout selector, customer-side fallback configuration, help copy, and the restaurant-profile seed used for new environments.
+
+The payment context filters the profile-driven list to `cod` and `upi`, so an existing Supabase profile that still contains an enabled Card entry cannot reintroduce it. If local storage contains the removed `card` selection, the selected method safely falls back to the first supported option and the valid replacement is persisted.
+
+The UPI payment card includes three compact rounded logo tiles for PhonePe, Google Pay, and Paytm. Use the brand icons already bundled through `react-icons/si`, with accessible labels and recognizable brand colors; do not add remote image requests or another package. The same supported method set is used at checkout, while the richer logo row is specific to the Payment Methods screen so checkout stays compact.
+
 ## Order Timeline
 
 The current-order details include a vertical three-step timeline:
@@ -55,6 +63,8 @@ This preserves visible brand feedback while eliminating the double-splash experi
 - `orderTrackingMap.mjs` derives validated endpoint coordinates, route geometry, bounds, and fallback URLs.
 - `orderView.mjs` derives timeline steps and monetary display values.
 - `checkout.js` enforces free delivery for new orders.
+- `PaymentContext` enforces the supported Cash on Delivery and UPI method set.
+- `payment-methods.js` renders the rounded UPI brand-logo row and no Card option.
 - `customerData.mjs` maps milestone timestamps between Supabase and the customer model.
 - A new migration records milestone times at the database boundary.
 
@@ -75,6 +85,9 @@ Test-first coverage must prove:
 - The restaurant marker uses `/applogo.jpeg`.
 - Checkout persists zero delivery fee and excludes it from totals.
 - Current order details display `Delivery charges` and `FREE`.
+- Payment methods and checkout expose only Cash on Delivery and UPI.
+- The UPI card renders accessible PhonePe, Google Pay, and Paytm logo tiles.
+- A stale locally stored Card selection falls back to a supported method.
 - Timeline status and timestamps derive correctly, including legacy missing-time fallbacks.
 - Previous-order and history-only surfaces use `#f6f6f6`.
 - Custom iOS startup-image links are absent while one root logo loader remains.
