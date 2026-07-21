@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getSupabase } from "@/utils/supabase.js";
 import { getRestaurantProfile, listActiveMenu, listActiveOffers } from "@/lib/restaurantData.mjs";
+import { createTrailingRefresh } from "@/lib/trailingRefresh.mjs";
 
 const MenuDataContext = createContext(null);
 
@@ -14,19 +15,23 @@ export function MenuDataProvider({ children }) {
   useEffect(() => {
     let cancelled = false;
 
-    function refetch() {
-      Promise.all([getRestaurantProfile(client), listActiveMenu(client), listActiveOffers(client)])
-        .then(([nextProfile, nextSections, nextOffers]) => {
-          if (cancelled) return;
-          setProfile(nextProfile);
-          setSections(nextSections);
-          setOffers(nextOffers);
-        })
-        .catch(() => {})
-        .finally(() => {
-          if (!cancelled) setIsLoading(false);
-        });
-    }
+    const refetch = createTrailingRefresh(async () => {
+      try {
+        const [nextProfile, nextSections, nextOffers] = await Promise.all([
+          getRestaurantProfile(client),
+          listActiveMenu(client),
+          listActiveOffers(client),
+        ]);
+        if (cancelled) return;
+        setProfile(nextProfile);
+        setSections(nextSections);
+        setOffers(nextOffers);
+      } catch {
+        // Existing fallback state remains usable.
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    });
 
     refetch();
 
