@@ -173,13 +173,21 @@ function FavoriteButton({ item, sectionTitle }) {
   );
 }
 
-export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecrement }) {
+export function ProductCard({
+  item,
+  sectionTitle,
+  quantity,
+  onIncrement,
+  onDecrement,
+  isOrderingDisabled = false,
+}) {
   const trait = foodTraitForItem(item, sectionTitle);
   const TraitIcon = trait.icon;
   const isSoldOut = item.isAvailable === false;
+  const isAddDisabled = isSoldOut || isOrderingDisabled;
 
   return (
-    <article className={`relative flex h-full flex-col bg-white ${isSoldOut ? "opacity-60" : ""}`}>
+    <article className={`relative flex h-full flex-col bg-white ${isAddDisabled ? "opacity-60" : ""}`}>
       <div className="relative h-[150px] w-full overflow-hidden rounded-[20px] bg-[#f4eee9]">
         <LazyImage
           src={item.imageUrl || PLACEHOLDER_IMAGE}
@@ -271,12 +279,17 @@ export function ProductCard({ item, sectionTitle, quantity, onIncrement, onDecre
                 type="button"
                 aria-label={`Add ${item.title}`}
                 onClick={onIncrement}
-                whileTap={{ scale: 0.85 }}
-                className="grid h-full w-8 place-items-center"
+                disabled={isOrderingDisabled}
+                whileTap={isOrderingDisabled ? undefined : { scale: 0.85 }}
+                className="grid h-full w-8 place-items-center disabled:opacity-40"
               >
                 <LuPlus className="h-4 w-4" />
               </motion.button>
             </div>
+          ) : isOrderingDisabled ? (
+            <span className="inline-flex h-10 min-w-[76px] items-center justify-center rounded-xl border border-[#d8d3cf] px-3 text-[12px] font-black text-[#8b8580]">
+              Closed
+            </span>
           ) : (
             <motion.button
               type="button"
@@ -494,8 +507,12 @@ function MenuNavigator({ entries, itemsByCategory, onSelect }) {
 }
 
 export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
-  const { sections, isLoading } = useMenuData();
+  const { sections, isLoading, profile } = useMenuData();
   const { cart, changeQuantity } = useCart();
+  const isOrderingDisabled = profile ? profile.busyMode || !profile.isOpen : false;
+  const closedReason = profile?.busyMode
+    ? "The restaurant is very busy right now and isn't accepting new orders."
+    : "The restaurant is currently closed.";
 
   const recommendedItems = useMemo(
     () =>
@@ -546,8 +563,9 @@ export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
         item={item}
         sectionTitle={sectionTitle}
         quantity={quantity}
+        isOrderingDisabled={isOrderingDisabled}
         onIncrement={() => {
-          if (item.isAvailable === false) return;
+          if (item.isAvailable === false || isOrderingDisabled) return;
           changeQuantity(item, quantity + 1, sectionTitle);
         }}
         onDecrement={() => changeQuantity(item, quantity - 1, sectionTitle)}
@@ -591,6 +609,12 @@ export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
   return (
     <section className="w-full bg-transparent px-4 pb-8 pt-2 sm:px-6 lg:pb-8 lg:pt-8">
       <div className="mx-auto max-w-3xl">
+        {isOrderingDisabled ? (
+          <p className="mb-4 rounded-xl bg-[#fdf1ef] px-3 py-2.5 text-center text-[13px] font-bold text-[#c0402a]">
+            {closedReason} You can browse the menu, but ordering is turned off right now.
+          </p>
+        ) : null}
+
         {showRecommended && recommendedItems.length > 0 ? (
           <CollapsibleSection
             title="Recommended"

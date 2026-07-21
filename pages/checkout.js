@@ -21,6 +21,7 @@ import { useCart } from "@/context/CartContext";
 import { useMenuData } from "@/context/MenuDataContext";
 import { useOrders } from "@/context/OrdersContext";
 import { usePayment } from "@/context/PaymentContext";
+import { calculateDeliveryFee } from "@/lib/deliveryFee.mjs";
 import { playOrderSuccessSound } from "@/lib/sounds";
 
 const PAYMENT_ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline };
@@ -186,8 +187,9 @@ export default function Checkout() {
 
   const subtotal = checkoutSummary.totalAmount;
   const discount = appliedOffer ? offerDiscount : appliedCoupon ? Math.round(subtotal * appliedCoupon.rate) : 0;
-  const deliveryFee = 0;
-  const total = Math.max(subtotal - discount, 0);
+  const deliveryFee =
+    items.length > 0 && profile ? calculateDeliveryFee(profile, subtotal, defaultAddress).fee : 0;
+  const total = Math.max(subtotal - discount + deliveryFee, 0);
 
   const isClosed = profile ? profile.busyMode || !profile.isOpen : false;
   const closedReason = profile?.busyMode
@@ -477,7 +479,11 @@ export default function Checkout() {
                     </div>
                     <div className="flex items-center justify-between text-[13px] font-semibold text-[#5f554c]">
                       <span>Delivery charges</span>
-                      <span className="font-black text-[#3c7c5b]">FREE</span>
+                      {deliveryFee > 0 ? (
+                        <span>₹{deliveryFee}</span>
+                      ) : (
+                        <span className="font-black text-[#3c7c5b]">FREE</span>
+                      )}
                     </div>
                     {discount > 0 ? (
                       <div className="flex items-center justify-between text-[13px] font-semibold text-[#32120d]">

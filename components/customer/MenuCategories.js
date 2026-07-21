@@ -1,27 +1,20 @@
 import Image from "next/image";
 import { motion } from "motion/react";
+import { useMenuData } from "@/context/MenuDataContext";
+import { sectionId } from "./menuNavigation.mjs";
 
-const menuCategories = [
-  {
-    label: "Mandi",
-    image: "/mandi9.png",
-    targetId: "section-chicken-mandi",
-    height: { compact: "h-[68px]", normal: "h-[80px]" },
-  },
-  {
-    label: "Starters",
-    image: "/starterimg.webp",
-    targetId: "section-chicken-starters",
-    height: { compact: "h-[68px]", normal: "h-[80px]" },
-  },
-  { label: "Rotis", image: "/rotis.png", targetId: "section-rotis" },
-  { label: "Desserts", image: "/desert.png", targetId: "section-desserts" },
-];
-
-const DEFAULT_HEIGHT = { compact: "h-[82px]", normal: "h-[96px]" };
+function resolveTargetId(category, sections) {
+  const section = category.sectionId
+    ? sections.find((candidate) => candidate.id === category.sectionId)
+    : sections.find((candidate) => candidate.heading === category.sectionTitle);
+  return section ? sectionId(section.heading) : null;
+}
 
 export default function MenuCategories({ compact = false }) {
+  const { categories, sections } = useMenuData();
+
   const scrollToSection = (targetId) => {
+    if (!targetId) return;
     document.getElementById(targetId)?.scrollIntoView({
       behavior: "smooth",
       block: "start",
@@ -37,33 +30,27 @@ export default function MenuCategories({ compact = false }) {
       }
     >
       <div className="grid grid-cols-4 gap-4">
-        {menuCategories.map((item) => (
+        {categories.map((category) => (
           <motion.button
             type="button"
-            key={item.label}
-            onClick={() => scrollToSection(item.targetId)}
+            key={category.id}
+            onClick={() => scrollToSection(resolveTargetId(category, sections))}
             whileTap={{ scale: 0.9 }}
             transition={{ type: "spring", stiffness: 500, damping: 20 }}
             className="flex min-w-0 flex-col items-center gap-3 text-[13px] font-black text-[#5f554c]"
           >
-            <span
-              className={`relative w-full ${
-                compact
-                  ? item.height?.compact || DEFAULT_HEIGHT.compact
-                  : item.height?.normal || DEFAULT_HEIGHT.normal
-              }`}
-            >
-              {item.image ? (
+            <span className={`relative w-full ${compact ? "h-[68px]" : "h-[80px]"}`}>
+              {category.imageUrl ? (
                 <Image
-                  src={item.image}
-                  alt={item.label}
+                  src={category.imageUrl}
+                  alt={category.label}
                   fill
                   sizes="25vw"
                   className="object-contain"
                 />
               ) : null}
             </span>
-            {item.label}
+            {category.label}
           </motion.button>
         ))}
       </div>

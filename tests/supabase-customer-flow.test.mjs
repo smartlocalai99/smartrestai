@@ -50,8 +50,14 @@ test("persists a complete order before clearing checkout", async () => {
   assert.match(checkout, /subtotal,/);
   assert.match(checkout, /discount,/);
   assert.match(checkout, /deliveryFee,/);
-  assert.match(checkout, /const deliveryFee = 0;/);
-  assert.match(checkout, /const total = Math\.max\(subtotal - discount, 0\);/);
+  assert.match(
+    checkout,
+    /const deliveryFee =\s*items\.length > 0 && profile \? calculateDeliveryFee\(profile, subtotal, defaultAddress\)\.fee : 0;/
+  );
+  assert.match(
+    checkout,
+    /const total = Math\.max\(subtotal - discount \+ deliveryFee, 0\);/
+  );
   assert.match(checkout, />FREE</);
   assert.match(checkout, /deliveryAddress: defaultAddress/);
   assert.match(checkout, /paymentMethod: method/);
