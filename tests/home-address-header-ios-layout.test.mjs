@@ -16,7 +16,8 @@ test("shows the signed-in customer's address in the home location control", asyn
     source,
     /const displayAddress =\s*isLoggedIn && defaultAddress\?\.line\?\.trim\(\)\s*\? defaultAddress\.line\.trim\(\)\s*:\s*"Kadapa"/
   );
-  assert.match(source, /onClick=\{\(\) => router\.push\("\/addresses"\)\}/);
+  assert.match(source, /onClick=\{onLocationClick\}/);
+  assert.doesNotMatch(source, /onClick=\{\(\) => router\.push\("\/addresses"\)\}/);
   assert.match(source, /<IoLocationOutline className="h-5 w-5"/);
   assert.doesNotMatch(source, /<IoHome className="h-5 w-5"/);
   assert.match(source, /truncate text-sm font-black/);
@@ -27,20 +28,17 @@ test("shows the signed-in customer's address in the home location control", asyn
   );
 });
 
-test("opens and dismisses the Saved Addresses route from the bottom", async () => {
-  const source = await readSource("pages/addresses.js");
+test("opens an address selector over Home without animating the address route", async () => {
+  const [home, addresses] = await Promise.all([
+    readSource("pages/index.js"),
+    readSource("pages/addresses.js"),
+  ]);
 
-  assert.match(source, /IoChevronBack/);
-  assert.match(source, /const \[isClosing, setIsClosing\] = useState\(false\)/);
-  assert.match(source, /const closeAddressPage = \(\) => setIsClosing\(true\)/);
-  assert.match(source, /initial=\{\{ y: "100%" \}\}/);
-  assert.match(source, /animate=\{\{ y: isClosing \? "100%" : 0 \}\}/);
-  assert.match(source, /onAnimationComplete=\{handlePageAnimationComplete\}/);
-  assert.match(source, /window\.history\.length > 1/);
-  assert.match(source, /router\.back\(\)/);
-  assert.match(source, /router\.replace\("\/"\)/);
-  assert.match(source, /aria-label="Back to previous page"/);
-  assert.match(source, /className="\[&>header\]:pl-16"/);
+  assert.match(home, /import HomeAddressSheet from "@\/components\/customer\/HomeAddressSheet"/);
+  assert.match(home, /const \[isAddressSheetOpen, setIsAddressSheetOpen\] = useState\(false\)/);
+  assert.match(home, /onLocationClick=\{\(\) => setIsAddressSheetOpen\(true\)\}/);
+  assert.match(home, /<AnimatePresence>[\s\S]*?<HomeAddressSheet/);
+  assert.doesNotMatch(addresses, /IoChevronBack|isClosing|closeAddressPage/);
 });
 
 test("does not reserve a separate bottom safe area in the installed app", async () => {

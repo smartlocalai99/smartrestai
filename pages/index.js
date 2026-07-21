@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence } from "motion/react";
 import AppShell from "@/components/customer/AppShell";
+import HomeAddressSheet from "@/components/customer/HomeAddressSheet";
 import MenuCategories from "@/components/customer/MenuCategories";
 import PageHead from "@/components/customer/PageHead";
 import RestaurantInfo from "@/components/customer/RestaurantInfo";
@@ -17,6 +19,7 @@ export default function Home() {
   const { sections } = useMenuData();
   const [vegOnly, setVegOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
   const topRef = useRef(null);
 
   const searchSuggestions = useMemo(
@@ -46,7 +49,11 @@ export default function Home() {
 
       <AppShell contentClassName="bg-[#f5f5fa]">
         <div ref={topRef} />
-        <HomeLocationBar vegOnly={vegOnly} onVegModeChange={setVegOnly} />
+        <HomeLocationBar
+          vegOnly={vegOnly}
+          onVegModeChange={setVegOnly}
+          onLocationClick={() => setIsAddressSheetOpen(true)}
+        />
         <HomeSearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -59,6 +66,15 @@ export default function Home() {
           <RestaurantInfo />
         </div>
       </AppShell>
+
+      <AnimatePresence>
+        {isAddressSheetOpen ? (
+          <HomeAddressSheet
+            key="home-address-sheet"
+            onClose={() => setIsAddressSheetOpen(false)}
+          />
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }

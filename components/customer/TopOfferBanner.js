@@ -42,8 +42,7 @@ function VegModeToggle({ vegOnly, onChange }) {
   );
 }
 
-function LocationHeader({ vegOnly, onVegModeChange }) {
-  const router = useRouter();
+function LocationHeader({ vegOnly, onVegModeChange, onLocationClick }) {
   const { isLoggedIn } = useAuth();
   const { defaultAddress } = useAddresses();
   const displayAddress =
@@ -56,7 +55,7 @@ function LocationHeader({ vegOnly, onVegModeChange }) {
       <motion.button
         type="button"
         aria-label={`Change delivery location. Current location: ${displayAddress}`}
-        onClick={() => router.push("/addresses")}
+        onClick={onLocationClick}
         whileTap={{ scale: 0.96 }}
         className="flex min-w-0 flex-1 items-center gap-2 rounded-full text-left"
       >
@@ -186,12 +185,17 @@ function OfferCard({ offer, onOrderNow }) {
   );
 }
 
-export function HomeLocationBar({ vegOnly = false, onVegModeChange = () => {} }) {
+export function HomeLocationBar({
+  vegOnly = false,
+  onVegModeChange = () => {},
+  onLocationClick = () => {},
+}) {
   return (
     <section className="relative shrink-0 overflow-hidden bg-[#32120d] px-5 pb-5 pt-[calc(1.5rem+env(safe-area-inset-top))] text-white">
       <LocationHeader
         vegOnly={vegOnly}
         onVegModeChange={onVegModeChange}
+        onLocationClick={onLocationClick}
       />
     </section>
   );
