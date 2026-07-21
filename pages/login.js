@@ -296,7 +296,7 @@ export default function Login() {
     <>
       <PageHead title="Log in - SmartRest" />
 
-      <main className="h-full w-full overflow-hidden bg-white">
+      <main className="fixed inset-0 overflow-hidden bg-white">
         <section className="relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-hidden bg-white">
           <div className="absolute top-0 left-0 z-20 flex items-center px-5 pt-[calc(1.5rem+env(safe-area-inset-top))]">
             <button
