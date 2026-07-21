@@ -4,13 +4,16 @@ import BottomNav from "@/components/customer/BottomNav";
 export default function AppShell({
   children,
   contentClassName = "",
+  sectionClassName = "bg-white",
   showCheckoutButton = true,
 }) {
   const { checkoutSummary } = useCart();
 
   return (
     <main className="fixed inset-0 touch-manipulation overflow-hidden overscroll-none bg-[#32120d] p-0 text-[#211712] [-webkit-tap-highlight-color:transparent]">
-      <section className="relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-hidden bg-white">
+      <section
+        className={`relative mx-auto flex h-full w-full max-w-[430px] flex-col overflow-hidden ${sectionClassName}`}
+      >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 z-50 bg-[#32120d]"

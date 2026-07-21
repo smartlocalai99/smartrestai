@@ -29,7 +29,11 @@ test("extends the branded empty-state background to the bottom navigation", asyn
   );
   assert.match(
     orders,
-    /<AppShell contentClassName={isEmpty \? "bg-\[#f5f5f5\]" : ""}>/
+    /contentClassName={isEmpty \? "bg-\[#f5f5f5\]" : ""}/
+  );
+  assert.match(
+    orders,
+    /sectionClassName={isEmpty \? "bg-\[#f5f5f5\]" : "bg-white"}/
   );
   assert.match(orders, /bgClassName="bg-\[#f5f5f5\]"/);
   assert.match(orders, /className={`flex min-h-full flex-col/);

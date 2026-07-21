@@ -21,7 +21,7 @@ export default function Orders() {
     return (
       <>
         <PageHead title="Your Orders - SmartRest" />
-        <AppShell contentClassName="bg-[#f5f5f5]">
+        <AppShell contentClassName="bg-[#f5f5f5]" sectionClassName="bg-[#f5f5f5]">
           <div className="flex min-h-full flex-col bg-[#f5f5f5]">
             <TabPageHeader title="Orders" subtitle="Track your current and past orders" />
             <EmptyState
@@ -43,7 +43,10 @@ export default function Orders() {
     <>
       <PageHead title="Your Orders - SmartRest" />
 
-      <AppShell contentClassName={isEmpty ? "bg-[#f5f5f5]" : ""}>
+      <AppShell
+        contentClassName={isEmpty ? "bg-[#f5f5f5]" : ""}
+        sectionClassName={isEmpty ? "bg-[#f5f5f5]" : "bg-white"}
+      >
         <div
           className={`flex min-h-full flex-col ${
             !isLoadingOrders && orders.length === 0 ? "bg-[#f5f5f5]" : "bg-white"

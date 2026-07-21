@@ -53,7 +53,8 @@ test("uses a white app shell behind the original glass navigation", async () => 
     ),
   ]);
 
-  assert.match(shellSource, /max-w-\[430px\][^\"]*bg-white/);
+  assert.match(shellSource, /max-w-\[430px\][^`]*\$\{sectionClassName\}/);
+  assert.match(shellSource, /sectionClassName = "bg-white"/);
   assert.match(source, /bg-white\/\[0\.42\]/);
   assert.match(source, /backdrop-blur-\[42px\]/);
   assert.match(source, /bg-gradient-to-b/);
