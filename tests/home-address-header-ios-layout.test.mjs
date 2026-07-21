@@ -40,6 +40,7 @@ test("opens and dismisses the Saved Addresses route from the bottom", async () =
   assert.match(source, /router\.back\(\)/);
   assert.match(source, /router\.replace\("\/"\)/);
   assert.match(source, /aria-label="Back to previous page"/);
+  assert.match(source, /className="\[&>header\]:pl-16"/);
 });
 
 test("does not reserve a separate bottom safe area in the installed app", async () => {

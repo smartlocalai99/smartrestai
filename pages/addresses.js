@@ -327,7 +327,9 @@ export default function Addresses() {
               <IoChevronBack className="h-5 w-5" aria-hidden="true" />
             </motion.button>
 
-            <TabPageHeader title="Saved Addresses" subtitle="Where should we deliver your order?" />
+            <div className="[&>header]:pl-16">
+              <TabPageHeader title="Saved Addresses" subtitle="Where should we deliver your order?" />
+            </div>
 
             {redirectParam && addresses.length === 0 ? (
               <div className="mx-4 mt-3 rounded-2xl border border-[#f3d4d0] bg-[#fdf6f4] px-4 py-3">

@@ -75,8 +75,8 @@ test("uses a shorter bottom navigation and matching content clearance", async ()
   assert.match(source, /flex h-14 min-w-0/);
   assert.match(source, /Icon className="h-6 w-6 shrink-0"/);
   assert.doesNotMatch(source, /flex h-16 min-w-0/);
-  // Content clearance now also accounts for the home-indicator safe area
-  // on notched devices, on top of the shorter nav's own height.
+  // Keep fixed content clearance for the shorter nav without reserving a
+  // separate home-indicator strip below the app surface.
   assert.match(shellSource, /pb-24/);
   assert.doesNotMatch(shellSource, /safe-area-inset-bottom/);
   assert.doesNotMatch(shellSource, /pb-28/);
