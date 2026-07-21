@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { motion } from "motion/react";
-import { IoChevronDown, IoHome, IoMicOutline, IoSearch } from "react-icons/io5";
+import {
+  IoChevronDown,
+  IoLocationOutline,
+  IoMicOutline,
+  IoSearch,
+} from "react-icons/io5";
+import { useAddresses } from "@/context/AddressContext";
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useMenuData } from "@/context/MenuDataContext";
 import LazyImage from "./LazyImage";
@@ -36,30 +43,36 @@ function VegModeToggle({ vegOnly, onChange }) {
 }
 
 function LocationHeader({ vegOnly, onVegModeChange }) {
+  const router = useRouter();
+  const { isLoggedIn } = useAuth();
+  const { defaultAddress } = useAddresses();
+  const displayAddress =
+    isLoggedIn && defaultAddress?.line?.trim()
+      ? defaultAddress.line.trim()
+      : "Kadapa";
+
   return (
     <div className="relative z-10 flex items-center justify-between gap-4">
       <motion.button
         type="button"
-        aria-label="Change delivery location"
+        aria-label={`Change delivery location. Current location: ${displayAddress}`}
+        onClick={() => router.push("/addresses")}
         whileTap={{ scale: 0.96 }}
-        className="flex min-w-0 items-center gap-2 rounded-full"
+        className="flex min-w-0 flex-1 items-center gap-2 rounded-full text-left"
       >
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#fff7df] text-[#8f2f1d] shadow-lg">
-          <IoHome className="h-5 w-5" />
+          <IoLocationOutline className="h-5 w-5" aria-hidden="true" />
         </span>
 
         <span className="flex min-w-0 items-center gap-1.5">
-          <span className="truncate text-xl font-black leading-none">
-            Kadapa
+          <span className="truncate text-sm font-black leading-tight">
+            {displayAddress}
           </span>
-          <IoChevronDown className="mt-0.5 h-4 w-4 shrink-0" />
+          <IoChevronDown className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
         </span>
       </motion.button>
 
-      <VegModeToggle
-        vegOnly={vegOnly}
-        onChange={onVegModeChange}
-      />
+      <VegModeToggle vegOnly={vegOnly} onChange={onVegModeChange} />
     </div>
   );
 }
