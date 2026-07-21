@@ -80,7 +80,7 @@ describe("OrderTrackingExperience", () => {
 
     fireEvent.click(screen.getByRole("tab", { name: "Previous Orders" }));
 
-    expect(screen.getByRole("tabpanel")).toHaveClass("bg-[#f6f6f6]");
+    expect(screen.getByRole("tabpanel")).toHaveClass("bg-[#f5f5f5]");
 
     const history = screen.getByRole("region", { name: "Previous Orders" });
     expect(within(history).getByText("Old Mandi")).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe("OrderTrackingExperience", () => {
     );
 
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
-    expect(screen.getByTestId("previous-orders-surface")).toHaveClass("bg-[#f6f6f6]");
+    expect(screen.getByTestId("previous-orders-surface")).toHaveClass("bg-[#f5f5f5]");
     expect(screen.getByRole("heading", { name: "Previous Orders" })).toBeInTheDocument();
     expect(screen.getByText("Order #PAST-24")).toBeInTheDocument();
   });

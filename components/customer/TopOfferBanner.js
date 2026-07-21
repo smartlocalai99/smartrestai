@@ -211,6 +211,21 @@ export default function TopOfferBanner() {
     setActiveIndex(Math.min(Math.max(index, 0), offers.length - 1));
   };
 
+  useEffect(() => {
+    if (offers.length < 2) return undefined;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+
+    const id = window.setInterval(() => {
+      const track = trackRef.current;
+      if (!track) return;
+      const currentIndex = Math.round(track.scrollLeft / track.clientWidth);
+      const nextIndex = (currentIndex + 1) % offers.length;
+      track.scrollTo({ left: nextIndex * track.clientWidth, behavior: "smooth" });
+    }, 4000);
+
+    return () => window.clearInterval(id);
+  }, [offers.length]);
+
   if (offers.length === 0) return null;
 
   return (

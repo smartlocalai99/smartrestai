@@ -33,9 +33,24 @@ function markerElement(className, label, { imageSrc = "", iconSvg = "" } = {}) {
 export default function OrderTrackingMap({ destination = {}, restaurant = {} }) {
   const containerRef = useRef(null);
   const [mapStatus, setMapStatus] = useState("loading");
+  // Depend on the primitive fields actually used by createMapEndpoints, not
+  // the destination/restaurant object references — those are fresh objects
+  // on every menu/order refetch even when nothing relevant changed, which
+  // was tearing down and rebuilding the whole map on a timer.
   const endpoints = useMemo(
     () => createMapEndpoints({ destination, restaurant }),
-    [destination, restaurant]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      destination.lat,
+      destination.lng,
+      destination.line,
+      destination.label,
+      restaurant.lat,
+      restaurant.lng,
+      restaurant.name,
+      restaurant.addressLine,
+      restaurant.address,
+    ]
   );
 
   useEffect(() => {

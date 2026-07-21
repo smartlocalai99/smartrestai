@@ -67,11 +67,29 @@ export function MenuDataProvider({ children }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, refetch)
       .on("postgres_changes", { event: "*", schema: "public", table: "offers" }, refetch)
       .on("postgres_changes", { event: "*", schema: "public", table: "menu_categories" }, refetch)
-      .subscribe();
+      .subscribe((status) => {
+        // Mobile browsers can silently drop the websocket when the app is
+        // backgrounded (screen lock, app switch) without the client ever
+        // firing a clean "closed" event, so it can sit stale until reload.
+        // Re-subscribing on reconnect plus the safety nets below keep the
+        // owner's restaurant status/menu updates arriving without one.
+        if (status === "SUBSCRIBED") refetch();
+      });
+
+    // Belt-and-braces: refetch whenever the tab/app comes back to the
+    // foreground, and on a short interval regardless, so a dropped
+    // realtime connection self-heals instead of requiring a full reload.
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") refetch();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    const pollId = window.setInterval(refetch, 20000);
 
     return () => {
       cancelled = true;
       client.removeChannel(channel);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.clearInterval(pollId);
     };
   }, [client]);
 

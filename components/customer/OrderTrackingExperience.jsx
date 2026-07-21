@@ -211,6 +211,7 @@ function PreviousOrders({ orders, accountPhone }) {
         imageAlt="Empty MANDI KING serving plate"
         title="No previous orders yet"
         message="Your completed and cancelled orders will appear here."
+        bgClassName="bg-[#f5f5f5]"
       />
     );
   }
@@ -239,7 +240,7 @@ export default function OrderTrackingExperience({
     return (
       <div
         data-testid="previous-orders-surface"
-        className="flex-1 bg-[#f6f6f6] px-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-2"
+        className="flex-1 bg-[#f5f5f5] px-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-2"
       >
         <PreviousOrders orders={previousOrders} accountPhone={accountPhone} />
       </div>
@@ -303,7 +304,7 @@ export default function OrderTrackingExperience({
           role="tabpanel"
           aria-labelledby="previous-orders-tab"
           data-testid="previous-orders-surface"
-          className="-mx-4 min-h-[430px] bg-[#f6f6f6] px-4 pt-1"
+          className="-mx-4 min-h-[430px] bg-[#f5f5f5] px-4 pt-1"
         >
           <PreviousOrders orders={previousOrders} accountPhone={accountPhone} />
         </div>

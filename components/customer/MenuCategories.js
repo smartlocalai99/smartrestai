@@ -30,39 +30,43 @@ export default function MenuCategories({ compact = false }) {
       }
     >
       <div className="grid grid-cols-4 gap-4">
-        {categories.map((category) => (
-          <motion.button
-            type="button"
-            key={category.id}
-            onClick={() => scrollToSection(resolveTargetId(category, sections))}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 500, damping: 20 }}
-            className="flex min-w-0 flex-col items-center gap-3 text-[13px] font-black text-[#5f554c]"
-          >
-            <span
-              className={`relative w-full ${
-                category.label.trim().toLowerCase() === "starters"
-                  ? compact
-                    ? "h-[58px]"
-                    : "h-[68px]"
-                  : compact
-                    ? "h-[68px]"
-                    : "h-[80px]"
-              }`}
+        {categories.map((category) => {
+          const isStarters = category.label.trim().toLowerCase() === "starters";
+
+          return (
+            <motion.button
+              type="button"
+              key={category.id}
+              onClick={() => scrollToSection(resolveTargetId(category, sections))}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 500, damping: 20 }}
+              className="flex min-w-0 flex-col items-center gap-3 text-[13px] font-black text-[#5f554c]"
             >
-              {category.imageUrl ? (
-                <Image
-                  src={category.imageUrl}
-                  alt={category.label}
-                  fill
-                  sizes="25vw"
-                  className="object-contain"
-                />
-              ) : null}
-            </span>
-            {category.label}
-          </motion.button>
-        ))}
+              <span
+                className={`relative flex w-full items-end justify-center ${
+                  compact ? "h-[68px]" : "h-[80px]"
+                }`}
+              >
+                {category.imageUrl ? (
+                  <span
+                    className={`relative w-full ${
+                      isStarters ? (compact ? "h-[56px]" : "h-[66px]") : "h-full"
+                    }`}
+                  >
+                    <Image
+                      src={category.imageUrl}
+                      alt={category.label}
+                      fill
+                      sizes="25vw"
+                      className="object-contain"
+                    />
+                  </span>
+                ) : null}
+              </span>
+              {category.label}
+            </motion.button>
+          );
+        })}
       </div>
     </section>
   );

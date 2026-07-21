@@ -34,5 +34,5 @@ test("extends the branded empty-state background to the bottom navigation", asyn
   assert.match(orders, /bgClassName="bg-\[#f5f5f5\]"/);
   assert.match(orders, /className={`flex min-h-full flex-col/);
   assert.match(orderExperience, /data-testid="previous-orders-surface"/);
-  assert.match(orderExperience, /bg-\[#f6f6f6\]/);
+  assert.match(orderExperience, /bg-\[#f5f5f5\]/);
 });
