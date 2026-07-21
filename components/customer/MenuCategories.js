@@ -39,7 +39,17 @@ export default function MenuCategories({ compact = false }) {
             transition={{ type: "spring", stiffness: 500, damping: 20 }}
             className="flex min-w-0 flex-col items-center gap-3 text-[13px] font-black text-[#5f554c]"
           >
-            <span className={`relative w-full ${compact ? "h-[68px]" : "h-[80px]"}`}>
+            <span
+              className={`relative w-full ${
+                category.label.trim().toLowerCase() === "starters"
+                  ? compact
+                    ? "h-[58px]"
+                    : "h-[68px]"
+                  : compact
+                    ? "h-[68px]"
+                    : "h-[80px]"
+              }`}
+            >
               {category.imageUrl ? (
                 <Image
                   src={category.imageUrl}

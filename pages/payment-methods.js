@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { IoCashOutline, IoCheckmarkCircle, IoPhonePortraitOutline } from "react-icons/io5";
-import { SiGooglepay, SiPaytm, SiPhonepe } from "react-icons/si";
+import { FcGoogle } from "react-icons/fc";
+import { SiPaytm, SiPhonepe } from "react-icons/si";
 import AppShell from "@/components/customer/AppShell";
 import PageHead from "@/components/customer/PageHead";
 import TabPageHeader from "@/components/customer/TabPageHeader";
@@ -11,7 +12,7 @@ const ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline };
 
 const UPI_APPS = [
   { label: "PhonePe", Icon: SiPhonepe, color: "text-[#5f259f]" },
-  { label: "Google Pay", Icon: SiGooglepay, color: "text-[#4285f4]" },
+  { label: "Google Pay", Icon: FcGoogle, color: "", isColored: true },
   { label: "Paytm", Icon: SiPaytm, color: "text-[#00baf2]" },
 ];
 
@@ -65,15 +66,22 @@ export default function PaymentMethods() {
                     </p>
                     {method.id === "upi" ? (
                       <span className="mt-3 flex flex-wrap gap-2">
-                        {UPI_APPS.map(({ label, Icon: AppIcon, color }) => (
+                        {UPI_APPS.map(({ label, Icon: AppIcon, color, isColored }) => (
                           <span
                             key={label}
                             role="img"
                             aria-label={label}
                             title={label}
-                            className="grid h-10 w-12 place-items-center rounded-xl border border-[#e9e0d8] bg-white shadow-[0_4px_12px_rgba(50,18,13,0.06)]"
+                            className="grid h-10 w-12 place-items-center gap-0.5 rounded-xl border border-[#e9e0d8] bg-white shadow-[0_4px_12px_rgba(50,18,13,0.06)]"
                           >
-                            <AppIcon aria-hidden="true" className={`h-6 w-7 ${color}`} />
+                            {isColored ? (
+                              <span className="flex items-center gap-0.5">
+                                <AppIcon aria-hidden="true" className="h-4 w-4" />
+                                <span className="text-[10px] font-bold text-[#5f554c]">Pay</span>
+                              </span>
+                            ) : (
+                              <AppIcon aria-hidden="true" className={`h-6 w-6 ${color}`} />
+                            )}
                           </span>
                         ))}
                       </span>

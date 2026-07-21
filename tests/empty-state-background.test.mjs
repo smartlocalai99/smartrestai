@@ -25,13 +25,13 @@ test("extends the branded empty-state background to the bottom navigation", asyn
   assert.match(favorites, /className={`flex min-h-full flex-col/);
   assert.match(
     orders,
-    /!isLoadingOrders && orders\.length === 0 \? "bg-\[#f3ede4\]" : "bg-white"/
+    /!isLoadingOrders && orders\.length === 0 \? "bg-\[#f5f5f5\]" : "bg-white"/
   );
   assert.match(
     orders,
-    /<AppShell contentClassName={isEmpty \? "bg-\[#f3ede4\]" : ""}>/
+    /<AppShell contentClassName={isEmpty \? "bg-\[#f5f5f5\]" : ""}>/
   );
-  assert.match(orders, /bgClassName="bg-\[#f3ede4\]"/);
+  assert.match(orders, /bgClassName="bg-\[#f5f5f5\]"/);
   assert.match(orders, /className={`flex min-h-full flex-col/);
   assert.match(orderExperience, /data-testid="previous-orders-surface"/);
   assert.match(orderExperience, /bg-\[#f6f6f6\]/);

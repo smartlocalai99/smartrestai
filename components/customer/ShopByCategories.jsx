@@ -184,10 +184,9 @@ export function ProductCard({
   const trait = foodTraitForItem(item, sectionTitle);
   const TraitIcon = trait.icon;
   const isSoldOut = item.isAvailable === false;
-  const isAddDisabled = isSoldOut || isOrderingDisabled;
 
   return (
-    <article className={`relative flex h-full flex-col bg-white ${isAddDisabled ? "opacity-60" : ""}`}>
+    <article className={`relative flex h-full flex-col bg-white ${isSoldOut ? "opacity-60" : ""}`}>
       <div className="relative h-[150px] w-full overflow-hidden rounded-[20px] bg-[#f4eee9]">
         <LazyImage
           src={item.imageUrl || PLACEHOLDER_IMAGE}
@@ -228,9 +227,16 @@ export function ProductCard({
           )}
         </div>
 
-        <h4 className="overflow-hidden text-[16px] font-black leading-[1.08] text-[#202020] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
-          {item.title}
-        </h4>
+        <div className="flex items-start justify-between gap-1.5">
+          <h4 className="min-w-0 overflow-hidden text-[16px] font-black leading-[1.08] text-[#202020] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+            {item.title}
+          </h4>
+          {item.badgeText ? (
+            <span className="shrink-0 rounded-full bg-[#ef4f61] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-white">
+              {item.badgeText}
+            </span>
+          ) : null}
+        </div>
 
         <p className="min-h-[28px] overflow-hidden text-[11px] font-medium leading-[1.25] text-[#756b64] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
           {item.description || "Freshly prepared and packed for your order."}
@@ -340,6 +346,7 @@ function LazyItemGrid({ items, renderItem }) {
 
 function CollapsibleSection({
   title,
+  badgeText,
   children,
   isOpen,
   onToggle,
@@ -357,7 +364,14 @@ function CollapsibleSection({
         whileTap={{ scale: 0.99 }}
         className={`mb-3 flex w-full items-center justify-between gap-3 text-left ${titleSize} font-semibold leading-tight text-[#202020]`}
       >
-        <span>{title}</span>
+        <span className="inline-flex min-w-0 items-baseline gap-2">
+          <span className="truncate">{title}</span>
+          {badgeText ? (
+            <span className="shrink-0 self-start rounded-full bg-[#ef4f61] px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">
+              {badgeText}
+            </span>
+          ) : null}
+        </span>
         <LuChevronDown
           className={`h-5 w-5 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
         />
@@ -510,9 +524,6 @@ export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
   const { sections, isLoading, profile } = useMenuData();
   const { cart, changeQuantity } = useCart();
   const isOrderingDisabled = profile ? profile.busyMode || !profile.isOpen : false;
-  const closedReason = profile?.busyMode
-    ? "The restaurant is very busy right now and isn't accepting new orders."
-    : "The restaurant is currently closed.";
 
   const recommendedItems = useMemo(
     () =>
@@ -609,12 +620,6 @@ export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
   return (
     <section className="w-full bg-transparent px-4 pb-8 pt-2 sm:px-6 lg:pb-8 lg:pt-8">
       <div className="mx-auto max-w-3xl">
-        {isOrderingDisabled ? (
-          <p className="mb-4 rounded-xl bg-[#fdf1ef] px-3 py-2.5 text-center text-[13px] font-bold text-[#c0402a]">
-            {closedReason} You can browse the menu, but ordering is turned off right now.
-          </p>
-        ) : null}
-
         {showRecommended && recommendedItems.length > 0 ? (
           <CollapsibleSection
             title="Recommended"
@@ -648,6 +653,7 @@ export default function PopularChoices({ vegOnly = false, searchQuery = "" }) {
             <CollapsibleSection
               key={section.heading}
               title={section.heading}
+              badgeText={section.badgeText}
               isOpen={openSections[section.heading] ?? true}
               onToggle={() => toggleSection(section.heading)}
             >

@@ -36,7 +36,7 @@ test("renders rounded PhonePe, Google Pay, and Paytm logos without Card", async 
   ]);
 
   assert.match(page, /SiPhonepe/);
-  assert.match(page, /SiGooglepay/);
+  assert.match(page, /FcGoogle/);
   assert.match(page, /SiPaytm/);
   assert.match(page, /label: "PhonePe"/);
   assert.match(page, /label: "Google Pay"/);

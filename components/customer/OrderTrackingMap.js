@@ -7,7 +7,13 @@ import {
   createVisualRoute,
 } from "@/lib/orderTrackingMap.mjs";
 
-function markerElement(className, label, imageSrc = "") {
+const HOME_ICON_SVG =
+  '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+  '<path d="M3 11.5L12 4l9 7.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+  '<path d="M5.5 10v8.5a1 1 0 0 0 1 1H17.5a1 1 0 0 0 1-1V10" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+  "</svg>";
+
+function markerElement(className, label, { imageSrc = "", iconSvg = "" } = {}) {
   const marker = document.createElement("div");
   marker.className = className;
   marker.setAttribute("aria-label", label);
@@ -17,6 +23,8 @@ function markerElement(className, label, imageSrc = "") {
     image.src = imageSrc;
     image.alt = label;
     marker.appendChild(image);
+  } else if (iconSvg) {
+    marker.innerHTML = iconSvg;
   }
 
   return marker;
@@ -84,7 +92,7 @@ export default function OrderTrackingMap({ destination = {}, restaurant = {} }) 
             element: markerElement(
               "order-map-marker order-map-marker--restaurant",
               `${endpoints.restaurant.name} restaurant`,
-              "/applogo.jpeg"
+              { imageSrc: "/applogo.jpeg" }
             ),
           })
             .setLngLat(endpoints.restaurant.coordinates)
@@ -93,7 +101,8 @@ export default function OrderTrackingMap({ destination = {}, restaurant = {} }) 
           new maplibregl.Marker({
             element: markerElement(
               "order-map-marker order-map-marker--customer",
-              "Customer address"
+              "Customer address",
+              { iconSvg: HOME_ICON_SVG }
             ),
           })
             .setLngLat(endpoints.customer.coordinates)
@@ -183,6 +192,7 @@ export default function OrderTrackingMap({ destination = {}, restaurant = {} }) 
           <span
             className="order-map-fallback-marker order-map-fallback-marker--customer"
             aria-hidden="true"
+            dangerouslySetInnerHTML={{ __html: HOME_ICON_SVG }}
           />
         </div>
       ) : null}
