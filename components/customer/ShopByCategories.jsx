@@ -215,7 +215,7 @@ export function ProductCard({
             <span className={`h-2 w-2 rounded-full ${item.isVeg ? "bg-[#32120d]" : "bg-[#ef4f61]"}`} />
           </span>
 
-          {item.isBestseller ? (
+          {item.badgeText ? null : item.isBestseller ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2d6] px-2 py-1 text-[11px] font-black text-[#8f2f1d]">
               Bestseller
             </span>
