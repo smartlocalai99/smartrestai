@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "motion/react";
 import {
   IoArrowBack,
-  IoCardOutline,
   IoCashOutline,
   IoChevronForward,
   IoCloseCircle,
@@ -22,10 +21,9 @@ import { useCart } from "@/context/CartContext";
 import { useMenuData } from "@/context/MenuDataContext";
 import { useOrders } from "@/context/OrdersContext";
 import { usePayment } from "@/context/PaymentContext";
-import { calculateDeliveryFee } from "@/lib/deliveryFee.mjs";
 import { playOrderSuccessSound } from "@/lib/sounds";
 
-const PAYMENT_ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline, card: IoCardOutline };
+const PAYMENT_ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline };
 
 const AVAILABLE_COUPONS = [
   { code: "SPICE10", rate: 0.1, description: "Save 10% on this order" },
@@ -188,9 +186,8 @@ export default function Checkout() {
 
   const subtotal = checkoutSummary.totalAmount;
   const discount = appliedOffer ? offerDiscount : appliedCoupon ? Math.round(subtotal * appliedCoupon.rate) : 0;
-  const deliveryFee =
-    items.length > 0 && profile ? calculateDeliveryFee(profile, subtotal, defaultAddress).fee : 0;
-  const total = Math.max(subtotal - discount + deliveryFee, 0);
+  const deliveryFee = 0;
+  const total = Math.max(subtotal - discount, 0);
 
   const isClosed = profile ? profile.busyMode || !profile.isOpen : false;
   const closedReason = profile?.busyMode
@@ -479,8 +476,8 @@ export default function Checkout() {
                       <span>₹{subtotal}</span>
                     </div>
                     <div className="flex items-center justify-between text-[13px] font-semibold text-[#5f554c]">
-                      <span>Delivery fees</span>
-                      <span>₹{deliveryFee}</span>
+                      <span>Delivery charges</span>
+                      <span className="font-black text-[#3c7c5b]">FREE</span>
                     </div>
                     {discount > 0 ? (
                       <div className="flex items-center justify-between text-[13px] font-semibold text-[#32120d]">

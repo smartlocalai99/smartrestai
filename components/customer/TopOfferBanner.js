@@ -12,35 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useMenuData } from "@/context/MenuDataContext";
 import LazyImage from "./LazyImage";
-
-function VegModeToggle({ vegOnly, onChange }) {
-  return (
-    <motion.button
-      type="button"
-      role="switch"
-      aria-checked={vegOnly}
-      aria-label="Veg or non-veg mode"
-      onClick={() => onChange(!vegOnly)}
-      whileTap={{ scale: 0.92 }}
-      className="flex h-11 w-[74px] shrink-0 flex-col items-center justify-center gap-1 rounded-full bg-black/10 px-2 backdrop-blur-sm"
-    >
-      <span className="w-full text-center text-[9px] font-black leading-none tracking-wide text-white drop-shadow">
-        {vegOnly ? "VEG" : "NON VEG"}
-      </span>
-
-      <span className="relative h-5 w-11 rounded-full bg-white p-0.5 shadow-lg ring-1 ring-white/70">
-        <motion.span
-          layout
-          transition={{ type: "spring", stiffness: 600, damping: 32 }}
-          className={`absolute top-0.5 h-4 w-4 rounded-full shadow-md ${
-            vegOnly ? "bg-[#3f7a54]" : "bg-[#d79b3f]"
-          }`}
-          style={{ left: vegOnly ? 26 : 2 }}
-        />
-      </span>
-    </motion.button>
-  );
-}
+import VegModeToggle from "./VegModeToggle";
 
 function LocationHeader({ vegOnly, onVegModeChange, onLocationClick }) {
   const { isLoggedIn } = useAuth();

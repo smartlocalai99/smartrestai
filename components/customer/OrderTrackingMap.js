@@ -1,22 +1,34 @@
-import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  CUSTOMER_POINT,
-  RESTAURANT,
   createFallbackMapUrl,
+  createMapEndpoints,
   createMapOptions,
   createVisualRoute,
 } from "@/lib/orderTrackingMap.mjs";
 
-function markerElement(className, label) {
+function markerElement(className, label, imageSrc = "") {
   const marker = document.createElement("div");
   marker.className = className;
   marker.setAttribute("aria-label", label);
+
+  if (imageSrc) {
+    const image = document.createElement("img");
+    image.src = imageSrc;
+    image.alt = label;
+    marker.appendChild(image);
+  }
+
   return marker;
 }
 
-export default function OrderTrackingMap({ destinationLabel }) {
+export default function OrderTrackingMap({ destination = {}, restaurant = {} }) {
   const containerRef = useRef(null);
   const [mapStatus, setMapStatus] = useState("loading");
+  const endpoints = useMemo(
+    () => createMapEndpoints({ destination, restaurant }),
+    [destination, restaurant]
+  );
 
   useEffect(() => {
     if (!containerRef.current) return undefined;
@@ -24,15 +36,17 @@ export default function OrderTrackingMap({ destinationLabel }) {
     let active = true;
     let map;
     let resizeObserver;
+    setMapStatus("loading");
+
     const loadTimeout = window.setTimeout(() => {
       if (active) setMapStatus("failed");
-    }, 8000);
+    }, 4500);
 
     import("maplibre-gl")
       .then(({ default: maplibregl }) => {
         if (!active || !containerRef.current) return;
 
-        map = new maplibregl.Map(createMapOptions(containerRef.current));
+        map = new maplibregl.Map(createMapOptions(containerRef.current, endpoints));
         map.on("error", () => {
           if (active && !map.loaded()) setMapStatus("failed");
         });
@@ -44,7 +58,7 @@ export default function OrderTrackingMap({ destinationLabel }) {
 
           map.addSource("delivery-route", {
             type: "geojson",
-            data: createVisualRoute(),
+            data: createVisualRoute(endpoints),
           });
           map.addLayer({
             id: "delivery-route-outline",
@@ -69,10 +83,11 @@ export default function OrderTrackingMap({ destinationLabel }) {
           new maplibregl.Marker({
             element: markerElement(
               "order-map-marker order-map-marker--restaurant",
-              RESTAURANT.name
+              `${endpoints.restaurant.name} restaurant`,
+              "/applogo.jpeg"
             ),
           })
-            .setLngLat(RESTAURANT.coordinates)
+            .setLngLat(endpoints.restaurant.coordinates)
             .addTo(map);
 
           new maplibregl.Marker({
@@ -81,18 +96,19 @@ export default function OrderTrackingMap({ destinationLabel }) {
               "Customer address"
             ),
           })
-            .setLngLat(CUSTOMER_POINT)
+            .setLngLat(endpoints.customer.coordinates)
             .addTo(map);
 
-          map.fitBounds([RESTAURANT.coordinates, CUSTOMER_POINT], {
-            padding: 54,
-            duration: 0,
-            maxZoom: 15.5,
-          });
+          map.fitBounds(
+            [endpoints.restaurant.coordinates, endpoints.customer.coordinates],
+            { padding: 54, duration: 0, maxZoom: 15.5 }
+          );
         });
 
-        resizeObserver = new ResizeObserver(() => map?.resize());
-        resizeObserver.observe(containerRef.current);
+        if (typeof ResizeObserver !== "undefined") {
+          resizeObserver = new ResizeObserver(() => map?.resize());
+          resizeObserver.observe(containerRef.current);
+        }
       })
       .catch(() => {
         if (active) setMapStatus("failed");
@@ -104,35 +120,38 @@ export default function OrderTrackingMap({ destinationLabel }) {
       resizeObserver?.disconnect();
       map?.remove();
     };
-  }, []);
+  }, [endpoints]);
 
-  const failed = mapStatus === "failed";
+  const ready = mapStatus === "ready";
 
   return (
     <div
       className="relative h-[290px] overflow-hidden bg-[#ebe7e2]"
-      aria-label={`Delivery map from ${RESTAURANT.name} to ${destinationLabel}`}
+      aria-label={`Delivery map from ${endpoints.restaurant.name} to ${endpoints.customer.label}`}
     >
+      <iframe
+        title={`OpenStreetMap delivery map to ${endpoints.customer.label}`}
+        src={createFallbackMapUrl(endpoints)}
+        className="absolute inset-0 h-full w-full border-0"
+        loading="eager"
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
+
       <div
         ref={containerRef}
-        className={`absolute inset-0 ${failed ? "invisible" : ""}`}
+        className={`absolute inset-0 transition-opacity duration-300 ${
+          ready ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
         aria-hidden="true"
       />
 
-      {failed ? (
-        <>
-          <iframe
-            title={`OpenStreetMap delivery map to ${destinationLabel}`}
-            src={createFallbackMapUrl()}
-            className="absolute inset-0 h-full w-full border-0"
-            loading="eager"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
+      {!ready ? (
+        <div className="pointer-events-none absolute inset-0">
           <svg
             aria-hidden="true"
             viewBox="0 0 430 290"
             preserveAspectRatio="none"
-            className="pointer-events-none absolute inset-0 h-full w-full"
+            className="absolute inset-0 h-full w-full"
           >
             <path
               d="M112 210 L164 146 L270 152 L326 82"
@@ -152,24 +171,32 @@ export default function OrderTrackingMap({ destinationLabel }) {
               strokeLinejoin="round"
             />
           </svg>
-        </>
-      ) : null}
-
-      {mapStatus === "loading" ? (
-        <div className="pointer-events-none absolute inset-0 grid place-items-center bg-[#ebe7e2]">
-          <span className="h-7 w-7 animate-spin rounded-full border-2 border-[#32120d]/20 border-t-[#32120d]" />
+          <span className="order-map-fallback-marker order-map-fallback-marker--restaurant">
+            <Image
+              src="/applogo.jpeg"
+              alt={`${endpoints.restaurant.name} restaurant`}
+              fill
+              sizes="38px"
+              className="object-cover"
+            />
+          </span>
+          <span
+            className="order-map-fallback-marker order-map-fallback-marker--customer"
+            aria-hidden="true"
+          />
         </div>
       ) : null}
 
-      <div className="pointer-events-none absolute inset-x-3 top-3 flex justify-between gap-3 text-[10px] font-black">
-        <span className="max-w-[46%] rounded-full bg-white/95 px-3 py-2 shadow">
-          MANDI KING
+      {mapStatus === "loading" ? (
+        <span className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-black text-[#32120d] shadow">
+          Loading live map…
         </span>
-        <span className="max-w-[46%] truncate rounded-full bg-white/95 px-3 py-2 shadow">
-          {destinationLabel}
-        </span>
-      </div>
-      <span className="sr-only">Visual route only. Live rider tracking is not available.</span>
+      ) : null}
+
+      <span className="sr-only">
+        Visual route from {endpoints.restaurant.name} to {endpoints.customer.label}. Live rider
+        tracking is not available.
+      </span>
     </div>
   );
 }

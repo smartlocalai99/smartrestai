@@ -1,13 +1,13 @@
-const CACHE_NAME = "smartrest-v6";
+const CACHE_NAME = "smartrest-v8";
 const APP_SHELL = [
   "/manifest.webmanifest",
   "/applogo.jpeg",
+  "/bannerlogin.png",
   "/pwa-icon-192.png",
   "/pwa-icon-512.png",
   "/pwa-icon-192-maskable.png",
   "/pwa-icon-512-maskable.png",
-  "/apple-touch-icon.png",
-  "/splash/iphone-1290x2796.png"
+  "/apple-touch-icon.png"
 ];
 
 self.addEventListener("install", (event) => {

@@ -82,8 +82,7 @@ create table if not exists public.restaurant_profile (
   free_delivery_min_amount numeric(10,2) check (free_delivery_min_amount is null or free_delivery_min_amount >= 0),
   payment_methods jsonb not null default '[
     {"id":"cod","label":"Cash on Delivery","enabled":true},
-    {"id":"upi","label":"UPI","enabled":true},
-    {"id":"card","label":"Card","enabled":true}
+    {"id":"upi","label":"UPI","enabled":true}
   ]'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

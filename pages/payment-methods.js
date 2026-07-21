@@ -1,12 +1,19 @@
 import { motion } from "motion/react";
-import { IoCardOutline, IoCashOutline, IoCheckmarkCircle, IoPhonePortraitOutline } from "react-icons/io5";
+import { IoCashOutline, IoCheckmarkCircle, IoPhonePortraitOutline } from "react-icons/io5";
+import { SiGooglepay, SiPaytm, SiPhonepe } from "react-icons/si";
 import AppShell from "@/components/customer/AppShell";
 import PageHead from "@/components/customer/PageHead";
 import TabPageHeader from "@/components/customer/TabPageHeader";
 import { usePayment } from "@/context/PaymentContext";
 import useRequireAuth from "@/hooks/useRequireAuth";
 
-const ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline, card: IoCardOutline };
+const ICONS = { cod: IoCashOutline, upi: IoPhonePortraitOutline };
+
+const UPI_APPS = [
+  { label: "PhonePe", Icon: SiPhonepe, color: "text-[#5f259f]" },
+  { label: "Google Pay", Icon: SiGooglepay, color: "text-[#4285f4]" },
+  { label: "Paytm", Icon: SiPaytm, color: "text-[#00baf2]" },
+];
 
 export default function PaymentMethods() {
   const { isReady } = useRequireAuth();
@@ -56,6 +63,21 @@ export default function PaymentMethods() {
                     <p className="mt-0.5 text-[12px] font-semibold leading-4 text-[#7d7169]">
                       {method.note}
                     </p>
+                    {method.id === "upi" ? (
+                      <span className="mt-3 flex flex-wrap gap-2">
+                        {UPI_APPS.map(({ label, Icon: AppIcon, color }) => (
+                          <span
+                            key={label}
+                            role="img"
+                            aria-label={label}
+                            title={label}
+                            className="grid h-10 w-12 place-items-center rounded-xl border border-[#e9e0d8] bg-white shadow-[0_4px_12px_rgba(50,18,13,0.06)]"
+                          >
+                            <AppIcon aria-hidden="true" className={`h-6 w-7 ${color}`} />
+                          </span>
+                        ))}
+                      </span>
+                    ) : null}
                   </div>
 
                   {isSelected ? (

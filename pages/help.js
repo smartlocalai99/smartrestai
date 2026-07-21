@@ -49,7 +49,7 @@ const FAQS = [
   },
   {
     q: "What payment methods do you accept?",
-    a: "Cash on Delivery, UPI and cards. Set your preferred option under Account → Payment Methods, and you can still change it at checkout.",
+    a: "Cash on Delivery and UPI. Set your preferred option under Account → Payment Methods, and you can still change it at checkout.",
   },
   {
     q: "Do you have vegetarian options?",

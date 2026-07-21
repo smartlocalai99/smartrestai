@@ -6,11 +6,13 @@ import PageHead from "@/components/customer/PageHead";
 import TabPageHeader from "@/components/customer/TabPageHeader";
 import { useAuth } from "@/context/AuthContext";
 import { useOrders } from "@/context/OrdersContext";
+import { useMenuData } from "@/context/MenuDataContext";
 
 export default function Orders() {
   const router = useRouter();
   const { user, isLoggedIn, isHydrated } = useAuth();
   const { orders, isLoadingOrders, ordersError, refreshOrders } = useOrders();
+  const { profile } = useMenuData();
   const isEmpty = !isLoadingOrders && orders.length === 0;
 
   if (!isHydrated) return null;
@@ -75,7 +77,11 @@ export default function Orders() {
               ctaHref="/"
             />
           ) : (
-            <OrderTrackingExperience orders={orders} accountPhone={user?.phone} />
+            <OrderTrackingExperience
+              orders={orders}
+              accountPhone={user?.phone}
+              restaurantProfile={profile}
+            />
           )}
         </div>
       </AppShell>

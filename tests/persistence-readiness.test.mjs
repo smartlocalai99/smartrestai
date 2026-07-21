@@ -22,6 +22,6 @@ test("persistent providers publish their existing hydration state", async () => 
   );
   assert.match(
     payment,
-    /return \{ methodId, setMethodId, method, methods, isHydrated \};[\s\S]*?\[methodId, methods, isHydrated\]/
+    /methodId: resolvedMethodId,[\s\S]*?setMethodId,[\s\S]*?method,[\s\S]*?methods,[\s\S]*?isHydrated,[\s\S]*?\[resolvedMethodId, methods, isHydrated\]/
   );
 });

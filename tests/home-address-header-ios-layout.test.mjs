@@ -28,6 +28,17 @@ test("shows the signed-in customer's address in the home location control", asyn
   );
 });
 
+test("uses both supplied food images in the sliding veg pill switch", async () => {
+  const source = await readSource("components/customer/VegModeToggle.jsx");
+
+  assert.match(source, /src="\/veg\.webp"/);
+  assert.match(source, /src="\/nonveg\.webp"/);
+  assert.match(source, /data-position=\{vegOnly \? "right" : "left"\}/);
+  assert.doesNotMatch(source, /rotate:/);
+  assert.doesNotMatch(source, /AnimatePresence/);
+  assert.match(source, /useReducedMotion/);
+});
+
 test("opens an address selector over Home without animating the address route", async () => {
   const [home, addresses] = await Promise.all([
     readSource("pages/index.js"),

@@ -51,3 +51,21 @@ test("hardens the shared timestamp trigger function", async () => {
     /revoke execute on function public\.set_updated_at\(\) from public, anon, authenticated/
   );
 });
+
+test("records customer order milestone timestamps at status transitions", async () => {
+  const migration = await read(
+    "supabase/migrations/20260721141159_customer_order_milestones.sql"
+  );
+
+  assert.match(migration, /add column if not exists ordered_at timestamptz/);
+  assert.match(migration, /add column if not exists picked_up_at timestamptz/);
+  assert.match(migration, /add column if not exists delivered_at timestamptz/);
+  assert.match(migration, /update public\.customer_orders\s+set ordered_at = placed_at/);
+  assert.match(migration, /set search_path = ''/);
+  assert.match(
+    migration,
+    /before insert or update of status on public\.customer_orders/
+  );
+  assert.match(migration, /new\.status in \('out_for_delivery', 'delivered'\)/);
+  assert.match(migration, /new\.status = 'delivered'/);
+});

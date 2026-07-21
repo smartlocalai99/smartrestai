@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 
 const menuCategories = [
   { label: "Mandi", image: "/mandi9.png", targetId: "section-chicken-mandi" },
-  { label: "Starters", image: "/starter.png", targetId: "section-chicken-starters" },
+  { label: "Starters", image: "/starterimg.webp", targetId: "section-chicken-starters" },
   { label: "Rotis", image: "/rotis.png", targetId: "section-rotis" },
   { label: "Desserts", image: "/desert.png", targetId: "section-desserts" },
 ];

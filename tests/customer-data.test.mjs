@@ -86,6 +86,9 @@ test("maps complete order snapshots in both directions", () => {
     deliveryAddress: {},
     paymentMethod: {},
     placedAt: "2026-07-14T10:00:00.000Z",
+    orderedAt: "2026-07-14T10:00:00.000Z",
+    pickedUpAt: "2026-07-14T10:20:00.000Z",
+    deliveredAt: null,
   };
 
   assert.deepEqual(orderFromRow(orderToRow("9999999999", order)), order);
@@ -105,6 +108,9 @@ test("maps legacy order gaps to safe database defaults", () => {
   assert.equal(row.delivery_fee, 0);
   assert.deepEqual(row.delivery_address, {});
   assert.equal(row.status, "preparing");
+  assert.equal(row.ordered_at, "2026-07-14T10:00:00.000Z");
+  assert.equal(row.picked_up_at, null);
+  assert.equal(row.delivered_at, null);
 });
 
 test("loads only addresses belonging to the normalized customer phone", async () => {
