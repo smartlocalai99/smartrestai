@@ -116,8 +116,9 @@ export function CartProvider({ children }) {
       offerDiscount,
       applyOffer,
       clearAppliedOffer,
+      isHydrated,
     };
-  }, [cart, appliedOffer]);
+  }, [cart, appliedOffer, isHydrated]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

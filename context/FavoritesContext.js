@@ -44,8 +44,9 @@ export function FavoritesProvider({ children }) {
       toggleFavorite,
       isFavorite: (id) => Boolean(favorites[id]),
       items: Object.values(favorites),
+      isHydrated,
     }),
-    [favorites]
+    [favorites, isHydrated]
   );
 
   return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;

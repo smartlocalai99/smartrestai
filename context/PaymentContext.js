@@ -43,8 +43,8 @@ export function PaymentProvider({ children }) {
 
   const value = useMemo(() => {
     const method = methods.find((m) => m.id === methodId) ?? methods[0];
-    return { methodId, setMethodId, method, methods };
-  }, [methodId, methods]);
+    return { methodId, setMethodId, method, methods, isHydrated };
+  }, [methodId, methods, isHydrated]);
 
   return <PaymentContext.Provider value={value}>{children}</PaymentContext.Provider>;
 }
