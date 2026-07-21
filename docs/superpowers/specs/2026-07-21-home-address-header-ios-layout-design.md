@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make the home header show the customer’s saved delivery address, provide a clear route into address management, and remove the unwanted white strip below the installed iOS PWA.
+Make the home header show the customer’s saved delivery address, open a compact address selector from the bottom of the Home screen, and remove the unwanted white strip below the installed iOS PWA.
 
 ## Home Header
 
@@ -10,15 +10,17 @@ The home location control reads from the existing authentication and address con
 
 The control replaces the home icon with a location-pin icon. The address uses compact `text-sm` typography and truncates to one line so the veg-mode control always remains reachable. The button’s accessible label contains the displayed location.
 
-The down chevron remains beside the text. The whole location control is one button, so tapping either the address or the arrow performs the same action.
+The down chevron remains beside the text. The whole location control is one button, so tapping either the address or the arrow opens the same bottom sheet.
 
-## Navigation and Page Transition
+## Home Address Selector
 
-Tapping the location control navigates to `/addresses` through the existing Pages Router. The existing protected-address flow remains authoritative: a logged-out customer is redirected through login before viewing or editing saved addresses.
+Tapping the location control opens an in-place modal sheet from the bottom of the Home screen instead of navigating away. A dimmed backdrop covers the Home content, and tapping the backdrop or the sheet close control dismisses it.
 
-The Saved Addresses page is wrapped in a page-level motion container that enters upward from below the viewport. When the page is dismissed with a new back control, it animates downward before calling `router.back()`. If there is no useful browser history, the control replaces the route with `/` so the customer is never stranded.
+For a logged-in customer, the sheet lists all saved addresses in a compact selection layout. Each row shows the saved label and address line, with the current default visibly selected. Tapping another row calls the existing `setDefault(address.id)` operation; after it succeeds, the sheet closes and the Home header reflects the new default address. While selection is saving, address controls are disabled. Existing context errors remain visible in the sheet.
 
-The existing address list, default selection, add/edit sheet, deletion, checkout redirect, and bottom navigation behavior stay unchanged.
+When the customer is logged out or has no saved address, the sheet shows `Kadapa` as the current fallback rather than an empty list. The sheet always includes an `Add or manage addresses` action. That action uses the existing protected `/addresses` flow, so logged-out customers are sent through login and authenticated customers can add, edit, or delete addresses on the established management page.
+
+The Saved Addresses page itself returns to its original normal route behavior. It does not receive a route-level slide animation or a new back button. Its existing list, default selection, add/edit sheet, deletion, checkout redirect, and bottom navigation behavior remain unchanged.
 
 ## iOS PWA Bottom Layout
 
@@ -29,14 +31,15 @@ The address add/edit form’s internal bottom padding is also changed to fixed p
 ## Components and Data Flow
 
 - `Home` continues to render `HomeLocationBar` without duplicating address state.
-- `HomeLocationBar` consumes `useAuth` and `useAddresses`, derives the display text, and navigates with `useRouter`.
+- `HomeLocationBar` consumes `useAuth` and `useAddresses`, derives the display text, and owns the open/closed state for the Home address selector.
+- A focused `HomeAddressSheet` component renders the address choices, selection state, fallback, error, dismissal controls, and management action.
 - `AddressContext.defaultAddress` remains the single source of truth for the selected delivery address.
-- `Addresses` owns only its page entrance/dismissal animation; address persistence remains in `AddressContext`.
+- The existing `/addresses` route remains responsible for full address management; address persistence remains in `AddressContext`.
 - Shared bottom spacing changes remain in `AppShell` and `BottomNav` so all customer routes behave consistently in the installed PWA.
 
 ## Error and Loading Behavior
 
-Address-loading failures retain the existing `Kadapa` fallback in the header. The address-management page continues to show its existing readable errors. Navigation does not wait for address loading.
+Address-loading failures retain the existing `Kadapa` fallback in the header. The bottom sheet shows loading feedback while addresses hydrate and the existing readable context error if loading or selection fails. A failed default-address change leaves the sheet open so the customer can retry. Navigation to full address management does not wait for address loading.
 
 ## Testing
 
@@ -45,9 +48,12 @@ Add focused regression coverage confirming that:
 - the header uses authentication and default-address state;
 - the displayed value falls back to `Kadapa`;
 - the location-pin icon replaces the home icon;
-- the location control navigates to `/addresses`;
+- the location control opens the Home bottom sheet without changing routes;
 - the address text uses compact typography and truncation;
-- the Saved Addresses screen enters from the bottom and provides animated dismissal;
+- the sheet lists saved addresses, marks the default, changes the default on selection, and dismisses after success;
+- the sheet shows `Kadapa` when no saved address is available;
+- the sheet provides an `Add or manage addresses` route into the existing protected page;
+- the Saved Addresses page has no added route-level animation or back button;
 - bottom safe-area environment spacing is absent from the app shell, bottom navigation, checkout button, and address form;
 - top safe-area handling and `viewport-fit=cover` remain intact.
 
@@ -55,7 +61,7 @@ Run the focused test in its failing and passing states, the complete test suite,
 
 ## Non-Goals
 
-- No compact address-picker overlay on the home screen.
+- No full address editor or deletion controls inside the Home selector.
 - No new address storage model or geocoding behavior.
 - No global route-transition framework.
 - No typography changes outside the home address label.
