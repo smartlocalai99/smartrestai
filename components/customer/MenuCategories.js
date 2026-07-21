@@ -2,11 +2,23 @@ import Image from "next/image";
 import { motion } from "motion/react";
 
 const menuCategories = [
-  { label: "Mandi", image: "/mandi9.png", targetId: "section-chicken-mandi" },
-  { label: "Starters", image: "/starterimg.webp", targetId: "section-chicken-starters" },
+  {
+    label: "Mandi",
+    image: "/mandi9.png",
+    targetId: "section-chicken-mandi",
+    height: { compact: "h-[68px]", normal: "h-[80px]" },
+  },
+  {
+    label: "Starters",
+    image: "/starterimg.webp",
+    targetId: "section-chicken-starters",
+    height: { compact: "h-[68px]", normal: "h-[80px]" },
+  },
   { label: "Rotis", image: "/rotis.png", targetId: "section-rotis" },
   { label: "Desserts", image: "/desert.png", targetId: "section-desserts" },
 ];
+
+const DEFAULT_HEIGHT = { compact: "h-[82px]", normal: "h-[96px]" };
 
 export default function MenuCategories({ compact = false }) {
   const scrollToSection = (targetId) => {
@@ -34,7 +46,13 @@ export default function MenuCategories({ compact = false }) {
             transition={{ type: "spring", stiffness: 500, damping: 20 }}
             className="flex min-w-0 flex-col items-center gap-3 text-[13px] font-black text-[#5f554c]"
           >
-            <span className={`relative w-full ${compact ? "h-[82px]" : "h-[96px]"}`}>
+            <span
+              className={`relative w-full ${
+                compact
+                  ? item.height?.compact || DEFAULT_HEIGHT.compact
+                  : item.height?.normal || DEFAULT_HEIGHT.normal
+              }`}
+            >
               {item.image ? (
                 <Image
                   src={item.image}
