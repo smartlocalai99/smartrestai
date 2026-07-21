@@ -1,6 +1,7 @@
-const CACHE_NAME = "smartrest-v5";
+const CACHE_NAME = "smartrest-v6";
 const APP_SHELL = [
   "/manifest.webmanifest",
+  "/applogo.jpeg",
   "/pwa-icon-192.png",
   "/pwa-icon-512.png",
   "/pwa-icon-192-maskable.png",
