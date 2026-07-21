@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const readSource = (path) =>
@@ -12,7 +12,7 @@ test("uses Mandi Kings as the installed app identity", async () => {
   assert.equal(manifest.name, "Mandi Kings");
   assert.equal(manifest.short_name, "Mandi Kings");
   assert.match(manifest.description, /Mandi Kings/);
-  assert.equal(manifest.background_color, "#32120d");
+  assert.equal(manifest.background_color, "#ffffff");
   assert.equal(manifest.theme_color, "#32120d");
   assert.match(documentSource, /name="application-name" content="Mandi Kings"/);
   assert.match(documentSource, /name="apple-mobile-web-app-title" content="Mandi Kings"/);
@@ -24,30 +24,26 @@ test("uses Mandi Kings as the installed app identity", async () => {
   );
 });
 
-test("provides logo splash artwork for matching and fallback iPhones", async () => {
-  const documentSource = await readSource("pages/_document.js");
-  assert.match(
-    documentSource,
-    /<link\s+rel="apple-touch-startup-image"\s+href="\/splash\/iphone-1290x2796\.png"\s+\/>/
-  );
+test("uses one centered login banner loader without a custom iOS startup layer", async () => {
+  const [documentSource, brandedSplash, startupGate, globalStyles] = await Promise.all([
+    readSource("pages/_document.js"),
+    readSource("components/customer/BrandedSplash.jsx"),
+    readSource("components/customer/StartupGate.jsx"),
+    readSource("styles/globals.css"),
+  ]);
 
-  const splashPaths = [
-    ...documentSource.matchAll(/href="(\/splash\/iphone-[^"]+\.png)"/g),
-  ].map((match) => match[1]);
-  assert.equal(splashPaths.length, 9);
-  assert.equal(new Set(splashPaths).size, 8);
-
-  await Promise.all(
-    [...new Set(splashPaths)].map(async (path) => {
-      const info = await stat(new URL(`../public${path}`, import.meta.url));
-      assert.ok(info.size > 0, `${path} must not be empty`);
-    })
-  );
+  assert.doesNotMatch(documentSource, /apple-touch-startup-image/);
+  assert.match(brandedSplash, /src="\/pwa-icon-512\.png"/);
+  assert.doesNotMatch(brandedSplash, /src="\/applogo\.jpeg"/);
+  assert.match(globalStyles, /\.startup-splash \{[\s\S]*?background: #32120d;/);
+  assert.match(globalStyles, /\.startup-splash__logo \{[\s\S]*?object-fit: contain;/);
+  assert.match(startupGate, /phase !== "hidden"/);
 });
 
 test("refreshes cached PWA branding assets", async () => {
   const source = await readSource("public/sw.js");
-  assert.match(source, /const CACHE_NAME = "smartrest-v6"/);
+  assert.match(source, /const CACHE_NAME = "smartrest-v8"/);
   assert.match(source, /"\/applogo\.jpeg"/);
-  assert.match(source, /"\/splash\/iphone-1290x2796\.png"/);
+  assert.match(source, /"\/bannerlogin\.png"/);
+  assert.doesNotMatch(source, /"\/splash\/iphone-/);
 });

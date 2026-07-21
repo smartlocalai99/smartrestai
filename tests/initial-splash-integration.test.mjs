@@ -39,7 +39,7 @@ test("defines branded motion with a reduced-motion override", async () => {
   assert.match(component, /unoptimized/);
   assert.match(component, /onLogoReady/);
   assert.doesNotMatch(component, /priority/);
-  assert.match(component, /sizes="\(max-width: 430px\) 80vw, 360px"/);
+  assert.match(component, /sizes="260px"/);
   assert.match(gate, /const MIN_VISIBLE_MS = 900/);
   assert.match(gate, /logoReady/);
   assert.match(gate, /minimumElapsed/);

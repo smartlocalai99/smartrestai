@@ -79,7 +79,7 @@ describe("StartupGate", () => {
     ).toBeInTheDocument();
     expect(screen.getByAltText("Mandi Kings")).toHaveAttribute(
       "src",
-      "/applogo.jpeg"
+      "/pwa-icon-512.png"
     );
     expect(screen.getByAltText("Mandi Kings")).toHaveAttribute(
       "data-preload",
