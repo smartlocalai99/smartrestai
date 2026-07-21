@@ -8,11 +8,11 @@ export default function BrandedSplash({ isExiting, onLogoReady }) {
       className={`startup-splash${isExiting ? " startup-splash--exiting" : ""}`}
     >
       <Image
-        src="/pwa-icon-512.png"
-        alt="Mandi Kings"
-        width={512}
-        height={512}
-        sizes="260px"
+        src="/bannerlogin.png"
+        alt="Mandi Kings welcome banner"
+        width={1600}
+        height={800}
+        sizes="(max-width: 430px) calc(100vw - 32px), 640px"
         preload
         unoptimized
         onLoad={onLogoReady}

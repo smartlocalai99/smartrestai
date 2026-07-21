@@ -33,9 +33,9 @@ test("uses one centered login banner loader without a custom iOS startup layer",
   ]);
 
   assert.doesNotMatch(documentSource, /apple-touch-startup-image/);
-  assert.match(brandedSplash, /src="\/pwa-icon-512\.png"/);
+  assert.match(brandedSplash, /src="\/bannerlogin\.png"/);
   assert.doesNotMatch(brandedSplash, /src="\/applogo\.jpeg"/);
-  assert.match(globalStyles, /\.startup-splash \{[\s\S]*?background: #32120d;/);
+  assert.match(globalStyles, /\.startup-splash \{[\s\S]*?background: #fff;/);
   assert.match(globalStyles, /\.startup-splash__logo \{[\s\S]*?object-fit: contain;/);
   assert.match(startupGate, /phase !== "hidden"/);
 });

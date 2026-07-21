@@ -47,7 +47,7 @@ body,
   overflow: hidden;
   padding: max(24px, env(safe-area-inset-top)) 24px
     max(24px, env(safe-area-inset-bottom));
-  background: #32120d;
+  background: #fff;
   opacity: 1;
   transition: opacity 250ms ease-out;
 }
@@ -58,7 +58,7 @@ body,
 }
 
 .startup-splash__logo {
-  width: min(46vw, 260px);
+  width: min(calc(100vw - 32px), 640px);
   height: auto;
   object-fit: contain;
   animation: startup-logo-breathe 1800ms ease-in-out infinite;

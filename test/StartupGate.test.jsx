@@ -77,15 +77,15 @@ describe("StartupGate", () => {
     expect(
       screen.getByRole("status", { name: "Loading Mandi Kings" })
     ).toBeInTheDocument();
-    expect(screen.getByAltText("Mandi Kings")).toHaveAttribute(
+    expect(screen.getByAltText("Mandi Kings welcome banner")).toHaveAttribute(
       "src",
-      "/pwa-icon-512.png"
+      "/bannerlogin.png"
     );
-    expect(screen.getByAltText("Mandi Kings")).toHaveAttribute(
+    expect(screen.getByAltText("Mandi Kings welcome banner")).toHaveAttribute(
       "data-preload",
       "true"
     );
-    expect(screen.getByAltText("Mandi Kings")).toHaveAttribute(
+    expect(screen.getByAltText("Mandi Kings welcome banner")).toHaveAttribute(
       "data-unoptimized",
       "true"
     );
@@ -112,7 +112,7 @@ describe("StartupGate", () => {
       screen.getByRole("status", { name: "Loading Mandi Kings" })
     ).not.toHaveClass("startup-splash--exiting");
 
-    fireEvent.load(screen.getByAltText("Mandi Kings"));
+    fireEvent.load(screen.getByAltText("Mandi Kings welcome banner"));
     act(() => vi.advanceTimersByTime(0));
     expect(
       screen.getByRole("status", { name: "Loading Mandi Kings" })
@@ -131,7 +131,7 @@ describe("StartupGate", () => {
         <button>Open menu</button>
       </StartupGate>
     );
-    fireEvent.load(screen.getByAltText("Mandi Kings"));
+    fireEvent.load(screen.getByAltText("Mandi Kings welcome banner"));
     act(() => vi.advanceTimersByTime(900));
     act(() => vi.advanceTimersByTime(0));
     act(() => vi.advanceTimersByTime(250));
@@ -176,7 +176,7 @@ describe("StartupGate", () => {
         <button>Open menu</button>
       </StartupGate>
     );
-    fireEvent.load(screen.getByAltText("Mandi Kings"));
+    fireEvent.load(screen.getByAltText("Mandi Kings welcome banner"));
     act(() => vi.advanceTimersByTime(900));
     act(() => vi.advanceTimersByTime(0));
     expect(
