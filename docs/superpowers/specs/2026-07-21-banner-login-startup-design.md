@@ -8,7 +8,8 @@ Replace the one-time Mandi Kings startup logo with the existing login banner art
 
 - Keep `StartupGate` and its current timing, readiness checks, fade-out, reduced-motion behavior, and eight-second fail-safe unchanged.
 - Update `BrandedSplash` to preload `/bannerlogin.png` with its native 1600×800 aspect ratio.
-- Render the complete banner centered on a pure white full-viewport surface using `object-contain`; do not crop or stretch it.
+- Render the complete banner centered on a pure white (`#ffffff`) full-viewport surface using `object-contain`; do not crop or stretch it.
+- The white surface covers the top and bottom safe-area/status-bar regions. No brown layer may appear behind or around the startup banner; the normal brown application theme returns only after the startup layer exits.
 - Retain the accessible `Loading Mandi Kings` status and descriptive image alternative text.
 - Update the service-worker application shell and cache version so installed PWAs receive the new startup artwork.
 

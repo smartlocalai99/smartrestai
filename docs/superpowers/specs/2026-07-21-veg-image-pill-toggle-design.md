@@ -20,7 +20,7 @@ Replace the home header's single flipping food image with a recognizable two-pos
 
 ## Motion and Accessibility
 
-- Animate only the selection surface with a short Motion spring; do not rotate, flip, or replace either image.
+- Animate only the selection surface with a short Motion spring; do not rotate, flip, replace, fade, or move either image.
 - Keep a subtle whole-control press response.
 - When reduced motion is requested, move the selection surface immediately.
 - Retain `role="switch"`, `aria-checked`, a state-specific accessible label, and a minimum 44-pixel touch height.
